@@ -4,17 +4,24 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "serve-backend": "cd backend && php artisan serve --host 192.168.1.205",
+    "dev:all": "concurrently \"npm run dev\" \"npm run serve-backend\"",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
+    "axios": "^1.13.4",
+    "lucide-react": "^0.563.0",
     "next": "16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "autoprefixer": "^10.4.23",
     "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
+    "postcss": "^8.5.6",
     "tailwindcss": "^4"
   }
 }

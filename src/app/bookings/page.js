@@ -1,75 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import {
-  Scissors,
-  Pickaxe,
-  Wind,
-  Zap,
-  Car,
-  Paintbrush,
-  Home,
-  ShieldCheck,
-  Star,
-  Heart,
-} from 'lucide-react';
+import Link from 'next/link';
+import { shops, services } from '@/utils/data';
 
-const ICON_MAP = {
-  Scissors,
-  Pickaxe,
-  Wind,
-  Zap,
-  Car,
-  Paintbrush,
-  Home,
-  ShieldCheck,
-};
-import api from "@/utils/api";
-
-
-export default function Main() {
-  const [shops, setShops] = useState([]);
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchServices();
-    fetchShops();
-  }, []);
-
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/services");
-      console.log(response.data);
-
-      setServices(
-        [{
-          id: null,
-          name: "All",
-          icon: "bag",
-        }, ...response.data]
-      );
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load services");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchShops = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/shops");
-      setShops(response.data.data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load shops");
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function Home() {
   const [activeService, setActiveService] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -85,19 +19,15 @@ export default function Main() {
 
   // Filter Logic
   const filteredServices = services.filter((s) =>
-    s.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+    s.label.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   const filteredShops = shops.filter((shop) => {
     const matchesSearch = shop.name.toLowerCase().includes(debouncedSearch.toLowerCase());
-    const matchesCategory = activeService ? shop.categoryId === activeService : true;
+    const matchesCategory = activeService ? shop.categoryId === activeService : true; 
     // Note: Ensure your 'shops' data has a categoryId or similar to link to service.id
     return matchesSearch && matchesCategory;
   });
-
-  if (loading) return <p>Loading shops...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
 
   return (
     <>
@@ -121,8 +51,7 @@ export default function Main() {
       <section className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar">
         {filteredServices.map((service) => {
           const isActive = activeService === service.id;
-          const Icon = ICON_MAP[service.icon];
-
+          const Icon = service.icon;
 
           return (
             <button
@@ -137,11 +66,9 @@ export default function Main() {
                 }
               `}
             >
-
-              {Icon && <Icon size={16} className={isActive ? "text-white" : "text-slate-500"} />}
-
+              <Icon size={16} className={isActive ? "text-white" : "text-slate-500"} />
               <span className="text-xs font-bold uppercase tracking-wider">
-                {service.name}
+                {service.label}
               </span>
             </button>
           );
@@ -158,19 +85,17 @@ export default function Main() {
             >
               <div
                 className="w-24 h-24 shrink-0 bg-center bg-no-repeat bg-cover rounded-xl"
-                style={{ backgroundImage: `url(${item.logo})` }}
+                style={{ backgroundImage: `url(${item.image})` }}
               />
 
               <div className="flex-1 flex flex-col justify-between min-h-[96px]">
                 <div>
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] font-extrabold uppercase tracking-widest ${item.statusColor}`}>
-                      Code # {item.shop_code}
+                      {item.status}
                     </span>
                     <div className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-primary text-base">
-                        <Heart />
-                      </span>
+                      <span className="material-symbols-outlined text-yellow-500 text-base">star</span>
                       <span className="text-sm font-bold">{item.rating}</span>
                     </div>
                   </div>
@@ -178,20 +103,17 @@ export default function Main() {
                   <h3 className="text-lg font-bold mt-0.5">{item.name}</h3>
 
                   <div className="flex items-center gap-2 mt-1 text-slate-400">
-                    <span className="text-[11px] font-semibold">{item.location}</span>
-                    {/* <span className="w-1 h-1 rounded-full bg-slate-600" /> */}
+                    <span className="text-[11px] font-semibold">{item.reviews} reviews</span>
+                    <span className="w-1 h-1 rounded-full bg-slate-600" />
                     <span className="text-[11px] font-semibold">{item.distance}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between mt-3">
-                  <div className="flex text-sm font-bold text-white/80 gap-1">
-                    <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
-                    <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
-                    <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
-                    <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
-                    <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
-                  </div>
+                  <p className="text-lg font-black">
+                    {item.price} AED
+                    <span className="text-[10px] text-slate-500 font-normal ml-0.5">/hr</span>
+                  </p>
                   <button className="bg-primary px-5 py-2 rounded-full text-xs font-bold uppercase shadow-lg shadow-primary/20">
                     Book Now
                   </button>

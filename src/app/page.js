@@ -25,8 +25,13 @@ const ICON_MAP = {
 };
 import api from "@/utils/api";
 
+import { useRouter } from "next/navigation";
+
 
 export default function Main() {
+
+  const router = useRouter();
+
   const [shops, setShops] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -192,7 +197,9 @@ export default function Main() {
                     <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
                     <span className="text-sm font-bold text-base"><Star className='text-yellow-500' size={12} /></span>
                   </div>
-                  <button className="bg-primary px-5 py-2 rounded-full text-xs font-bold uppercase shadow-lg shadow-primary/20">
+                  <button
+                    onClick={() => router.push(`/detail?id=${item.id}`)}
+                    className="bg-primary px-5 py-2 rounded-full text-xs font-bold uppercase shadow-lg shadow-primary/20">
                     Book Now
                   </button>
                 </div>

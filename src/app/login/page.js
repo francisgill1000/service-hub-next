@@ -13,7 +13,7 @@ const Login = ({ }) => {
             {/* --- Logo Section --- */}
             <div className="flex flex-col items-center mb-10">
                 <div className="size-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6 border border-primary/20">
-                    <span className="material-symbols-outlined text-primary text-5xl [font-variation-settings:'FILL'_1]">handyman</span>
+                    <span className="material-symbols-outlined text-primary text-5xl [fontVariationSettings:'FILL'_1]">handyman</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <span className="text-2xl font-extrabold tracking-tight text-white">

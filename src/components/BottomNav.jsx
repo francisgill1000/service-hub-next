@@ -15,12 +15,12 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/5 backdrop-blur-xl border-t border-white/10 rounded-t-3xl flex items-center justify-around px-4 z-[100]">
       <Link href="/" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/') ? 'text-primary [font-variation-settings:"FILL"_1]' : 'text-muted-text'}`}>explore</span>
+        <span className={`material-symbols-outlined ${isActive('/') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>explore</span>
         <span className={`text-[10px] ${isActive('/') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Explore</span>
       </Link>
 
       <Link href="/bookings" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/bookings') ? 'text-primary [font-variation-settings:"FILL"_1]' : 'text-muted-text'}`}>calendar_today</span>
+        <span className={`material-symbols-outlined ${isActive('/bookings') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>calendar_today</span>
         <span className={`text-[10px] ${isActive('/bookings') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Bookings</span>
       </Link>
 
@@ -31,12 +31,12 @@ export default function BottomNav() {
       </Link>
 
       <Link href="/favourites" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/favourites') ? 'text-primary [font-variation-settings:"FILL"_1]' : 'text-muted-text'}`}>favorite</span>
+        <span className={`material-symbols-outlined ${isActive('/favourites') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>favorite</span>
         <span className={`text-[10px] ${isActive('/favourites') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Favourites</span>
       </Link>
 
       <Link href="/notifications" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/notifications') ? 'text-primary [font-variation-settings:"FILL"_1]' : 'text-muted-text'}`}>notifications</span>
+        <span className={`material-symbols-outlined ${isActive('/notifications') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>notifications</span>
         <span className={`text-[10px] ${isActive('/notifications') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Notifications</span>
       </Link>
     </nav>

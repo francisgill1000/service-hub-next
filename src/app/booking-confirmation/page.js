@@ -1,21 +1,34 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { X, Star, ArrowRight, MessageCircle } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import api from '@/utils/api';
 
 const ConfirmationPage = () => {
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const shopId = searchParams.get("id");
+
     const [isVisible, setIsVisible] = useState(false);
 
+    const [bookingDetails, setBookingDetails] = useState(null);
+
     useEffect(() => {
-        // Small delay to trigger entry animations
-        setIsVisible(true);
+        api.get(`/booking/${shopId}`).then((response) => {
+            console.log("Booking Details:", response.data);
+            setBookingDetails(response.data);
+
+        }).catch((error) => {
+            console.error("Error fetching booking details:", error);
+        });
+
+        setTimeout(() => {
+            // Trigger visibility after a short delay for animation
+            setIsVisible(true);
+        }, 100);
     }, []);
 
-    const bookingDetails = [
-        { label: "Service Provider", value: "Elite Plumbing Services" },
-        { label: "Date", value: "Oct 24, 2023" },
-        { label: "Time", value: "10:00 AM" },
-        { label: "Booking ID", value: "#BK-98231", isPrimary: true },
-    ];
 
     return (
         <div className="bg-[#0B121E] text-white font-sans min-h-screen flex flex-col selection:bg-[#137fec]/30 overflow-x-hidden">
@@ -41,9 +54,11 @@ const ConfirmationPage = () => {
 
                 {/* Hero Text */}
                 <div className="text-center mb-6">
+
                     <h1 className="text-white tracking-tight text-3xl font-extrabold leading-tight mb-2">
                         Booking Confirmed!
                     </h1>
+
                     <p className="text-gray-400 text-base max-w-[280px] mx-auto">
                         Your service provider is scheduled and ready to help you out.
                     </p>
@@ -60,12 +75,7 @@ const ConfirmationPage = () => {
                     <div className="w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl border border-[#1E293B] relative transition-transform duration-300 hover:scale-[1.01]">
                         <div
                             className="w-full h-full bg-center bg-no-repeat bg-cover flex items-end p-5 bg-gradient-to-t from-[#0B121E] via-[#0B121E]/40 to-transparent"
-                            style={{ backgroundImage: `url('https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&q=80&w=800')` }}
-                        >
-                            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
-                                <Star className="text-yellow-400 w-4 h-4 fill-current" />
-                                <span className="text-white text-xs font-bold tracking-tight">4.9 (120+ reviews)</span>
-                            </div>
+                            style={{ backgroundImage: `url(${bookingDetails?.shop?.hero_image})` }}                        >
                         </div>
                     </div>
                 </div>
@@ -73,19 +83,30 @@ const ConfirmationPage = () => {
                 {/* Booking Details Card */}
                 <div className="w-full bg-[#151F2D] rounded-2xl p-6 shadow-xl border border-[#1E293B]">
                     <div className="space-y-4">
-                        {bookingDetails.map((detail, idx) => (
-                            <React.Fragment key={idx}>
-                                <div className="flex justify-between items-center gap-x-6">
-                                    <p className="text-gray-400 text-sm font-medium">{detail.label}</p>
-                                    <p className={`text-sm font-bold text-right ${detail.isPrimary ? 'text-[#137fec]' : 'text-white'}`}>
-                                        {detail.value}
-                                    </p>
-                                </div>
-                                {idx !== bookingDetails.length - 1 && (
-                                    <div className="h-px bg-[#1E293B] w-full"></div>
-                                )}
-                            </React.Fragment>
-                        ))}
+                        <div className="flex justify-between items-center gap-x-6">
+                            <p className="text-gray-400 text-sm font-medium">Booking Reference</p>
+                            <p className={`text-sm font-bold text-right`}>
+                                <span>BK{String(bookingDetails?.id).padStart(5, '0')}</span>
+                            </p>
+                        </div>
+                        <div className="flex justify-between items-center gap-x-6">
+                            <p className="text-gray-400 text-sm font-medium">Shop</p>
+                            <p className={`text-sm font-bold text-right`}>
+                                {bookingDetails?.shop?.name}
+                            </p>
+                        </div>
+                        <div className="flex justify-between items-center gap-x-6">
+                            <p className="text-gray-400 text-sm font-medium">Date</p>
+                            <p className={`text-sm font-bold text-right`}>
+                                {bookingDetails?.date}
+                            </p>
+                        </div>
+                        <div className="flex justify-between items-center gap-x-6">
+                            <p className="text-gray-400 text-sm font-medium">Time</p>
+                            <p className={`text-sm font-bold text-right`}>
+                                {bookingDetails?.start_time} - {bookingDetails?.end_time}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -97,17 +118,9 @@ const ConfirmationPage = () => {
 
             {/* Persistent Footer Actions */}
             <footer className="px-6 pt-6 pb-12 bg-[#0B121E]/95 backdrop-blur-xl border-t border-[#1E293B]/50 space-y-4 max-w-lg mx-auto w-full">
-                <button className="w-full bg-[#137fec] hover:bg-[#137fec]/90 active:scale-[0.98] text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#137fec]/20 group">
-                    View Booking Details
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <button onClick={() => router.push(`/`)} className="w-full bg-[#137fec] hover:bg-[#137fec]/90 active:scale-[0.98] text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#137fec]/20 group">
+                    Book Again
                 </button>
-
-                <button className="w-full bg-[#151F2D] hover:bg-[#1E293B] active:scale-[0.98] border border-[#1E293B] text-white font-bold h-[60px] rounded-2xl transition-all">
-                    Go to Home
-                </button>
-
-
-
             </footer>
 
             <div className="h-4 bg-[#0B121E]"></div>

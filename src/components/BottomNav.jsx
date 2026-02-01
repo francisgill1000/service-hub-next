@@ -1,44 +1,58 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
+
+const NAV_ITEMS = [
+  { label: 'Explore', icon: 'explore', path: '/explore' },
+  { label: 'Bookings', icon: 'calendar_today', path: '/bookings' },
+  { label: 'Home', icon: 'home', path: '/' },
+  { label: 'Favourites', icon: 'favorite', path: '/favourites' },
+  { label: 'Near Me', icon: 'near_me', path: '/near-me' },
+];
 
 export default function BottomNav() {
   const pathname = usePathname();
 
-  // Helper to check if a link is active
-  const isActive = (path) => pathname === path;
-
-  // We hide the nav on login/register pages
   const hideNav = ['/login', '/register', '/forgot-password'].includes(pathname);
   if (hideNav) return null;
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/5 backdrop-blur-xl border-t border-white/10 rounded-t-3xl flex items-center justify-around px-4 z-[100]">
-      <Link href="/" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>explore</span>
-        <span className={`text-[10px] ${isActive('/') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Explore</span>
-      </Link>
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/10 backdrop-blur-2xl border-t border-white/10 rounded-t-[32px] flex items-center justify-around px-2 z-[100] pb-2">
+      {NAV_ITEMS.map((item,index) => {
+        const active = pathname === item.path;
 
-      <Link href="/bookings" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/bookings') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>calendar_today</span>
-        <span className={`text-[10px] ${isActive('/bookings') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Bookings</span>
-      </Link>
+        return (
+          <Link 
+            key={index} 
+            href={item.path} 
+            className="relative flex flex-col items-center justify-center w-full h-full group"
+          >
+            {/* The Floating Indicator */}
+            {active && (
+              <motion.div
+                layoutId="nav-indicator"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                className="absolute -top-6 size-14 bg-primary rounded-full shadow-lg shadow-primary/40 border-[4px] border-[#0a0a0a] flex items-center justify-center"
+              >
+                <span className="material-symbols-outlined text-white text-2xl [fontVariationSettings:'FILL'_1]">
+                  {item.icon}
+                </span>
+              </motion.div>
+            )}
 
-      <Link href="/detail" className="flex flex-col items-center gap-1 group">
-        <div className="relative -top-8 size-16 bg-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/40 border-[6px] border-brand-dark cursor-pointer active:scale-95 transition-transform">
-          <span className="material-symbols-outlined text-white text-3xl">add</span>
-        </div>
-      </Link>
-
-      <Link href="/favourites" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/favourites') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>favorite</span>
-        <span className={`text-[10px] ${isActive('/favourites') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Favourites</span>
-      </Link>
-
-      <Link href="/notifications" className="flex flex-col items-center gap-1 group">
-        <span className={`material-symbols-outlined ${isActive('/notifications') ? 'text-primary [fontVariationSettings:"FILL"_1]' : 'text-muted-text'}`}>notifications</span>
-        <span className={`text-[10px] ${isActive('/notifications') ? 'text-primary font-bold' : 'text-muted-text font-medium'}`}>Notifications</span>
-      </Link>
+            {/* The Regular Icon (hidden when active) */}
+            <div className={`flex flex-col items-center gap-1 transition-all duration-300 ${active ? 'opacity-0 translate-y-4' : 'opacity-100'}`}>
+              <span className="material-symbols-outlined text-muted-text">
+                {item.icon}
+              </span>
+              <span className="text-[10px] text-muted-text font-medium">
+                {item.label}
+              </span>
+            </div>
+          </Link>
+        );
+      })}
     </nav>
   );
 }

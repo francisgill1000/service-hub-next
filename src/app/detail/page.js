@@ -1,98 +1,24 @@
 "use client"
+import BookingDetailHeader from "@/components/BookingDetailHeader";
 import WorkingHours from "@/components/WorkingHours";
 import api from "@/utils/api";
+import { generateDates } from "@/utils/date";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css"; // default styling
-
-const generateDates = (numDays = 31) => {
-    const dates = [];
-    const today = new Date();
-
-    for (let i = 0; i < numDays; i++) {
-        const date = new Date();
-        date.setDate(today.getDate() + i);
-        dates.push(date);
-    }
-
-    return dates;
-};
-
-
-
-const SHOP_DUMMY_IMAGE = "https://lh3.googleusercontent.com/aida-public/AB6AXuA699cNhnG0fEkFg4tALoMy6bJHZeDz68OUenoI2EntA7xwe6iHHv5zFFXmqnxvv_f0UFLPJmVzhyzUo3vAHBt0OKk90ctRN-2qZ-FCV3giW6U0Dw91paHD7Sc703LLKYXq8PzTml8_04UUXBcz0VJJSzQ1nm_BP7KEmBw1wo8b0r5Z1BSatcAgQ1Hd5Tv7ZIV6Apue5RCb7feUCvRB4ZkK-gDhA5HfiAjFDlPYSywFJRiaqoMLVPI09PspZdG51IRWKmtwXgFo3v8X"
-const RATING_DUMMY = 4.9;
-const catalog = [
-    {
-        id: 1,
-        title: "Signature Haircut",
-        description: "45 min • Styling included",
-        price: "65.00",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuCwMyLE2JRqV7y0BpYEYbQcQah_0DgDIsLzauhrmwnF3oi0hbL8kA-wOpdBF82QJH545A5M04QcxhC80SA9uV0Z_dVtZccVWHNxejHsMd9KFKTnqxuch9bp3sW75StvWF7zj7Ydqx8Vu4qNGblpC4ofr0_EZzkvWvhbuH4aQcF03dfgHKXX47BIvJOQGzpOX80XfOnYfvYUi56EzyRqcaKqgO2Hbt81fSNBSHjtqkQanwVsS2hh9RccruEXiDX8JTZqFZqnz3G1BpJb",
-    },
-    {
-        id: 2,
-        title: "Royal Beard Groom",
-        description: "30 min • Hot towel",
-        price: "45.00",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAa2HGA6r5474ZBXmKPXjMczhQrzc0WaFghXQttvrzDPNJ701GvCj8MbghytS2tKjUCPwce_dGPTsqOxA1fXFF_qz2731zqiu0mq53gbXq6jPTp8paFv83bUXTUR3QtlSFomU43Zk52rxWGGLDPXuNDBKMnSqeqcRlFFn5Ge8zpuHytIh_6GQJLIllHH_tKuTcvvhiCk42fUIQmKKFh2KuLm_gjU_mTsym5C41f0TSHAAGj_AuUcWjaMLBtazyLQu26AZKpbrLWhb1F",
-    },
-    {
-        id: 3,
-        title: "Scalp Therapy",
-        description: "20 min • Organic oils",
-        price: "35.00",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAlTQ95_yiXLiVs34q-yclG8hFqgraZUKbyPzaOGkI7PmLW0_eaMzTyhcuQA3w3NtybTAAv7SUJxCTaBkhA_nI9-M_mJQTUKNHeuaOmGaZQDaHwSXC1fyy4GR6MrFCABonp5GSFFikd6mW2LGD6ssP8FNrgoYdFUL5diiF9aX5oHPba8Nfyn9VZuihwOVgQScB-up3qnm_36_06sUuhbn3himOhsw2fz_xA4fVyt072FnjRJ5ZDWmsRbel6cIK6oShX8hpMssawSTZL",
-    },
-];
-
-const TIME_SLOTS = [
-    "10:00 AM",
-    "10:30 AM",
-    "11:00 AM",
-    "11:30 AM",
-    "12:00 PM",
-    "12:30 PM",
-    "01:00 PM",
-    "01:30 PM",
-    "02:00 PM",
-    "03:00 PM",
-    "03:30 PM",
-    "04:00 PM",
-    "04:30 PM",
-    "05:00 PM",
-    "05:30 PM",
-    "06:00 PM",
-    "06:30 PM",
-    "07:00 PM",
-    "07:30 PM",
-    "08:00 PM",
-    "08:30 PM",
-    "09:00 PM",
-    "09:30 PM",
-    "10:00 PM",
-    "10:30 PM",
-    "11:00 PM",
-    "11:30 PM",
-];
-
-
 
 export default function DetailPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const shopId = searchParams.get("id");
+
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
     const [shop, setShop] = useState(null);
     const [activeServices, setActiveServices] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const dates = generateDates(31);
     const [selectedTime, setSelectedTime] = useState("");
-
-
-
 
     const toggleService = (serviceId) => {
         // All clicked → reset filters
@@ -110,7 +36,7 @@ export default function DetailPage() {
 
     const totalPrice = activeServices.reduce(
         (sum, serviceId) => {
-            const service = catalog.find(s => s.id === serviceId);
+            const service = shop?.catalogs.find(s => s.id === serviceId);
             return sum + (service ? parseFloat(service.price) : 0);
         },
         0
@@ -125,15 +51,48 @@ export default function DetailPage() {
         });
     }, [shopId]);
 
-    const handleBooking = () => {
-        // Here you can handle the booking logic, e.g., send data to the backend
-        const bookingDetails = {
-            shop_id: shop.id,
-            services: activeServices.map(id => catalog.find(s => s.id === id)),
-            totalPrice: totalPrice
-        };
-        console.log("Booking Details:", bookingDetails);
-        router.push('/booking-confirmation');
+    const handleBooking = async () => {
+        if (loading) return;
+
+        try {
+            setLoading(true);
+            setErrorMessage(null); // clear previous error
+
+            const bookingDetails = {
+                date: selectedDate,
+                start_time: selectedTime,
+                charges: totalPrice,
+                services: activeServices.map(id => {
+                    const service = shop?.catalogs.find(s => s.id === id);
+                    if (!service) return null;
+
+                    // Destructure to exclude `image`
+                    const { image, ...rest } = service;
+                    return rest;
+                }).filter(Boolean) // remove any nulls if service not found
+            };
+
+            const response = await api.post(
+                `/shops/${shop.id}/book`,
+                bookingDetails
+            );
+
+            // success
+            router.push(
+                '/booking-confirmation?id=' + response.data.data.id
+            );
+
+        } catch (error) {
+            let message = "Something went wrong. Please try again.";
+
+            if (error.response?.data?.message) {
+                message = error.response.data.message;
+            }
+
+            setErrorMessage(message); // 🔥 only ONE error stored
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (!shop) return <p>Loading...</p>;
@@ -142,51 +101,8 @@ export default function DetailPage() {
         <>
             <div className="relative flex h-screen w-full flex-col overflow-x-hidden">
                 <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
-                    <div className="relative w-full h-[40vh]">
-                        <div className="w-full h-full bg-center bg-no-repeat bg-cover"
-                            data-alt="Modern luxury interior of a professional hair salon"
-                            style={{ backgroundImage: `url(${shop.hero_image})` }}>
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/20 to-transparent"></div>
-                    </div>
-                    <div className="px-5 -mt-16 relative z-10">
-                        <div className="glass-card rounded-2xl p-5 flex flex-col gap-3">
-                            <div className="flex justify-between items-start">
-                                <div
-                                    className="bg-primary/20 border border-primary/30 text-primary text-[10px] uppercase font-bold tracking-[0.1em] w-fit px-2.5 py-1 rounded-md">
 
-                                    {shop.is_verified ? "Verified" : "Unverified"} Provider
-                                </div>
-                                <div className="flex items-center gap-1 bg-yellow-400/10 px-2 py-1 rounded-md">
-                                    <span className="material-symbols-outlined text-yellow-400 text-sm"
-                                        style={{ "fontVariationSettings": "'FILL' 1" }}>star</span>
-                                    <span className="text-yellow-400 font-bold text-xs">{RATING_DUMMY}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-extrabold tracking-tight text-white mb-1">{shop.name}</h1>
-                                <div className="flex items-center gap-2 text-navy-muted text-sm">
-                                    <span className="material-symbols-outlined text-sm">location_on</span>
-                                    <span>{shop.location}</span>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2 mt-2 pt-4 border-t border-white/5">
-                                <div className="flex flex-col items-center">
-                                    <p className="text-[10px] text-navy-muted uppercase font-semibold">Status</p>
-                                    <p className="text-sm font-bold text-green-400">Open Now</p>
-                                </div>
-
-                                <div className="flex flex-col items-center">
-                                    <p className="text-[10px] text-navy-muted uppercase font-semibold">Total Bookings</p>
-                                    <p className="text-sm font-bold text-white">{shop.total_bookings}</p>
-                                </div>
-                                <div className="flex flex-col items-center border-x border-white/10">
-                                    <p className="text-[10px] text-navy-muted uppercase font-semibold">Experience</p>
-                                    <p className="text-sm font-bold text-white">{shop.year_of_experience}+ Yrs</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <BookingDetailHeader shop={shop} />
 
                     <div className="px-5 flex flex-col gap-4 pt-6">
                         <div className="flex items-center justify-between mb-2">
@@ -195,7 +111,7 @@ export default function DetailPage() {
                                 {/* <span className="material-symbols-outlined text-navy-muted text-xl">tune</span> */}
                             </button>
                         </div>
-                        {catalog.map((item) => {
+                        {shop?.catalogs.map((item) => {
                             const isActive = activeServices.includes(item.id);
 
                             return (
@@ -265,7 +181,7 @@ export default function DetailPage() {
             ${isActive
                                                     ? "bg-primary text-white shadow-lg scale-105"
                                                     : isToday
-                                                        ? "bg-primary  hover:text-white"
+                                                        ? "border border-primary hover:text-white"
                                                         : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"
                                                 }`}
                                         >
@@ -284,9 +200,8 @@ export default function DetailPage() {
                             <p className="text-xs text-navy-muted font-semibold uppercase mb-3">
                                 Time Slot
                             </p>
-
                             <div className="flex overflow-x-auto no-scrollbar gap-3">
-                                {TIME_SLOTS.map((time) => {
+                                {shop?.slots.map((time) => {
                                     const active = selectedTime === time;
                                     return (
                                         <button
@@ -306,17 +221,22 @@ export default function DetailPage() {
                         </div>
                     </div>
 
-
-
                     <div className="px-5 py-10">
                         <div className="glass-card rounded-2xl p-5">
-                            <WorkingHours />
+                            <WorkingHours working_hours={shop?.working_hours || []} />
                         </div>
                     </div>
 
                 </div>
+
+
                 <div
                     className="fixed bottom-20 left-0 right-0 p-5 bg-navy-deep/95 backdrop-blur-2xl border-t border-white/10 z-[60]">
+                    {errorMessage && (
+                        <div className="mx-5 mb-3 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400 font-semibold">
+                            {errorMessage}
+                        </div>
+                    )}
                     <div className="flex items-center justify-between gap-5">
                         <div className="flex flex-col">
                             <p className="text-[10px] text-navy-muted uppercase font-bold tracking-wider">{activeServices.length}  Service{activeServices.length > 1 ? "s" : ""}</p>

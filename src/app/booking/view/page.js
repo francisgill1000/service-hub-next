@@ -141,7 +141,7 @@ const ConfirmationPage = () => {
                             <div key={item.id} className="p-5 flex justify-between items-center group hover:bg-[#1E293B]/30 transition-colors first:rounded-t-2xl last:rounded-b-2xl">
                                 <div className="flex flex-col">
                                     <span className="text-gray-200 font-semibold">{item.title}</span>
-                                    <span className="text-gray-500 text-xs uppercase tracking-wider">Professional Service</span>
+                                    <span className="text-gray-500 text-xs uppercase tracking-wider">{item.description}</span>
                                 </div>
                                 <div className="text-right">
                                     <span className="text-[#137fec] font-bold">AED {item.price}</span>

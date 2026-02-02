@@ -79,7 +79,7 @@ export default function DetailPage() {
 
             // success
             router.push(
-                '/booking-confirmation?id=' + response.data.data.id
+                `/booking/view?id=${response.data.data.id}`
             );
 
         } catch (error) {
@@ -154,8 +154,6 @@ export default function DetailPage() {
                                 </div>
                             );
                         })}
-
-
                     </div>
 
                     <div className="px-5 flex flex-col gap-4 pt-6">
@@ -242,11 +240,21 @@ export default function DetailPage() {
                             <p className="text-[10px] text-navy-muted uppercase font-bold tracking-wider">{activeServices.length}  Service{activeServices.length > 1 ? "s" : ""}</p>
                             <p className="text-xl font-extrabold text-white">AED {totalPrice.toFixed(2)}</p>
                         </div>
-                        <button onClick={handleBooking}
-                            className="flex-1 bg-primary text-white h-14 rounded-2xl font-bold text-base shadow-lg shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                        <button
+                            onClick={handleBooking}
+                            className="
+        flex-1 h-14 rounded-2xl font-bold text-base flex items-center justify-center gap-2
+        transition-transform active:scale-95
+        bg-primary text-white shadow-lg shadow-primary/30
+        disabled:bg-gray-400 disabled:shadow-none
+        disabled:cursor-not-allowed disabled:active:scale-100
+    "
+                        >
                             Continue Booking
                             <span className="material-symbols-outlined">arrow_forward</span>
                         </button>
+
+
                     </div>
                     <div className="h-4"></div>
                 </div>

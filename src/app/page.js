@@ -165,8 +165,8 @@ export default function Main() {
               <div className="flex-1 flex flex-col justify-between min-h-[96px]">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${item.statusColor}`}>
-                    ID # {item.shop_code}
+                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${item.is_open ? 'text-green-500' : 'text-orange-500'}`}>
+                      {item.is_open ? "Open" : "Close"}
                     </span>
                     <div className="flex items-center gap-1">
                       <button onClick={() => toggleFavourite(item.id)}>

@@ -33,7 +33,7 @@ export default function BookingDetailHeader({ shop }) {
                     <div className="grid grid-cols-3 gap-2 mt-2 pt-4 border-t border-white/5">
                         <div className="flex flex-col items-center">
                             <p className="text-[10px] text-navy-muted uppercase font-semibold">Status</p>
-                            <p className="text-sm font-bold text-green-400">Open Now</p>
+                            <p className={`text-sm font-bold ${shop.is_open ? 'text-green-500' : 'text-orange-500'}`}>{shop.is_open ? "Open" : "Closed"}</p>
                         </div>
 
                         <div className="flex flex-col items-center">

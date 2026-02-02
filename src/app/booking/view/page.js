@@ -3,6 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/utils/api';
 
+let booking_statusses = {
+    "Booked": "text-green-500",
+    "Cancelled": "text-gray-500",
+    "Completed": "text-primary"
+}
+
 const ConfirmationPage = () => {
 
     const router = useRouter();
@@ -84,6 +90,12 @@ const ConfirmationPage = () => {
                 <div className="w-full bg-[#151F2D] rounded-2xl p-6 shadow-xl border border-[#1E293B]">
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-x-6">
+                            <p className="text-gray-400 text-sm font-medium">Status</p>
+                            <p className={`text-sm font-bold text-right ${booking_statusses[bookingDetails?.status]}`}>
+                                {bookingDetails?.status}
+                            </p>
+                        </div>
+                        <div className="flex justify-between items-center gap-x-6">
                             <p className="text-gray-400 text-sm font-medium">Booking Reference</p>
                             <p className={`text-sm font-bold text-right`}>
                                 <span>BK{String(bookingDetails?.id).padStart(5, '0')}</span>
@@ -98,7 +110,7 @@ const ConfirmationPage = () => {
                         <div className="flex justify-between items-center gap-x-6">
                             <p className="text-gray-400 text-sm font-medium">Date</p>
                             <p className={`text-sm font-bold text-right`}>
-                                {bookingDetails?.date}
+                                {bookingDetails?.show_date}
                             </p>
                         </div>
                         <div className="flex justify-between items-center gap-x-6">
@@ -107,6 +119,35 @@ const ConfirmationPage = () => {
                                 {bookingDetails?.start_time} - {bookingDetails?.end_time}
                             </p>
                         </div>
+                        <div className="flex justify-between items-center gap-x-6">
+                            <p className="text-gray-400 text-sm font-medium">Charges</p>
+                            <p className={`text-sm font-bold text-right`}>
+                                AED {bookingDetails?.charges}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* Services Section */}
+                <div className="w-full mt-8">
+                    <h3 className="text-white text-lg font-bold mb-4 flex items-center">
+                        <span className="w-1 h-5 bg-[#137fec] rounded-full mr-3"></span>
+                        Services Booked
+                    </h3>
+
+                    <div className="w-full bg-[#151F2D] rounded-2xl shadow-xl border border-[#1E293B] divide-y divide-[#1E293B]">
+                        {bookingDetails?.services.map((item) => (
+                            <div key={item.id} className="p-5 flex justify-between items-center group hover:bg-[#1E293B]/30 transition-colors first:rounded-t-2xl last:rounded-b-2xl">
+                                <div className="flex flex-col">
+                                    <span className="text-gray-200 font-semibold">{item.title}</span>
+                                    <span className="text-gray-500 text-xs uppercase tracking-wider">Professional Service</span>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[#137fec] font-bold">AED {item.price}</span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 

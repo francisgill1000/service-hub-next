@@ -97,37 +97,6 @@ export default function Main() {
 
   return (
     <>
-      {/* Services Horizontal List */}
-      {/* <section className="flex gap-2 px-4 py-4 mt-5 overflow-x-auto no-scrollbar">
-        {services.map((service) => {
-          const isActive = activeService === service.id;
-          const Icon = ICON_MAP[service.icon];
-
-
-          return (
-            <button
-              key={service.id}
-              onClick={() => setActiveService(isActive ? null : service.id)}
-              className={`
-                flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 
-                transition-all duration-300 cursor-pointer
-                ${isActive
-                  ? "bg-primary text-white shadow-lg scale-105"
-                  : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"
-                }
-              `}
-            >
-
-              {Icon && <Icon size={16} className={isActive ? "text-white" : "text-slate-500"} />}
-
-              <span className="text-xs font-bold uppercase tracking-wider">
-                {service.name}
-              </span>
-            </button>
-          );
-        })}
-      </section> */}
-
       {/* Search Input Section */}
       <section className="flex gap-2 px-4 py-4 overflow-x-auto no-scrollbar">
         <div className="relative group w-full">
@@ -189,9 +158,9 @@ export default function Main() {
                     AED {item?.charges}
                   </div>
                   <button
-                    onClick={() => router.push(`/detail?id=${item.id}`)}
+                    onClick={() => router.push(`/booking/view?id=${item.id}`)}
                     className="bg-primary px-5 py-2 rounded-full text-xs font-bold uppercase shadow-lg shadow-primary/20">
-                    Book Now
+                    View Book
                   </button>
                 </div>
               </div>

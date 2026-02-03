@@ -105,13 +105,13 @@ export default function DetailPage() {
                     <BookingDetailHeader shop={shop} />
 
                     <div className="px-5 flex flex-col gap-4 pt-6">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center justify-between">
                             <h2 className="text-lg font-bold">Service Catalog</h2>
                             <button className="glass-card p-1.5 rounded-lg">
                                 {/* <span className="material-symbols-outlined text-navy-muted text-xl">tune</span> */}
                             </button>
                         </div>
-                        {shop?.catalogs.map((item) => {
+                        {shop?.catalogs.length > 0 ? shop?.catalogs.map((item) => {
                             const isActive = activeServices.includes(item.id);
 
                             return (
@@ -153,10 +153,10 @@ export default function DetailPage() {
                                     </button>
                                 </div>
                             );
-                        })}
+                        }) : "No catalog available"}
                     </div>
 
-                    <div className="px-5 flex flex-col gap-4 pt-6">
+                    <div className="px-5 flex flex-col gap-4 pt-10">
                         <h2 className="text-lg font-bold">Select Date & Time</h2>
 
                         {/* Date Picker */}
@@ -199,7 +199,7 @@ export default function DetailPage() {
                                 Time Slot
                             </p>
                             <div className="flex overflow-x-auto no-scrollbar gap-3">
-                                {shop?.slots.map((time) => {
+                                {shop?.slots.length > 0 ? shop?.slots.map((time) => {
                                     const active = selectedTime === time;
                                     return (
                                         <button
@@ -214,7 +214,7 @@ export default function DetailPage() {
                                             {time}
                                         </button>
                                     );
-                                })}
+                                }) : "No slots available" }
                             </div>
                         </div>
                     </div>

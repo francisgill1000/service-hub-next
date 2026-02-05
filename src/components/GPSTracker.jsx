@@ -1,16 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import {
     MapPin,
     Crosshair,
     Satellite,
     Pencil,
     Loader2,
-} from 'lucide-react';
+} from "lucide-react";
 import api from "@/utils/api";
 
+/* =========================
+   Distance Helper (meters)
+========================= */
+function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // Earth radius in meters
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
 
 export default function GPSTracker({ coordinates, onSuccess, setError = () => { } }) {
 
@@ -19,70 +35,105 @@ export default function GPSTracker({ coordinates, onSuccess, setError = () => { 
     const [scanProgress, setScanProgress] = useState(0);
     const [isRetryVisible, setIsRetryVisible] = useState(false);
 
+    // Store last accepted location
+    const lastCoordsRef = useRef(null);
+
     const startGpsScan = () => {
-        console.log("1. Initiation...");
         setError(null);
         setIsRetryVisible(false);
         setIsWaitingForPermission(true);
 
-        // Set a safety timeout: If no response in 10s, show retry
         const safetyTimer = setTimeout(() => {
-            if (isWaitingForPermission) {
-                setIsWaitingForPermission(false);
-                setIsRetryVisible(true);
-                setError("The request is taking longer than expected.");
-            }
+            setIsWaitingForPermission(false);
+            setIsRetryVisible(true);
+            setError("The request is taking longer than expected.");
         }, 10000);
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 clearTimeout(safetyTimer);
-                console.log("2. Signal Acquired", position.coords);
+
                 const { latitude, longitude } = position.coords;
 
-                // Store coordinates to be revealed after the animation
+                const newCoords = {
+                    lat: latitude,
+                    lon: longitude,
+                };
+
+                // ===== DISTANCE FILTER FIX =====
+                if (lastCoordsRef.current) {
+                    const distance = getDistanceInMeters(
+                        lastCoordsRef.current.lat,
+                        lastCoordsRef.current.lon,
+                        newCoords.lat,
+                        newCoords.lon
+                    );
+
+                    // Ignore GPS drift (< 30 meters)
+                    if (distance < 100) {
+                        console.log("GPS drift ignored:", distance.toFixed(2), "m");
+
+                        // HARD STOP — prevent backend call
+                        window.pendingCoords = null;
+                        setIsWaitingForPermission(false);
+                        setIsScanning(false);
+                        setScanProgress(0);
+
+                        return;
+                    }
+
+                }
+
+
                 window.pendingCoords = {
                     lat: latitude.toFixed(6),
-                    lon: longitude.toFixed(6)
+                    lon: longitude.toFixed(6),
                 };
 
                 setIsWaitingForPermission(false);
-                setIsScanning(true); // Triggers the visual scan bar
+                setIsScanning(true);
                 setScanProgress(0);
             },
             (err) => {
                 clearTimeout(safetyTimer);
-                console.log("3. Error", err.message);
                 setIsWaitingForPermission(false);
                 setIsScanning(false);
                 setError(`Location Error: ${err.message}`);
             },
-            { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            {
+                enableHighAccuracy: false, // IMPORTANT for indoor stability
+                timeout: 10000,
+                maximumAge: 60000,
+            }
         );
     };
 
-
     const fetchLocation = async (coords) => {
-
-        let config = {
-            params: coords
-        }
-
         try {
-            const response = await api.get("/location", config);
-            console.log(response.data);
-            onSuccess(response.data);
+            const response = await api.get("/location", { params: coords });
 
+            const locationData = {
+                lat: parseFloat(response.data.lat),
+                lon: parseFloat(response.data.lon),
+                address: response.data.address,
+            };
+
+            // Save for distance comparison
+            lastCoordsRef.current = locationData;
+
+            // Persist across refresh
+            localStorage.setItem(
+                "lastAcceptedCoords",
+                JSON.stringify(locationData)
+            );
+
+            onSuccess(locationData);
         } catch (err) {
-            console.error(err);
             setError("Failed to load services");
-        } finally {
         }
     };
 
 
-
-    // Update the Progress Effect to actually show the address
     useEffect(() => {
         let interval;
         if (isScanning) {
@@ -91,8 +142,8 @@ export default function GPSTracker({ coordinates, onSuccess, setError = () => { 
                     if (prev >= 100) {
                         clearInterval(interval);
                         setIsScanning(false);
-                        // CRITICAL: Set the address here so the loading state ends
-                        if (window.pendingCoords) {
+
+                        if (window.pendingCoords && !isWaitingForPermission) {
                             fetchLocation(window.pendingCoords);
                         }
                         return 100;
@@ -104,6 +155,15 @@ export default function GPSTracker({ coordinates, onSuccess, setError = () => { 
         return () => clearInterval(interval);
     }, [isScanning]);
 
+    useEffect(() => {
+        const saved = localStorage.getItem("lastAcceptedCoords");
+        if (saved) {
+            const parsed = JSON.parse(saved);
+
+            lastCoordsRef.current = parsed;
+            onSuccess(parsed); // shows address immediately
+        }
+    }, []);
 
 
     return (
@@ -111,26 +171,29 @@ export default function GPSTracker({ coordinates, onSuccess, setError = () => { 
             <div className="bg-[#151921] border border-white/10 rounded-3xl px-8 py-13 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
                 <div className={`absolute inset-0 bg-blue-500/5 transition-opacity duration-1000 ${(isScanning || isWaitingForPermission) ? 'opacity-100' : 'opacity-0'}`} />
 
-                <div className="relative mt-2" >
+                <div className="relative mt-2">
                     <div className={`absolute -inset-4 border-2 border-blue-500/20 rounded-full ${(isScanning || isWaitingForPermission) ? 'animate-ping' : ''}`} />
                     <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.5)] z-10 relative">
-                        {(isScanning || isWaitingForPermission) ? <Loader2 className="animate-spin" size={28} /> : <Crosshair size={28} />}
+                        {(isScanning || isWaitingForPermission)
+                            ? <Loader2 className="animate-spin" size={28} />
+                            : <Crosshair size={28} />}
                     </div>
                 </div>
 
-                <div className='mt-10'>
+                <div className="mt-10">
                     <h4 className="text-lg font-medium mb-1">
                         {isWaitingForPermission ? 'Check Browser Prompt' : 'Detect My Location'}
                     </h4>
-                    <p className="text-white/40 text-xs">Using high-precision GPS radar mapping</p>
+                    <p className="text-white/40 text-xs">
+                        Using high-precision GPS radar mapping
+                    </p>
                 </div>
-
 
                 <button
                     onClick={startGpsScan}
                     disabled={isScanning || isWaitingForPermission}
                     className={`relative z-50 flex items-center gap-2 px-8 py-4 rounded-xl font-medium transition-all w-full justify-center shadow-lg
-    ${(isScanning || isWaitingForPermission)
+                    ${(isScanning || isWaitingForPermission)
                             ? 'bg-blue-600/50 text-white/70 cursor-not-allowed'
                             : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white shadow-blue-500/20'}`}
                 >
@@ -153,21 +216,21 @@ export default function GPSTracker({ coordinates, onSuccess, setError = () => { 
             </div>
 
             <div className="bg-[#151921] border border-white/10 rounded-2xl p-4 flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 flex-shrink-0">
+                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
                     <MapPin size={22} />
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">
                         Detected GPS Coordinates
                     </p>
-                    <p className="text-sm text-white/80 leading-relaxed truncate font-mono">
+                    <p className="text-sm text-white/80 truncate font-mono">
                         {coordinates.address}
                     </p>
                 </div>
-                <button className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors">
+                <button className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg">
                     <Pencil size={18} />
                 </button>
             </div>
         </>
-    )
+    );
 }

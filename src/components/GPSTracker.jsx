@@ -28,7 +28,7 @@ function getDistanceInMeters(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-export default function GPSTracker({ coordinates, onSuccess, setError = () => { } }) {
+export default function GPSTracker({ address, onSuccess, setError = () => { } }) {
 
     const [isScanning, setIsScanning] = useState(false);
     const [isWaitingForPermission, setIsWaitingForPermission] = useState(false);
@@ -224,7 +224,7 @@ export default function GPSTracker({ coordinates, onSuccess, setError = () => { 
                         Detected GPS Coordinates
                     </p>
                     <p className="text-sm text-white/80 truncate font-mono">
-                        {coordinates.address}
+                        {address}
                     </p>
                 </div>
                 <button className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg">

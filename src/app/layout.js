@@ -1,5 +1,9 @@
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
+import { Bell } from "lucide-react";
+import Header from "@/components/Header";
+import GuestHeader from "@/components/GuestHeader";
+import ShopProviders from "./ShopProviders";
 
 // We'll remove Geist since your design uses Manrope via the Google Fonts link
 export const metadata = {
@@ -25,20 +29,15 @@ export default function RootLayout({ children }) {
         {/* Wrapping children in a div helps maintain that 
             mobile-app width (480px) across your whole site 
         */}
-        <div className="max-w-[480px] mx-auto min-h-screen relative shadow-2xl">
-          <div className="relative flex min-h-screen w-full flex-col bg-brand-dark max-w-[480px] mx-auto overflow-x-hidden shadow-2xl pb-24">
-
-            {/* Header */}
-
-            <header className="sticky top-0 z-50 flex items-center justify-center px-6 py-4 bg-brand-dark/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.6),0_4px_6px_-4px_rgba(0,0,0,0.3)]">
-              <h1 className="text-sm font-black tracking-[0.25em] text-white uppercase">
-                Services Hub
-              </h1>
-            </header>
-            {children}
-            <BottomNav />
+        <ShopProviders>
+          <div className="max-w-[480px] mx-auto min-h-screen relative shadow-2xl">
+            <div className="relative flex min-h-screen w-full flex-col bg-brand-dark max-w-[480px] mx-auto overflow-x-hidden shadow-2xl pb-24">
+              <Header />
+              {children}
+              <BottomNav />
+            </div>
           </div>
-        </div>
+        </ShopProviders>
       </body>
     </html>
   );

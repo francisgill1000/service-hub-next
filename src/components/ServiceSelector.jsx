@@ -1,22 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DropDown from './DropDown';
-
-const categories = [
-    { id: 1, name: 'Retail & Shopping' },
-    { id: 2, name: 'Food & Beverage' },
-    { id: 3, name: 'Technology & Software' },
-    { id: 4, name: 'Professional Services' },
-    { id: 5, name: 'Health & Wellness' },
-    { id: 6, name: 'Education & Learning' },
-    { id: 7, name: 'Beauty & Fashion' },
-    { id: 8, name: 'Finance & Insurance' }
-];
+import api from '@/utils/api';
 
 const ServiceSelector = ({ category, setCategory }) => {
 
+    const [services, setServices] = useState([]);
+
+    const fetchServices = async () => {
+        try {
+            const response = await api.get("/services");
+            setServices(response.data)
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchServices();
+    }, []);
+
+
     return (
         <DropDown
-            categories={categories}
+            categories={services}
             selectedId={category}
             onSelect={setCategory}
             placeholder="Select Category"

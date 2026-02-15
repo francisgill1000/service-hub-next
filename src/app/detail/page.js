@@ -4,10 +4,19 @@ import WorkingHours from "@/components/WorkingHours";
 import api from "@/utils/api";
 import { generateDates } from "@/utils/date";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import "react-datepicker/dist/react-datepicker.css"; // default styling
 
-export default function DetailPage() {
+const DetailPageLoader = () => (
+    <div className="relative flex h-screen w-full flex-col overflow-x-hidden items-center justify-center">
+        <div className="text-center">
+            <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
+            <p className="text-gray-400 text-sm">Loading shop details...</p>
+        </div>
+    </div>
+);
+
+function DetailPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const shopId = searchParams.get("id");
@@ -16,9 +25,11 @@ export default function DetailPage() {
     const [errorMessage, setErrorMessage] = useState(null);
     const [shop, setShop] = useState(null);
     const [activeServices, setActiveServices] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const dates = generateDates(31);
     const [selectedTime, setSelectedTime] = useState("");
+
+
 
     const toggleService = (serviceId) => {
         // All clicked → reset filters
@@ -45,11 +56,27 @@ export default function DetailPage() {
     useEffect(() => {
         if (!shopId) return;
 
-        api.get(`/shops/${shopId}`).then(res => {
-            console.log(res.data);
-            setShop(res.data);
+        api.get(`/shops/${shopId}`, {
+            params: {
+                date: selectedDate ? selectedDate.toISOString().split('T')[0] : undefined
+            }
+        }
+
+        ).then(res => {
+            console.log("Shop data:", res.data);
+            // Handle both response structures: {data: {...}} or direct object
+            const shopData = res.data.data || res.data;
+            // Ensure catalogs is an array
+            if (shopData && !Array.isArray(shopData.catalogs)) {
+                shopData.catalogs = [];
+            }
+            setShop(shopData);
+        }).catch(err => {
+            console.error("Error fetching shop:", err);
+            setShop(null);
         });
-    }, [shopId]);
+    }, [shopId, selectedDate]);
+
 
     const handleBooking = async () => {
         if (loading) return;
@@ -123,8 +150,19 @@ export default function DetailPage() {
                                 >
                                     <div
                                         className="size-20 rounded-xl bg-cover bg-center shrink-0 border border-white/5"
-                                        style={{ backgroundImage: `url(${item.image})` }}
-                                    />
+                                        style={{
+                                            backgroundImage: item.image ? `url(${item.image})` : 'none',
+                                            backgroundColor: !item.image ? '#1e293b' : undefined
+                                        }}
+                                    >
+                                        {!item.image && (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <span className="material-symbols-outlined text-lg text-slate-500">
+                                                    image
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     <div className="flex-1">
                                         <h3 className="font-bold text-base">{item.title}</h3>
@@ -132,7 +170,7 @@ export default function DetailPage() {
                                             {item.description}
                                         </p>
                                         <p className="text-primary font-bold mt-2 text-lg">
-                                            AED {item.price}
+                                            AED {parseFloat(item.price).toFixed(2)}
                                         </p>
                                     </div>
 
@@ -214,7 +252,7 @@ export default function DetailPage() {
                                             {time}
                                         </button>
                                     );
-                                }) : "No slots available" }
+                                }) : "No slots available"}
                             </div>
                         </div>
                     </div>
@@ -260,5 +298,13 @@ export default function DetailPage() {
                 </div>
             </div>
         </>
+    );
+}
+
+export default function DetailPage() {
+    return (
+        <Suspense fallback={<DetailPageLoader />}>
+            <DetailPageContent />
+        </Suspense>
     );
 }

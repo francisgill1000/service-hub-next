@@ -130,7 +130,7 @@ export default function Main() {
                 <div>
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] font-extrabold uppercase tracking-widest`}>
-                      BK{String(item?.id).padStart(5, '0')}
+                      {item?.booking_reference || `BK${String(item?.id).padStart(5, '0')}`}
                     </span>
                     <div className="flex items-center gap-1">
                       <button>
@@ -148,8 +148,8 @@ export default function Main() {
                   <h3 className="text-lg font-bold mt-0.5">{item?.shop?.name}</h3>
 
                   <div className="flex items-center gap-2 mt-1 text-slate-400">
-                    <span className="text-[11px] font-semibold">{item?.shop.location}</span>
-                    <span className="text-[11px] font-semibold">{item?.shop.distance}</span>
+                    <span className="text-[11px] font-semibold">{item?.shop?.location}</span>
+                    <span className="text-[11px] font-semibold">{item?.shop?.distance}</span>
                   </div>
                 </div>
 

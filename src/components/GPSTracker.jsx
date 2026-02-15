@@ -28,8 +28,9 @@ function getDistanceInMeters(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-export default function GPSTracker({ address, onSuccess, setError = () => { } }) {
+export default function GPSTracker({ onSuccess, setError = () => { } }) {
 
+    const [address, setAddress] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
     const [isWaitingForPermission, setIsWaitingForPermission] = useState(false);
     const [scanProgress, setScanProgress] = useState(0);
@@ -78,6 +79,15 @@ export default function GPSTracker({ address, onSuccess, setError = () => { } })
                         setIsWaitingForPermission(false);
                         setIsScanning(false);
                         setScanProgress(0);
+
+                        const saved = localStorage.getItem("lastAcceptedCoords");
+                        if (saved) {
+                            const parsed = JSON.parse(saved);
+
+                            lastCoordsRef.current = parsed;
+                            onSuccess(parsed);
+                            setAddress(parsed.address)
+                        }
 
                         return;
                     }
@@ -128,6 +138,7 @@ export default function GPSTracker({ address, onSuccess, setError = () => { } })
             );
 
             onSuccess(locationData);
+            setAddress(parsed.address)
         } catch (err) {
             setError("Failed to load services");
         }
@@ -162,9 +173,9 @@ export default function GPSTracker({ address, onSuccess, setError = () => { } })
 
             lastCoordsRef.current = parsed;
             onSuccess(parsed); // shows address immediately
+            setAddress(parsed.address)
         }
     }, []);
-
 
     return (
         <>
@@ -219,18 +230,21 @@ export default function GPSTracker({ address, onSuccess, setError = () => { } })
                 <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
                     <MapPin size={22} />
                 </div>
+
                 <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">
+                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">
                         Detected GPS Coordinates
-                    </p>
-                    <p className="text-sm text-white/80 truncate font-mono">
-                        {address}
-                    </p>
+                    </label>
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)} // make sure you have state
+                        className="w-full bg-[#1E222B] text-white/80 placeholder:text-white/40 rounded-xl px-4 py-2 text-sm font-mono border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                        placeholder="Enter coordinates..."
+                    />
                 </div>
-                <button className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg">
-                    <Pencil size={18} />
-                </button>
             </div>
+
         </>
     );
 }

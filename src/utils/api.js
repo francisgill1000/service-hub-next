@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 // Create Axios instance
 const api = axios.create({
   baseURL: "http://192.168.1.205:8000/api",
+  // baseURL: "http://64.227.153.90:81/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -29,6 +30,20 @@ const getDeviceId = () => {
   return deviceId;
 };
 
+const getAuthToken = () => {
+  if (typeof window === "undefined") return null;
+
+  const shopToken = localStorage.getItem("shop_token");
+  if (shopToken) return shopToken;
+
+  const legacyToken = localStorage.getItem("auth_token");
+  if (!legacyToken) return null;
+
+  localStorage.setItem("shop_token", legacyToken);
+  localStorage.removeItem("auth_token");
+  return legacyToken;
+};
+
 // Axios request interceptor
 api.interceptors.request.use((config) => {
   const search = getGlobalSearch();
@@ -44,6 +59,11 @@ api.interceptors.request.use((config) => {
 
   if (deviceId) {
     config.headers["X-Device-Id"] = deviceId;
+  }
+
+  const token = getAuthToken();
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;

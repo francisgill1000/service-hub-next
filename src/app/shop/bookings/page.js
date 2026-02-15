@@ -53,12 +53,8 @@ export default function ShopBookingsPage() {
   };
 
   const getFilteredBookings = () => {
-    return bookings.filter(booking => {
-      const statusMatch = selectedStatus === null || booking.status === selectedStatus;
-      const searchMatch = searchTerm === "" ||
-        booking.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.id?.toString().includes(searchTerm);
-      return statusMatch && searchMatch;
+    return bookings.filter(({ booking_reference }) => {
+      return searchTerm === "" || booking_reference?.toString().includes(searchTerm);
     });
   };
 
@@ -107,11 +103,10 @@ export default function ShopBookingsPage() {
             <button
               key={filter.value}
               onClick={() => setSelectedStatus(filter.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                selectedStatus === filter.value
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-[#151F2D] text-gray-400 border border-white/10'
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedStatus === filter.value
+                ? 'bg-blue-500 text-white'
+                : 'bg-[#151F2D] text-gray-400 border border-white/10'
+                }`}
             >
               {filter.label}
             </button>
@@ -137,7 +132,7 @@ export default function ShopBookingsPage() {
                 {/* Top Row - ID and Status */}
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    BK{String(booking.id).padStart(5, '0')}
+                    {booking.booking_reference}
                   </span>
                   <div className={`px-3 py-1 rounded-full border text-[10px] font-bold uppercase ${BOOKING_STATUS_COLORS[booking.status] || BOOKING_STATUS_COLORS['Booked']}`}>
                     <div className="flex items-center gap-1">

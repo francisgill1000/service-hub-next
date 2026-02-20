@@ -25,10 +25,10 @@ export default function BookingDetailHeader({ shop }) {
                     </div>
                     <div>
                         <h1 className="text-2xl font-extrabold tracking-tight text-white mb-1">{shop.name}</h1>
-                        <div className="flex items-center gap-2 text-navy-muted text-sm">
+                        {/* <div className="flex items-center gap-2 text-navy-muted text-sm">
                             <span className="material-symbols-outlined text-sm">location_on</span>
                             <span>{shop.location}</span>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="grid grid-cols-3 gap-2 mt-2 pt-4 border-t border-white/5">
                         <div className="flex flex-col items-center">

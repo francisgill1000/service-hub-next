@@ -28,7 +28,7 @@ export default function Header() {
           <div className="relative">
             <div
               className="size-10 rounded-full border-2 border-blue-600/30 bg-slate-300 bg-cover bg-center"
-              style={{ backgroundImage: 'url("https://api.dicebear.com/7.x/avataaars/svg?seed=Felix")' }}
+              style={{ backgroundImage: `url(${shop.hero_image})` }}
             />
             <div className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-[#101622] rounded-full" />
           </div>

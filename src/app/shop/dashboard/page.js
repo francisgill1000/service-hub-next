@@ -17,9 +17,11 @@ import {
 } from 'lucide-react';
 
 import api from '@/utils/api';
+import { useShop } from '@/context/ShopContext';
 
 export default function ShopDashboard() {
    const router = useRouter();
+   const { shop, token } = useShop();
    const [totalBookings, setTotalBookings] = useState(null);
    const [totalRevenue, setTotalRevenue] = useState(null);
    const [bookings, setBookings] = useState([]);
@@ -27,7 +29,7 @@ export default function ShopDashboard() {
    useEffect(() => {
       const fetchTotals = async () => {
          try {
-            const response = await api.get('/shop/bookings');
+            const response = await api.get('/shop/bookings?shop_id=' + (shop.id || ''));
             const data = response.data || {};
             const list = data.data || [];
             setBookings(list);
@@ -79,8 +81,8 @@ export default function ShopDashboard() {
 
             {/* --- Stats Section --- */}
             <div className="flex flex-wrap gap-3 py-4">
-                  <StatCard label="Total Bookings" value={totalBookings !== null ? String(totalBookings) : '—'} trend="" Icon={CalendarCheck} />
-                  <StatCard label="Total Revenue" value={totalRevenue !== null ? `AED ${Number(totalRevenue).toLocaleString()}` : '—'} trend="" Icon={CircleDollarSign} />
+               <StatCard label="Total Bookings" value={totalBookings !== null ? String(totalBookings) : '—'} trend="" Icon={CalendarCheck} />
+               <StatCard label="Total Revenue" value={totalRevenue !== null ? `AED ${Number(totalRevenue).toLocaleString()}` : '—'} trend="" Icon={CircleDollarSign} />
             </div>
 
             {/* --- Upcoming Bookings --- */}

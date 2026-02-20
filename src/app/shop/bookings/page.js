@@ -19,9 +19,9 @@ const BOOKING_STATUS_DOTS = {
 
 const STATUS_FILTERS = [
   { label: 'All', value: null },
-  { label: 'Booked', value: 'Booked' },
-  { label: 'Completed', value: 'Completed' },
-  { label: 'Cancelled', value: 'Cancelled' }
+  { label: 'Booked', value: 'booked' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Cancelled', value: 'cancelled' }
 ];
 
 export default function ShopBookingsPage() {
@@ -36,12 +36,18 @@ export default function ShopBookingsPage() {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [selectedStatus]);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/shop/bookings");
+      let config = {
+        params: {
+          shop_id: shop?.id,
+          status: selectedStatus
+        },
+      };
+      const response = await api.get("/shop/all-bookings", config);
       setBookings(response.data.data || response.data);
       setError(null);
     } catch (err) {
@@ -59,17 +65,6 @@ export default function ShopBookingsPage() {
   };
 
   const filteredBookings = getFilteredBookings();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B121E] text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-blue-500 rounded-full mb-4"></div>
-          <p className="text-gray-400 text-sm">Loading bookings...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#0B121E] text-white pb-28">
@@ -193,19 +188,28 @@ export default function ShopBookingsPage() {
           </div>
         ) : (
           <div className="py-16 text-center">
-            <div className="mb-4">
-              <span className="material-symbols-outlined text-6xl text-gray-600 block">
-                calendar_blank
-              </span>
-            </div>
-            <p className="text-gray-400 text-base font-medium mb-2">
-              {searchTerm ? 'No bookings found' : 'No bookings yet'}
-            </p>
-            <p className="text-gray-500 text-sm">
-              {searchTerm
-                ? `Try adjusting your search for "${searchTerm}"`
-                : 'Your bookings will appear here'}
-            </p>
+            {loading ? (
+              <div>
+                <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-blue-500 rounded-full mb-4"></div>
+                <p className="text-gray-400 text-sm">Loading bookings...</p>
+              </div>
+            ) : (
+              <div>
+                <span className="material-symbols-outlined text-6xl text-gray-600 block mb-4">
+                  calendar_blank
+                </span>
+
+                <p className="text-gray-400 text-base font-medium mb-2">
+                  {searchTerm ? "No bookings found" : "No bookings yet"}
+                </p>
+
+                <p className="text-gray-500 text-sm">
+                  {searchTerm
+                    ? `Try adjusting your search for "${searchTerm}"`
+                    : "Your bookings will appear here"}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -75,18 +75,22 @@ export default function GPSTracker({ onSuccess, setError = () => { } }) {
                         console.log("GPS drift ignored:", distance.toFixed(2), "m");
 
                         // HARD STOP — prevent backend call
-                        window.pendingCoords = null;
+                        if (typeof window !== "undefined") {
+                            window.pendingCoords = null;
+                        }
                         setIsWaitingForPermission(false);
                         setIsScanning(false);
                         setScanProgress(0);
 
-                        const saved = localStorage.getItem("lastAcceptedCoords");
-                        if (saved) {
-                            const parsed = JSON.parse(saved);
+                        if (typeof window !== "undefined") {
+                            const saved = localStorage.getItem("lastAcceptedCoords");
+                            if (saved) {
+                                const parsed = JSON.parse(saved);
 
-                            lastCoordsRef.current = parsed;
-                            onSuccess(parsed);
-                            setAddress(parsed.address)
+                                lastCoordsRef.current = parsed;
+                                onSuccess(parsed);
+                                setAddress(parsed.address)
+                            }
                         }
 
                         return;
@@ -95,10 +99,12 @@ export default function GPSTracker({ onSuccess, setError = () => { } }) {
                 }
 
 
-                window.pendingCoords = {
-                    lat: latitude.toFixed(6),
-                    lon: longitude.toFixed(6),
-                };
+                if (typeof window !== "undefined") {
+                    window.pendingCoords = {
+                        lat: latitude.toFixed(6),
+                        lon: longitude.toFixed(6),
+                    };
+                }
 
                 setIsWaitingForPermission(false);
                 setIsScanning(true);
@@ -138,7 +144,7 @@ export default function GPSTracker({ onSuccess, setError = () => { } }) {
             );
 
             onSuccess(locationData);
-            setAddress(parsed.address)
+            setAddress(locationData.address)
         } catch (err) {
             setError("Failed to load services");
         }
@@ -154,7 +160,7 @@ export default function GPSTracker({ onSuccess, setError = () => { } }) {
                         clearInterval(interval);
                         setIsScanning(false);
 
-                        if (window.pendingCoords && !isWaitingForPermission) {
+                        if (typeof window !== "undefined" && window.pendingCoords && !isWaitingForPermission) {
                             fetchLocation(window.pendingCoords);
                         }
                         return 100;
@@ -164,9 +170,11 @@ export default function GPSTracker({ onSuccess, setError = () => { } }) {
             }, 50);
         }
         return () => clearInterval(interval);
-    }, [isScanning]);
+    }, [isScanning, isWaitingForPermission]);
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
+
         const saved = localStorage.getItem("lastAcceptedCoords");
         if (saved) {
             const parsed = JSON.parse(saved);
@@ -175,7 +183,7 @@ export default function GPSTracker({ onSuccess, setError = () => { } }) {
             onSuccess(parsed); // shows address immediately
             setAddress(parsed.address)
         }
-    }, []);
+    }, [onSuccess]);
 
     return (
         <>

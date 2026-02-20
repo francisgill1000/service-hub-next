@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useShop } from '@/context/ShopContext';
+import { useState, useEffect } from 'react';
 
 const GUEST_NAV_ITEMS = [
   { label: 'Explore', icon: 'explore', path: '/explore' },
@@ -22,9 +23,14 @@ const SHOP_NAV_ITEMS = [
 export default function BottomNav() {
   const pathname = usePathname();
   const { shop } = useShop();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const hideNav = ['/login', '/register', '/forgot-password'].includes(pathname);
-  if (hideNav) return null;
+  if (!isClient || hideNav) return null;
 
   // Determine if shop owner or guest
   const isShopRoute = pathname?.startsWith("/shop");

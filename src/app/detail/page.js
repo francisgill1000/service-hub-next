@@ -25,9 +25,16 @@ function DetailPageContent() {
     const [errorMessage, setErrorMessage] = useState(null);
     const [shop, setShop] = useState(null);
     const [activeServices, setActiveServices] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [todayString, setTodayString] = useState("");
     const dates = generateDates(31);
     const [selectedTime, setSelectedTime] = useState("");
+
+    useEffect(() => {
+        const today = new Date();
+        setSelectedDate(today);
+        setTodayString(today.toDateString());
+    }, []);
 
 
 
@@ -206,7 +213,7 @@ function DetailPageContent() {
                             <div className="mt-3 overflow-x-auto no-scrollbar flex gap-3">
                                 {dates.map((date) => {
                                     const isActive = selectedDate?.toDateString() === date.toDateString();
-                                    const isToday = new Date().toDateString() === date.toDateString();
+                                    const isToday = todayString === date.toDateString();
 
                                     return (
                                         <button

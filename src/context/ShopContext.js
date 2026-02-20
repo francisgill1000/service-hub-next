@@ -9,6 +9,8 @@ export const ShopProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (typeof window === 'undefined') return;
+
         const savedShop = localStorage.getItem('shop_data') ?? localStorage.getItem('shop');
         const savedToken = localStorage.getItem('shop_token') ?? localStorage.getItem('auth_token');
 

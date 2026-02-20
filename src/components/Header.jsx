@@ -4,18 +4,22 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useShop } from "@/context/ShopContext";
 import GuestHeader from "./GuestHeader";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { shop, logoutShop } = useShop();
+  const [isClient, setIsClient] = useState(false);
 
-  const isGuestRoute =
-    pathname === "/login" || pathname === "/register";
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const isShopRoute = pathname?.startsWith("/shop");
 
-  if (!isShopRoute) return <GuestHeader />;
+  if (!isClient) return null;
+  if (!isShopRoute) return null;
 
   return (
     <header className="sticky top-0 z-40 bg-[#f5f6f8]/50 dark:bg-[#101622]/100 backdrop-blur-md">

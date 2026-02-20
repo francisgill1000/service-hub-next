@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/utils/api';
 import { notify } from '@/utils/alerts';
 
-const EditCatalog = () => {
+const EditCatalogContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const catalogId = searchParams.get("id");
@@ -266,6 +266,23 @@ const EditCatalog = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+const EditCatalog = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-[#0B121B] text-white font-sans items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
+            <p className="text-navy-muted text-sm">Loading service...</p>
+          </div>
+        </div>
+      }
+    >
+      <EditCatalogContent />
+    </Suspense>
   );
 };
 

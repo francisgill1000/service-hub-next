@@ -1,10 +1,13 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
+const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.eloquentservice.com/api";
+
+
 // Create Axios instance
 const api = axios.create({
-  baseURL: "http://192.168.1.205:8000/api",
-  // baseURL: "http://64.227.153.90:81/api",
+  baseURL: baseURL,
+  // baseURL: "https://api.eloquentservice.com/api",
   headers: {
     "Content-Type": "application/json",
   },

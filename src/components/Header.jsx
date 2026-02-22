@@ -28,7 +28,7 @@ export default function Header() {
           <div className="relative">
             <div
               className="size-10 rounded-full border-2 border-blue-600/30 bg-slate-300 bg-cover bg-center"
-              style={{ backgroundImage: `url(${shop.hero_image})` }}
+              style={{ backgroundImage: `url(${shop?.hero_image || '/barber-shop-image.png'})` }}
             />
             <div className="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-[#101622] rounded-full" />
           </div>

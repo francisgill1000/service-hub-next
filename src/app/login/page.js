@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 const Login = () => {
     const router = useRouter();
-    const { shop, loginShop, loading: contextLoading } = useShop();
+    const { shop, loginShop, logoutShop, loading: contextLoading } = useShop();
 
     // 1. Local State
     const [shopCode, setShopCode] = useState("");
@@ -18,42 +18,18 @@ const Login = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    // 2. Sync State with Context (On Load)
-    useEffect(() => {
-        if (!contextLoading && shop) {
-            setShopCode(shop.shop_code || "");
-            // We usually don't pre-fill PINs for security, 
-            // but including it as per your requirement:
-            setPin(shop.pin || "");
+    // Handler for remember checkbox — clears stored credentials and context when unchecked
+    const handleRememberChange = (checked) => {
+        setRememberMe(checked);
+
+        if (!checked && typeof window !== "undefined") {
+            localStorage.removeItem("remember_shop_login");
+            localStorage.removeItem("remember_shop_code");
+            localStorage.removeItem("remember_shop_pin");
+
+            if (shop) logoutShop();
         }
-    }, [contextLoading, shop]);
-
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        // One-time prefill after registration
-        const postRegisterPrefill = sessionStorage.getItem("post_register_login_prefill");
-        if (postRegisterPrefill) {
-            try {
-                const parsed = JSON.parse(postRegisterPrefill);
-                if (parsed?.shopCode) setShopCode(String(parsed.shopCode));
-                if (parsed?.pin) setPin(String(parsed.pin));
-            } finally {
-                sessionStorage.removeItem("post_register_login_prefill");
-            }
-        }
-
-        // Remember-me prefill
-        const rememberEnabled = localStorage.getItem("remember_shop_login") === "true";
-        if (rememberEnabled) {
-            setRememberMe(true);
-            const savedShopCode = localStorage.getItem("remember_shop_code") || "";
-            const savedPin = localStorage.getItem("remember_shop_pin") || "";
-            if (savedShopCode) setShopCode(savedShopCode);
-            if (savedPin) setPin(savedPin);
-        }
-    }, []);
-
+    };
     // 3. Handle Form Submission
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -138,7 +114,7 @@ const Login = () => {
                             value={shopCode}
                             onChange={(e) => setShopCode(e.target.value)}
                             className="w-full h-14 bg-card-dark border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                            placeholder="123456"
+                            placeholder=""
                             type="text"
                             required
                         />
@@ -157,7 +133,7 @@ const Login = () => {
                             value={pin}
                             onChange={(e) => setPin(e.target.value)}
                             className="w-full h-14 bg-card-dark border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                            placeholder="••••"
+                            placeholder=""
                             type={showPin ? "text" : "password"}
                             required
                         />
@@ -186,7 +162,7 @@ const Login = () => {
                     <input
                         type="checkbox"
                         checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
+                        onChange={(e) => handleRememberChange(e.target.checked)}
                         className="size-4 accent-primary"
                     />
                     <span className="text-xs text-muted-text">Remember ID &amp; PIN</span>

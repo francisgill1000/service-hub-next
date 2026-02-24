@@ -18,6 +18,7 @@ import {
 
 import api from '@/utils/api';
 import { useShop } from '@/context/ShopContext';
+import Notifications from '@/components/Notifications';
 
 export default function ShopDashboard() {
    const router = useRouter();
@@ -28,8 +29,11 @@ export default function ShopDashboard() {
 
    useEffect(() => {
       const fetchTotals = async () => {
+
+         if(!shop?.id) return;
+         
          try {
-            const response = await api.get('/shop/bookings?shop_id=' + (shop.id || ''));
+            const response = await api.get('/shop/bookings?shop_id=' + (shop?.id || 0));
             const data = response.data || {};
             const list = data.data || [];
             setBookings(list);
@@ -84,6 +88,8 @@ export default function ShopDashboard() {
                <StatCard label="Total Bookings" value={totalBookings !== null ? String(totalBookings) : '—'} trend="" Icon={CalendarCheck} />
                <StatCard label="Total Revenue" value={totalRevenue !== null ? `AED ${Number(totalRevenue).toLocaleString()}` : '—'} trend="" Icon={CircleDollarSign} />
             </div>
+
+            <Notifications />
 
             {/* --- Upcoming Bookings --- */}
             <div className="pt-6">

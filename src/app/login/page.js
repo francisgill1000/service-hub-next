@@ -18,6 +18,35 @@ const Login = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
+    // Populate fields from remembered localStorage or post-register sessionStorage
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const remembered = localStorage.getItem('remember_shop_login') === 'true';
+        const rememberedCode = localStorage.getItem('remember_shop_code') || '';
+        const rememberedPin = localStorage.getItem('remember_shop_pin') || '';
+
+        if (remembered && rememberedCode) {
+            setShopCode(rememberedCode);
+            setPin(rememberedPin);
+            setRememberMe(true);
+            return;
+        }
+
+        const prefill = sessionStorage.getItem('post_register_login_prefill');
+        if (prefill) {
+            try {
+                const obj = JSON.parse(prefill);
+                if (obj.shopCode) setShopCode(obj.shopCode);
+                if (obj.pin) setPin(obj.pin);
+            } catch (e) {
+                // ignore parse errors
+            }
+
+            sessionStorage.removeItem('post_register_login_prefill');
+        }
+    }, []);
+
     // Handler for remember checkbox — clears stored credentials and context when unchecked
     const handleRememberChange = (checked) => {
         setRememberMe(checked);

@@ -133,10 +133,10 @@ const App = () => {
                                 value={form.name}
                                 onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                             />
-                            <ServiceSelector
+                            {/* <ServiceSelector
                                 category={form.category_id}
                                 setCategory={(id) => setForm(prev => ({ ...prev, category_id: Number(id) }))}
-                            />
+                            /> */}
                         </section>
 
                         {/* Branding & Visuals Section */}

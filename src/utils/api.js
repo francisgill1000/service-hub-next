@@ -1,7 +1,9 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.eloquentservice.com/api";
+// const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.eloquentservice.com/api";
+const baseURL = "http://192.168.1.205:8000/api";
+export const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://192.168.1.205:3000";
 
 
 // Create Axios instance

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ImageIcon, Edit2 } from "lucide-react";
+import compressImage from '@/utils/image';
 
 export default function HeroImageUploader({
   label = "Cover Photo",
@@ -10,16 +11,22 @@ export default function HeroImageUploader({
 }) {
   const [preview, setPreview] = useState(null);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result);
-      onChange && onChange(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const dataUrl = await compressImage(file, 2000, 1200, 0.8);
+      setPreview(dataUrl);
+      onChange && onChange(dataUrl);
+    } catch (err) {
+      console.error('Image compression failed', err);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+        onChange && onChange(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (

@@ -16,8 +16,9 @@ const GUEST_NAV_ITEMS = [
 const SHOP_NAV_ITEMS = [
   { label: 'Dashboard', icon: 'dashboard', path: '/shop/dashboard' },
   { label: 'Services', icon: 'inventory_2', path: '/shop/catalogs' },
-  { label: 'Hours', icon: 'schedule', path: '/shop/working_hours' },
   { label: 'Bookings', icon: 'calendar_today', path: '/shop/bookings' },
+  { label: 'Hours', icon: 'schedule', path: '/shop/working_hours' },
+  { label: 'Profile', icon: 'person', path: '/shop/profile' },
 ];
 
 export default function BottomNav() {

@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from "react";
 import { Camera } from "lucide-react";
+import compressImage from '@/utils/image';
 
 export default function LogoUploader({
   label = "Brand Logo",
@@ -8,16 +11,22 @@ export default function LogoUploader({
 }) {
   const [preview, setPreview] = useState(null);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result); // base64 string
-      onChange && onChange(reader.result); // send to parent
-    };
-    reader.readAsDataURL(file);
+    try {
+      const dataUrl = await compressImage(file, 1200, 1200, 0.8);
+      setPreview(dataUrl);
+      onChange && onChange(dataUrl);
+    } catch (err) {
+      console.error('Image compression failed', err);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+        onChange && onChange(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (

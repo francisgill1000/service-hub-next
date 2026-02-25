@@ -1,10 +1,11 @@
 "use client";
-import { LogOut } from "lucide-react";
+import { Bell, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useShop } from "@/context/ShopContext";
 import GuestHeader from "./GuestHeader";
 import { useState, useEffect } from "react";
+import Notifications from "./Notifications";
 
 export default function Header() {
   const pathname = usePathname();
@@ -37,15 +38,23 @@ export default function Header() {
             <h2 className="text-lg font-bold leading-tight tracking-tight">{shop?.name ?? "Your Shop"}</h2>
           </div>
         </div>
-        <button
-          onClick={() => {
-            logoutShop();
-            router.push("/login");
-          }}
-          className="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 transition-transform active:scale-95"
-        >
-          <LogOut size={20} />
-        </button>
+
+
+
+        <div className="flex gap-1">
+
+          <Notifications />
+
+          <button
+            onClick={() => {
+              logoutShop();
+              router.push("/login");
+            }}
+            className="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 transition-transform active:scale-95"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
       </div>
     </header>
   )

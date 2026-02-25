@@ -89,8 +89,6 @@ export default function ShopDashboard() {
                <StatCard label="Total Revenue" value={totalRevenue !== null ? `AED ${Number(totalRevenue).toLocaleString()}` : '—'} trend="" Icon={CircleDollarSign} />
             </div>
 
-            <Notifications />
-
             {/* --- Upcoming Bookings --- */}
             <div className="pt-6">
                <div className="flex items-center justify-between pb-4">

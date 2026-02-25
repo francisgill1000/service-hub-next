@@ -53,8 +53,8 @@ export default function Notifications() {
     useEffect(() => {
         if (!clientId) return;
 
-        const evtSource = new EventSource(`http://localhost:5000/stream?clientId=${clientId}`);
-        // const evtSource = new EventSource(`https://push.eloquentservice.com/stream?clientId=${clientId}`);
+        // const evtSource = new EventSource(`http://localhost:5000/stream?clientId=${clientId}`);
+        const evtSource = new EventSource(`https://push.eloquentservice.com/stream?clientId=${clientId}`);
 
 
 
@@ -72,8 +72,8 @@ export default function Notifications() {
             evtSource.close();
             setTimeout(() => {
                 // reconnect on error
-                new EventSource(`http://localhost:5000/stream?clientId=${clientId}`);
-                // new EventSource(`https://push.eloquentservice.com/stream?clientId=${clientId}`);
+                // new EventSource(`http://localhost:5000/stream?clientId=${clientId}`);
+                new EventSource(`https://push.eloquentservice.com/stream?clientId=${clientId}`);
             }, 1000);
         };
 

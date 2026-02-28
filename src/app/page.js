@@ -118,7 +118,7 @@ export default function Main() {
   return (
     <>
       {/* Services Horizontal List */}
-      <section className="flex gap-2 px-8 py-4 mt-5 overflow-x-auto no-scrollbar">
+      {/* <section className="flex gap-2 px-8 py-4 mt-5 overflow-x-auto no-scrollbar">
         {services.map((service) => {
           const isActive = activeService === service.id;
           const Icon = ICON_MAP[service.icon];
@@ -146,7 +146,7 @@ export default function Main() {
             </button>
           );
         })}
-      </section>
+      </section> */}
 
       {/* Search Input Section */}
       <section className="flex gap-2 px-4 py-4 overflow-x-auto no-scrollbar">
@@ -170,11 +170,13 @@ export default function Main() {
           shops.map((item) => (
             <div
               key={item.id}
+
               className="flex items-center gap-4 rounded-2xl bg-card-dark p-4 border border-white/5 shadow-lg active:scale-[0.98] transition-all"
             >
               <div
                 className="w-24 h-24 shrink-0 bg-center bg-no-repeat bg-cover rounded-xl"
                 style={{ backgroundImage: `url(${item.logo})` }}
+                onClick={() => router.push(`/detail?id=${item.id}`)}
               />
 
               <div className="flex-1 flex flex-col justify-between min-h-[96px]">
@@ -209,7 +211,7 @@ export default function Main() {
                     {item.today_working_hours?.start_time} - {item.today_working_hours?.end_time}
                   </div>
                   <button
-                    onClick={() => router.push(`/detail?id=${item.id}`)}
+
                     className="bg-primary px-5 py-2 rounded-full text-xs font-bold uppercase shadow-lg shadow-primary/20">
                     Book Now
                   </button>

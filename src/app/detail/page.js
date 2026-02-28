@@ -60,16 +60,23 @@ function DetailPageContent() {
         0
     );
 
+    // Format date as local YYYY-MM-DD to avoid timezone shifts when sending to backend
+    const formatLocalDate = (d) => {
+        if (!d) return undefined;
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
+
     useEffect(() => {
         if (!shopId) return;
 
         api.get(`/shops/${shopId}`, {
             params: {
-                date: selectedDate ? selectedDate.toISOString().split('T')[0] : undefined
+                date: formatLocalDate(selectedDate)
             }
-        }
-
-        ).then(res => {
+        }).then(res => {
             console.log("Shop data:", res.data);
             // Handle both response structures: {data: {...}} or direct object
             const shopData = res.data.data || res.data;
@@ -93,7 +100,7 @@ function DetailPageContent() {
             setErrorMessage(null); // clear previous error
 
             const bookingDetails = {
-                date: selectedDate,
+                date: formatLocalDate(selectedDate),
                 start_time: selectedTime,
                 charges: totalPrice,
                 services: activeServices.map(id => {
@@ -286,6 +293,7 @@ function DetailPageContent() {
                             <p className="text-xl font-extrabold text-white">AED {totalPrice.toFixed(2)}</p>
                         </div>
                         <button
+                            disabled={activeServices.length === 0 || !selectedTime || loading}
                             onClick={handleBooking}
                             className="
         flex-1 h-14 rounded-2xl font-bold text-base flex items-center justify-center gap-2

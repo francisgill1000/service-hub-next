@@ -13,7 +13,8 @@ import {
    BarChart3,
    Settings,
    CircleDollarSign,
-   CalendarCheck
+   CalendarCheck,
+   QrCode
 } from 'lucide-react';
 
 import api from '@/utils/api';
@@ -108,6 +109,27 @@ export default function ShopDashboard() {
             <div className="flex flex-wrap gap-3 py-4">
                <StatCard label="Total Bookings" value={totalBookings !== null ? String(totalBookings) : '—'} trend="" Icon={CalendarCheck} />
                <StatCard label="Total Revenue" value={totalRevenue !== null ? `AED ${Number(totalRevenue).toLocaleString()}` : '—'} trend="" Icon={CircleDollarSign} />
+            </div>
+
+            <div className="pt-2">
+               <button
+                  type="button"
+                  onClick={() => router.push('/shop/scan-login')}
+                  className="w-full rounded-xl p-4 bg-white dark:bg-[#1c2331] border border-slate-100 dark:border-slate-800 text-left shadow-sm"
+               >
+                  <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-3">
+                        <div className="size-10 rounded-xl bg-blue-600/15 text-blue-600 flex items-center justify-center">
+                           <QrCode size={18} />
+                        </div>
+                        <div>
+                           <p className="text-sm font-bold">Scan QR Login</p>
+                           <p className="text-xs text-slate-500 dark:text-slate-400">Approve desktop login from mobile app</p>
+                        </div>
+                     </div>
+                     <ChevronRight size={18} className="text-slate-400" />
+                  </div>
+               </button>
             </div>
 
             {/* --- Upcoming Bookings --- */}

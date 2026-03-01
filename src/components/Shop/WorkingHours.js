@@ -7,14 +7,13 @@ import { notify } from '@/utils/alerts';
 import { useShop } from '@/context/ShopContext';
 
 const WorkingHours = () => {
-    const { shop } = useShop();
+    const { shop, loginShop, token } = useShop();
     const [loading, setLoading] = useState(false);
 
     // Day indexes: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    // State to manage the schedule for each day
-    const [days, setDays] = useState([
+    const initialDays = [
         { day: 'Monday', dayOfWeek: 1, isOpen: true, openTime: '09:00', closeTime: '23:00' },
         { day: 'Tuesday', dayOfWeek: 2, isOpen: true, openTime: '09:00', closeTime: '23:00' },
         { day: 'Wednesday', dayOfWeek: 3, isOpen: true, openTime: '09:00', closeTime: '23:00' },
@@ -22,26 +21,58 @@ const WorkingHours = () => {
         { day: 'Friday', dayOfWeek: 5, isOpen: true, openTime: '09:00', closeTime: '23:00' },
         { day: 'Saturday', dayOfWeek: 6, isOpen: true, openTime: '10:00', closeTime: '18:00' },
         { day: 'Sunday', dayOfWeek: 0, isOpen: false, openTime: '09:00', closeTime: '17:00' },
-    ]);
+    ];
 
-    // Load existing working hours from backend on mount
+    const buildDaysFromWorkingHours = (workingHours = []) => {
+        return initialDays.map(dayItem => {
+            const existingHours = workingHours.find(wh => wh.day_of_week === dayItem.dayOfWeek);
+            if (existingHours) {
+                return {
+                    ...dayItem,
+                    isOpen: true,
+                    openTime: existingHours.start_time,
+                    closeTime: existingHours.end_time
+                };
+            }
+            return {
+                ...dayItem,
+                isOpen: false
+            };
+        });
+    };
+
+    // State to manage the schedule for each day
+    const [days, setDays] = useState(buildDaysFromWorkingHours(shop?.working_hours || []));
+
+    // Load from context (source of truth)
     useEffect(() => {
-        if (shop?.working_hours) {
-            const updatedDays = days.map(dayItem => {
-                const existingHours = shop.working_hours.find(wh => wh.day_of_week === dayItem.dayOfWeek);
-                if (existingHours) {
-                    return {
-                        ...dayItem,
-                        isOpen: true,
-                        openTime: existingHours.start_time,
-                        closeTime: existingHours.end_time
-                    };
+        setDays(buildDaysFromWorkingHours(shop?.working_hours || []));
+    }, [shop?.id, shop?.working_hours]);
+
+    // Refresh latest shop data on page load/reload
+    useEffect(() => {
+        if (!shop?.id) return;
+
+        let cancelled = false;
+
+        const fetchShop = async () => {
+            try {
+                const response = await api.get(`/shops/${shop.id}`);
+                const freshShop = response?.data?.data || response?.data;
+                if (!cancelled && freshShop && token) {
+                    loginShop(freshShop, token);
                 }
-                return dayItem;
-            });
-            setDays(updatedDays);
-        }
-    }, [shop?.working_hours]);
+            } catch (error) {
+                console.error('Error fetching latest shop hours:', error);
+            }
+        };
+
+        fetchShop();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [shop?.id, token]);
 
     const toggleDay = (index) => {
         const updatedDays = [...days];
@@ -77,9 +108,17 @@ const WorkingHours = () => {
                     slot_duration: 30
                 }));
 
-            await api.put(`/shops/${shop.id}`, {
+            const response = await api.put(`/shops/${shop.id}`, {
                 working_hours: workingHoursData
             });
+
+            const updatedShopFromApi = response?.data?.shop || response?.data?.data;
+
+            if (updatedShopFromApi && token) {
+                loginShop(updatedShopFromApi, token);
+            } else {
+                setDays(buildDaysFromWorkingHours(workingHoursData));
+            }
 
             await notify({
                 icon: 'success',

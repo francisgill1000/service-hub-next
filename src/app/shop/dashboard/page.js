@@ -18,34 +18,55 @@ import {
 
 import api from '@/utils/api';
 import { useShop } from '@/context/ShopContext';
-import Notifications from '@/components/Notifications';
 
 export default function ShopDashboard() {
    const router = useRouter();
-   const { shop, token } = useShop();
+   const { shop, loading } = useShop();
    const [totalBookings, setTotalBookings] = useState(null);
    const [totalRevenue, setTotalRevenue] = useState(null);
    const [bookings, setBookings] = useState([]);
 
    useEffect(() => {
-      const fetchTotals = async () => {
+      if (!loading && !shop) {
+         router.push('/login');
+      }
+   }, [loading, shop, router]);
 
-         if(!shop?.id) return;
-         
+   useEffect(() => {
+      if (loading || !shop?.id) return;
+
+      let cancelled = false;
+
+      const fetchTotals = async () => {
          try {
-            const response = await api.get('/shop/bookings?shop_id=' + (shop?.id || 0));
+            const response = await api.get('/shop/bookings', {
+               params: { shop_id: shop.id },
+            });
+
+            if (cancelled) return;
+
             const data = response.data || {};
-            const list = data.data || [];
+            const list = Array.isArray(data.data) ? data.data : [];
+            const calculatedRevenue = list.reduce((sum, booking) => sum + Number(booking?.charges || 0), 0);
+
             setBookings(list);
             setTotalBookings(data.total_bookings ?? list.length);
-            setTotalRevenue(data.total_revenue ?? list.reduce((s, b) => s + (b.charges || 0), 0));
+            setTotalRevenue(data.total_revenue ?? calculatedRevenue);
          } catch (err) {
+            if (cancelled) return;
             console.error('Failed to fetch booking totals', err);
+            setBookings([]);
+            setTotalBookings(0);
+            setTotalRevenue(0);
          }
       };
 
       fetchTotals();
-   }, []);
+
+      return () => {
+         cancelled = true;
+      };
+   }, [loading, shop?.id]);
 
    const formatDayMonth = (dateStr) => {
       if (!dateStr) return { day: '--', month: '---' };

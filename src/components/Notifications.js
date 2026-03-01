@@ -2,10 +2,12 @@
 
 import { useShop } from "@/context/ShopContext";
 import { Bell } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 export default function Notifications() {
 
+    const router = useRouter();
     const { shop } = useShop();
 
     const [notifications, setNotifications] = useState([]);
@@ -24,7 +26,7 @@ export default function Notifications() {
         const ctx = ensureAudioContext();
         if (!ctx) return;
         if (ctx.state === 'suspended') {
-            ctx.resume().catch(() => {});
+            ctx.resume().catch(() => { });
         }
 
         const now = ctx.currentTime;
@@ -135,7 +137,7 @@ export default function Notifications() {
                 onClick={() => {
                     setOpen((s) => !s);
                     const ctx = ensureAudioContext();
-                    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+                    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => { });
                 }}
                 className="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 transition-transform active:scale-95"
                 style={bellStyle}
@@ -150,13 +152,17 @@ export default function Notifications() {
 
             {open && (
                 <div style={dropdownStyle} className="bg-white dark:bg-[#1c2331]" >
-                    <div style={{ padding: '8px 12px',  fontWeight: 600 }} className="border-b border-slate-700">Notifications</div>
+                    <div style={{ padding: '8px 12px', fontWeight: 600 }} className="border-b border-slate-700">Notifications</div>
                     {notifications.length === 0 ? (
                         <div style={{ padding: 12, color: '#6b7280' }}>No notifications</div>
                     ) : (
                         notifications.map((n, i) => (
-                            <div key={i} style={{ padding: 10,  fontSize: 13 }} className="border-b border-slate-700  bg-slate-900">
-                                <div style={{  marginBottom: 4 }}>{typeof n.message === 'object' ? JSON.stringify(n.message) : n.message}</div>
+                            <div
+                                key={i}
+                                onClick={() => { router.push(n.data.notification_url); setOpen(false); }}
+                                style={{ padding: 10, fontSize: 13 }}
+                                className="border-b border-slate-700  bg-slate-900">
+                                <div style={{ marginBottom: 4 }}>{typeof n.message === 'object' ? JSON.stringify(n.message) : n.message}</div>
                                 <div style={{ fontSize: 12 }}>{n.timestamp}</div>
                             </div>
                         ))

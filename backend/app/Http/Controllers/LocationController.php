@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+use function Laravel\Prompts\info;
 
 class LocationController extends Controller
 {
@@ -30,12 +33,44 @@ class LocationController extends Controller
         // Otherwise, call Google Maps API
         $apiKey = env('GOOGLE_MAPS_KEY');
 
+        Log::info("Google Maps API key: ". ($apiKey));
+
+        if (empty($apiKey)) {
+            info('Google Maps key missing on server configuration', [
+                'lat' => $lat,
+                'lon' => $lon,
+            ]);
+
+            return response()->json([
+                'lat' => $lat,
+                'lon' => $lon,
+                'address' => null,
+                'google_status' => 'MISSING_KEY',
+            ]);
+        }
+
         info("Calling api for new $lat, lon $lon");
 
-        $res = Http::withoutVerifying()->get("https://maps.googleapis.com/maps/api/geocode/json", [
+        $res = Http::withoutVerifying()->timeout(20)->get("https://maps.googleapis.com/maps/api/geocode/json", [
             'latlng' => "$lat,$lon",
             'key' => $apiKey,
         ]);
+
+        if (! $res->successful()) {
+            info('Google Maps HTTP request failed', [
+                'status' => $res->status(),
+                'body' => $res->body(),
+                'lat' => $lat,
+                'lon' => $lon,
+            ]);
+
+            return response()->json([
+                'lat' => $lat,
+                'lon' => $lon,
+                'address' => null,
+                'google_status' => 'HTTP_'.$res->status(),
+            ]);
+        }
 
         $data = $res->json();
         if ($data['status'] === "OK" && count($data['results']) > 0) {
@@ -48,10 +83,19 @@ class LocationController extends Controller
             return response()->json($savedLocation);
         }
 
+        info('Google Maps geocode did not resolve address', [
+            'google_status' => $data['status'] ?? 'UNKNOWN',
+            'google_error_message' => $data['error_message'] ?? null,
+            'lat' => $lat,
+            'lon' => $lon,
+        ]);
+
         return response()->json([
             'lat' => $lat,
             'lon' => $lon,
             'address' => null,
+            'google_status' => $data['status'] ?? 'UNKNOWN',
+            'google_error_message' => $data['error_message'] ?? null,
         ]);
     }
 }

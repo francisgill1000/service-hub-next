@@ -12,10 +12,13 @@ export default function ShopProfile() {
     const router = useRouter();
     const { shop, loading, loginShop, token } = useShop();
     const [isSaving, setIsSaving] = useState(false);
+    const [isLocating, setIsLocating] = useState(false);
     const [message, setMessage] = useState('');
     const [form, setForm] = useState({
         name: '',
         location: '',
+        lat: '',
+        lon: '',
         pin: '',
         logo: null,
         hero_image: null,
@@ -30,6 +33,8 @@ export default function ShopProfile() {
         setForm({
             name: shop.name || '',
             location: shop.location || '',
+            lat: shop.lat ?? '',
+            lon: shop.lon ?? '',
             logo: null,
             hero_image: null,
         });
@@ -85,6 +90,14 @@ export default function ShopProfile() {
                 location: form.location,
             };
 
+            if (form.lat !== '') {
+                payload.lat = Number(form.lat);
+            }
+
+            if (form.lon !== '') {
+                payload.lon = Number(form.lon);
+            }
+
             // Only include logo if it was changed
             if (form.logo) {
                 payload.logo = form.logo;
@@ -134,6 +147,62 @@ export default function ShopProfile() {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const handleUseCurrentLocation = async () => {
+        if (!navigator.geolocation || isLocating) {
+            return;
+        }
+
+        setIsLocating(true);
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const latitude = Number(position.coords.latitude.toFixed(7));
+                const longitude = Number(position.coords.longitude.toFixed(7));
+
+                const fallbackLocation = `${latitude}, ${longitude}`;
+                let readableLocation = fallbackLocation;
+
+                try {
+                    const response = await api.get('/location', {
+                        params: {
+                            lat: latitude,
+                            lon: longitude,
+                        },
+                    });
+
+                    if (response?.data?.address) {
+                        readableLocation = response.data.address;
+                    }
+                } catch (error) {
+                    console.error('Reverse geocoding failed, using coordinates fallback', error);
+                }
+
+                setForm(prev => ({
+                    ...prev,
+                    lat: latitude,
+                    lon: longitude,
+                    location: readableLocation,
+                }));
+
+                setIsLocating(false);
+            },
+            async (error) => {
+                setIsLocating(false);
+
+                await notify({
+                    icon: 'error',
+                    title: 'Location Error',
+                    text: error?.message || 'Unable to fetch your current location.',
+                });
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+            }
+        );
     };
 
     const downloadQr = async () => {
@@ -277,8 +346,21 @@ export default function ShopProfile() {
                                 value={form.location}
                                 onChange={(e) => handleChange('location', e.target.value)}
                                 className="mt-1 w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
-                                placeholder="Location"
+                                placeholder="Latitude, Longitude"
                             />
+                            <button
+                                type="button"
+                                onClick={handleUseCurrentLocation}
+                                disabled={isLocating}
+                                className="mt-2 w-full bg-white/10 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-60"
+                            >
+                                {isLocating ? 'Fetching location...' : 'Use Current Location'}
+                            </button>
+                            <div className="mt-2 text-[11px] text-white/50">
+                                {form.lat !== '' && form.lon !== ''
+                                    ? `Lat: ${form.lat}, Lon: ${form.lon}`
+                                    : 'No coordinates selected yet'}
+                            </div>
                         </div>
                     </div>
 

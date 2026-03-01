@@ -104,7 +104,7 @@ export default function ShopDashboard() {
                         const time = b.start_time ? formatTime(b.start_time) + (b.end_time ? ` - ${formatTime(b.end_time)}` : '') : (b.show_date || 'TBD');
 
                         return (
-                           <div key={b.id} onClick={() => router.push(`/booking/view?id=${b.id}`)}>
+                           <div key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)}>
                               <BookingCard
                                  name={customerName}
                                  service={servicesText}

@@ -161,8 +161,7 @@ export default function ShopProfile() {
                 const latitude = Number(position.coords.latitude.toFixed(7));
                 const longitude = Number(position.coords.longitude.toFixed(7));
 
-                const fallbackLocation = `${latitude}, ${longitude}`;
-                let readableLocation = fallbackLocation;
+                let readableLocation = null;
 
                 try {
                     const response = await api.get('/location', {
@@ -171,6 +170,9 @@ export default function ShopProfile() {
                             lon: longitude,
                         },
                     });
+
+                    console.log(response);
+                    
 
                     if (response?.data?.address) {
                         readableLocation = response.data.address;
@@ -185,6 +187,8 @@ export default function ShopProfile() {
                     lon: longitude,
                     location: readableLocation,
                 }));
+
+                handleChange('location', readableLocation);
 
                 setIsLocating(false);
             },
@@ -344,7 +348,7 @@ export default function ShopProfile() {
                             <label className="text-xs text-white/60">Location</label>
                             <input
                                 value={form.location}
-                                onChange={(e) => handleChange('location', e.target.value)}
+                                onChange={(e) => handleChange('location', e.target.value || "")}
                                 className="mt-1 w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
                                 placeholder="Latitude, Longitude"
                             />
@@ -418,7 +422,7 @@ export default function ShopProfile() {
 
                     <div className="mt-6">
                         <button onClick={handleSave} disabled={isSaving} className="w-full bg-blue-600 py-3 rounded-xl font-bold disabled:opacity-70 mb-3">
-                            {isSaving ? 'Updating...' : 'Update Profile'}
+                            {isSaving ? 'Updating...' : 'Update'}
                         </button>
 
                         <button onClick={() => router.push('/shop/dashboard')} className="w-full bg-white/10 py-3 rounded-xl font-bold">Back to Dashboard</button>

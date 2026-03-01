@@ -35,6 +35,36 @@ export default function ShopProfile() {
         });
     }, [shop]);
 
+    const qrTarget = shop?.id ? `https://eloquent-services-hub.netlify.app/detail?id=${shop.id}` : '';
+
+    const googleQrUrl = qrTarget
+        ? `https://chart.googleapis.com/chart?cht=qr&chs=600x600&chl=${encodeURIComponent(qrTarget)}`
+        : '';
+
+    const [qrDataUrl, setQrDataUrl] = useState(null);
+
+    useEffect(() => {
+        if (!qrTarget) {
+            setQrDataUrl(null);
+            return;
+        }
+
+        let mounted = true;
+        const gen = async () => {
+            try {
+                const dataUrl = await QRCode.toDataURL(qrTarget, { width: 600 });
+                if (mounted) setQrDataUrl(dataUrl);
+            } catch (err) {
+                console.error('Local QR generation failed, falling back to Google API', err);
+                if (mounted) setQrDataUrl(null);
+            }
+        };
+        gen();
+        return () => { mounted = false };
+    }, [qrTarget]);
+
+    const qrImageUrl = qrDataUrl || googleQrUrl;
+
     if (loading || !shop) return null;
 
     const hero = shop.hero_image || shop.cover_image || shop.hero || null;
@@ -105,29 +135,6 @@ export default function ShopProfile() {
             setIsSaving(false);
         }
     };
-
-    const qrTarget = `https://eloquent-services-hub.netlify.app/detail?id=${shop.id}`;
-
-    const googleQrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=600x600&chl=${encodeURIComponent(qrTarget)}`;
-
-    const [qrDataUrl, setQrDataUrl] = useState(null);
-
-    useEffect(() => {
-        let mounted = true;
-        const gen = async () => {
-            try {
-                const dataUrl = await QRCode.toDataURL(qrTarget, { width: 600 });
-                if (mounted) setQrDataUrl(dataUrl);
-            } catch (err) {
-                console.error('Local QR generation failed, falling back to Google API', err);
-                if (mounted) setQrDataUrl(null);
-            }
-        };
-        gen();
-        return () => { mounted = false };
-    }, [qrTarget]);
-
-    const qrImageUrl = qrDataUrl || googleQrUrl;
 
     const downloadQr = async () => {
         try {

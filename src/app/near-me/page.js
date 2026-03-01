@@ -37,6 +37,8 @@ export default function Main() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
   const [activeService, setActiveService] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,11 +66,22 @@ export default function Main() {
     }
   };
 
-  const fetchShops = async () => {
+  const fetchShops = async (coords = userLocation) => {
+    if (!coords?.lat || !coords?.lon) {
+      setShops([]);
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await api.get(`/shops`);
-      setShops(response.data.data);
+      const response = await api.get(`/shops/nearby`, {
+        params: {
+          lat: coords.lat,
+          lon: coords.lon,
+          per_page: 50,
+        },
+      });
+      setShops(response.data.data || []);
     } catch (err) {
       console.error(err);
       setError("Failed to load shops");
@@ -78,27 +91,60 @@ export default function Main() {
   };
 
   useEffect(() => {
-    fetchShops();
+    fetchServices();
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      setLocationError("Geolocation is not supported in this browser.");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setLocationError(null);
+        setUserLocation({
+          lat: coords.latitude,
+          lon: coords.longitude,
+        });
+      },
+      () => {
+        setLocationError("Please allow location access to see nearby shops.");
+        setLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!userLocation) return;
+    fetchShops(userLocation);
+  }, [userLocation]);
+
+  useEffect(() => {
+    if (!userLocation) return;
+
     const timeout = setTimeout(() => {
       if (typeof window !== "undefined") {
         window.globalDebouncedSearch = searchTerm; // safe now
-        fetchShops();
-        fetchServices();
+        fetchShops(userLocation);
       }
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [searchTerm]);
+  }, [searchTerm, userLocation]);
 
   const toggleFavourite = async (shopId) => {
     await api.post(`/shops/${shopId}/favourite`);
     fetchShops(); // or optimistic update
   };
 
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (error) return <p className="text-red-500 px-4">{error}</p>;
 
   return (
     <>
@@ -151,6 +197,9 @@ export default function Main() {
 
       {/* Shops Main List */}
       <main className="flex-1 px-4 space-y-4 pt-4 pb-28">
+        {loading && <p className="text-slate-400 text-sm">Loading nearby shops...</p>}
+        {locationError && <p className="text-amber-400 text-sm">{locationError}</p>}
+
         {shops.length > 0 ? (
           shops.map((item) => (
             <div
@@ -185,7 +234,7 @@ export default function Main() {
 
                   <div className="flex items-center gap-2 mt-1 text-slate-400">
                     <span className="text-[11px] font-semibold">{item.location}</span>
-                    <span className="text-[11px] font-semibold">{item.distance}</span>
+                    <span className="text-[11px] font-semibold">{item.distance || (item.distance_km ? `${Number(item.distance_km).toFixed(1)} km` : "")}</span>
                   </div>
                 </div>
 
@@ -202,11 +251,11 @@ export default function Main() {
               </div>
             </div>
           ))
-        ) : (
+        ) : !loading ? (
           <div className="text-center py-10 text-slate-500">
             No results found for "{searchTerm}"
           </div>
-        )}
+        ) : null}
       </main>
     </>
   );

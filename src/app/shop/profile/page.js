@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
-import { Image, Camera } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import api from '@/utils/api';
 import { notify } from '@/utils/alerts';
+import compressImage from '@/utils/image';
 
 export default function ShopProfile() {
     const router = useRouter();
@@ -77,6 +78,39 @@ export default function ShopProfile() {
 
     const handleChange = (key, value) => {
         setForm(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handleImageUpload = async (key, file, options = {}) => {
+        if (!file) {
+            return;
+        }
+
+        if (!file.type?.startsWith('image/')) {
+            await notify({
+                icon: 'error',
+                title: 'Invalid file',
+                text: 'Please select an image file.',
+            });
+            return;
+        }
+
+        try {
+            const compressed = await compressImage(
+                file,
+                options.maxWidth ?? 1600,
+                options.maxHeight ?? 1600,
+                options.quality ?? 0.8
+            );
+
+            handleChange(key, compressed);
+        } catch (error) {
+            console.error('Image compression failed', error);
+            await notify({
+                icon: 'error',
+                title: 'Upload failed',
+                text: 'Could not process selected image. Please try another image.',
+            });
+        }
     };
 
     const handleSave = async () => {
@@ -277,15 +311,13 @@ export default function ShopProfile() {
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                                 const file = e.target.files?.[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onloadend = () => {
-                                        handleChange('hero_image', reader.result);
-                                    };
-                                    reader.readAsDataURL(file);
-                                }
+                                await handleImageUpload('hero_image', file, {
+                                    maxWidth: 1920,
+                                    maxHeight: 1080,
+                                    quality: 0.75,
+                                });
                             }}
                         />
                     </label>
@@ -317,15 +349,13 @@ export default function ShopProfile() {
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                                 const file = e.target.files?.[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onloadend = () => {
-                                        handleChange('logo', reader.result);
-                                    };
-                                    reader.readAsDataURL(file);
-                                }
+                                await handleImageUpload('logo', file, {
+                                    maxWidth: 800,
+                                    maxHeight: 800,
+                                    quality: 0.8,
+                                });
                             }}
                         />
                     </label>

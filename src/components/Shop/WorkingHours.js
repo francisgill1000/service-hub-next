@@ -10,9 +10,6 @@ const WorkingHours = () => {
     const { shop, loginShop, token } = useShop();
     const [loading, setLoading] = useState(false);
 
-    // Day indexes: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
     const initialDays = [
         { day: 'Monday', dayOfWeek: 1, isOpen: true, openTime: '09:00', closeTime: '23:00' },
         { day: 'Tuesday', dayOfWeek: 2, isOpen: true, openTime: '09:00', closeTime: '23:00' },

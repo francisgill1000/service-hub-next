@@ -103,7 +103,7 @@ export default function Main() {
   return (
     <>
       {/* Services Horizontal List */}
-      <section className="flex gap-2 px-4 py-4 mt-5 overflow-x-auto no-scrollbar">
+      {/* <section className="flex gap-2 px-4 py-4 mt-5 overflow-x-auto no-scrollbar">
         {services.map((service) => {
           const isActive = activeService === service.id;
           const Icon = ICON_MAP[service.icon];
@@ -131,7 +131,7 @@ export default function Main() {
             </button>
           );
         })}
-      </section>
+      </section> */}
 
       {/* Search Input Section */}
       <section className="flex gap-2 px-4 py-4 overflow-x-auto no-scrollbar">

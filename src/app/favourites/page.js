@@ -130,7 +130,7 @@ export default function Main() {
       </section>
 
       {/* Services Horizontal List */}
-      <section className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar">
+      {/* <section className="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar">
         {filteredServices.map((service) => {
           const isActive = activeService === service.id;
           const Icon = ICON_MAP[service.icon];
@@ -158,7 +158,7 @@ export default function Main() {
             </button>
           );
         })}
-      </section>
+      </section> */}
 
       {/* Shops Main List */}
       <main className="flex-1 px-4 space-y-4 pt-4 pb-28">

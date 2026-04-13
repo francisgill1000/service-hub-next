@@ -106,7 +106,7 @@ const AddToCatalog = () => {
   };
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-[#0B121B] text-white font-sans">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md md:max-w-5xl mx-auto bg-[#0B121B] text-white font-sans">
 
       {/* Header */}
       <div className="sticky top-0 z-40 bg-[#0B121B] px-5 py-4 border-b border-white/10 flex items-center gap-3">

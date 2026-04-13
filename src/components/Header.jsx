@@ -23,7 +23,7 @@ export default function Header() {
   if (!isShopRoute) return null;
 
   return (
-    <header className="sticky top-0 z-40 bg-[#f5f6f8]/50 dark:bg-[#101622]/100 backdrop-blur-md">
+    <header className="sticky top-0 z-40 bg-[#f5f6f8]/50 dark:bg-[#101622]/100 backdrop-blur-md md:hidden">
       <div className="flex items-center p-4 justify-between max-w-md mx-auto">
         <div className="flex items-center gap-3">
           <div className="relative">

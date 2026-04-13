@@ -59,7 +59,7 @@ const App = () => {
 
     return (
         <div className="min-h-screen  text-white font-sans flex justify-center items-start p-4 md:p-8">
-            <div className="w-full max-w-md space-y-8 pb-12">
+            <div className="w-full max-w-md md:max-w-2xl space-y-8 pb-12">
 
                 {/* Header */}
                 <header className="flex items-center justify-center mb-8">

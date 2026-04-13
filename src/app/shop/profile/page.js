@@ -283,180 +283,183 @@ export default function ShopProfile() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0b0f14] text-white pb-28">
-            <div className="max-w-md mx-auto">
-                {/* Hero / Cover */}
+        <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+            <div className="max-w-[1024px] mx-auto px-4 md:px-8 pt-6 md:pt-8">
 
-                <div className="relative mt-10">
-                    {/* Hero — clickable to update */}
-                    <label className="relative block cursor-pointer group h-56 w-full bg-gradient-to-r from-slate-800 via-slate-900 to-black rounded-b-3xl overflow-hidden">
+                {/* Page heading */}
+                <div className="mb-6">
+                    <h2 className="text-2xl font-black text-white tracking-tight">Shop Profile</h2>
+                    <p className="text-[#8b90a0] font-semibold mt-1 text-sm">Manage your shop identity and public information.</p>
+                </div>
+
+                {/* Hero / Cover */}
+                <div className="relative rounded-xl overflow-visible mb-14">
+                    <label className="relative block cursor-pointer group h-48 w-full bg-[#151c25] rounded-xl overflow-hidden">
                         {form.hero_image ? (
                             <>
                                 <img src={form.hero_image} alt="cover preview" className="absolute inset-0 w-full h-full object-cover" />
-                                <div className="absolute top-3 left-4 bg-white/10 text-[11px] px-2 py-1 rounded backdrop-blur-sm">Preview</div>
+                                <div className="absolute top-3 left-4 bg-black/40 text-[11px] px-2 py-1 rounded-lg backdrop-blur-sm text-white">Preview</div>
                             </>
                         ) : hero ? (
                             <img src={hero} alt="cover" className="absolute inset-0 w-full h-full object-cover" />
-                        ) : null}
-
-                        {/* overlay for visual effect */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
-
-                        {/* Edit Button - Always Visible */}
-                        <div className="absolute top-4 right-4 bg-blue-600 hover:bg-blue-500 p-3 rounded-full shadow-lg transition-all">
-                            <Camera size={20} className="text-white" />
+                        ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#8b90a0]">
+                                <span className="material-symbols-outlined text-4xl">add_photo_alternate</span>
+                                <span className="text-xs font-semibold">Click to upload cover image</span>
+                            </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                        <div className="absolute top-4 right-4 bg-[#4b8eff] hover:bg-[#adc6ff] p-2.5 rounded-xl shadow-lg transition-all">
+                            <Camera size={18} className="text-[#002e69]" />
                         </div>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
+                        <input type="file" accept="image/*" className="hidden"
                             onChange={async (e) => {
                                 const file = e.target.files?.[0];
-                                await handleImageUpload('hero_image', file, {
-                                    maxWidth: 1920,
-                                    maxHeight: 1080,
-                                    quality: 0.75,
-                                });
+                                await handleImageUpload('hero_image', file, { maxWidth: 1920, maxHeight: 1080, quality: 0.75 });
                             }}
                         />
                     </label>
 
-                    {/* Logo — clickable to update */}
-                    <label className="absolute -bottom-14 left-6 w-28 h-28 rounded-full bg-[#0f1720] border-4 border-white/10 ring-4 ring-white/10 ring-offset-2 ring-offset-[#0b0f14] z-30 shadow-2xl cursor-pointer group block transition-all">
+                    {/* Logo */}
+                    <label className="absolute -bottom-12 left-6 w-24 h-24 rounded-full bg-[#19202a] border-4 border-[#0d141d] z-30 shadow-2xl cursor-pointer block">
                         {form.logo ? (
-                            <>
-                                <img src={form.logo} alt="logo preview" className="absolute inset-0 w-full h-full object-cover rounded-full" />
-                                <div className="absolute top-1 left-1 bg-white/10 text-[10px] px-2 py-1 rounded-full">Preview</div>
-                            </>
+                            <img src={form.logo} alt="logo preview" className="absolute inset-0 w-full h-full object-cover rounded-full" />
                         ) : logo ? (
                             <img src={logo} alt={`${shop.name || 'shop'} logo`} className="absolute inset-0 w-full h-full object-cover rounded-full" />
-                        ) : null}
-
-                        {/* Fallback bg if no logo */}
-                        {!logo && (
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-                                <span className="text-xs text-white font-semibold">Logo</span>
+                        ) : (
+                            <div className="absolute inset-0 rounded-full bg-[#4b8eff]/20 flex items-center justify-center">
+                                <span className="text-[10px] text-[#adc6ff] font-bold uppercase tracking-wider">Logo</span>
                             </div>
                         )}
-
-                        {/* Edit Button - Always Visible */}
-                        <div className="absolute bottom-2 right-2 z-40 bg-blue-600 hover:bg-blue-500 p-2 rounded-full shadow-lg border-2 border-[#0f1720] transition-all">
-                            <Camera size={14} className="text-white" />
+                        <div className="absolute bottom-1 right-1 z-40 bg-[#4b8eff] p-1.5 rounded-full shadow-lg border-2 border-[#0d141d]">
+                            <Camera size={12} className="text-white" />
                         </div>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
+                        <input type="file" accept="image/*" className="hidden"
                             onChange={async (e) => {
                                 const file = e.target.files?.[0];
-                                await handleImageUpload('logo', file, {
-                                    maxWidth: 800,
-                                    maxHeight: 800,
-                                    quality: 0.8,
-                                });
+                                await handleImageUpload('logo', file, { maxWidth: 800, maxHeight: 800, quality: 0.8 });
                             }}
                         />
                     </label>
                 </div>
 
-                <div className="px-6 pt-20">
-                    {/* Form Fields */}
-                    <div className="space-y-3 mb-6">
-                        <div>
-                            <label className="text-xs text-white/60">Shop Name</label>
-                            <input
-                                value={form.name}
-                                onChange={(e) => handleChange('name', e.target.value)}
-                                className="mt-1 w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
-                                placeholder="Shop name"
-                            />
-                        </div>
+                {/* Two-column layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                        <div>
-                            <label className="text-xs text-white/60">Location</label>
-                            <input
-                                value={form.location}
-                                onChange={(e) => handleChange('location', e.target.value || "")}
-                                className="mt-1 w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
-                                placeholder="Latitude, Longitude"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleUseCurrentLocation}
-                                disabled={isLocating}
-                                className="mt-2 w-full bg-white/10 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-60"
-                            >
-                                {isLocating ? 'Fetching location...' : 'Use Current Location'}
-                            </button>
-                            <div className="mt-2 text-[11px] text-white/50">
-                                {form.lat !== '' && form.lon !== ''
-                                    ? `Lat: ${form.lat}, Lon: ${form.lon}`
-                                    : 'No coordinates selected yet'}
-                            </div>
-                        </div>
-                    </div>
+                    {/* Left: Form fields */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <div className="bg-[#151c25] rounded-xl p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-white">Basic Information</h3>
 
-                    <div className="mt-6 space-y-3">
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                             <div>
-                                <div className="text-xs text-white/60">Shop Code</div>
-                                <div className="font-mono font-bold text-lg">{shop.shop_code || '—'}</div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div>
-                                <div className="text-xs text-white/60">PIN</div>
-                                <div className="font-mono font-bold text-lg">{shop.pin || '—'}</div>
-                            </div>
-                        </div>
-                        {/* QR Code */}
-
-                        <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center text-center max-w-sm">
-                            {/* Header */}
-                            <span className="text-xs font-medium uppercase tracking-wider text-white/40">
-                                Shop QR Code
-                            </span>
-
-                            {/* QR Code Container */}
-                            <div className="my-6 p-3 bg-white rounded-xl shadow-lg shadow-black/20">
-                                <img
-                                    src={qrImageUrl}
-                                    alt="shop-qr"
-                                    className="w-40 h-40 object-contain"
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-2">Shop Name</label>
+                                <input
+                                    value={form.name}
+                                    onChange={(e) => handleChange('name', e.target.value)}
+                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
+                                    placeholder="Enter shop name"
                                 />
                             </div>
 
-                            {/* Action Button */}
-                            <div className="w-full">
+                            <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-2">Location</label>
+                                <input
+                                    value={form.location}
+                                    onChange={(e) => handleChange('location', e.target.value || "")}
+                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
+                                    placeholder="Shop address or area"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleUseCurrentLocation}
+                                    disabled={isLocating}
+                                    className="mt-2 flex items-center gap-2 w-full bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 py-2.5 px-4 rounded-xl text-sm font-semibold text-[#c1c6d7] disabled:opacity-50 transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-[18px] text-[#adc6ff]">my_location</span>
+                                    {isLocating ? 'Fetching location...' : 'Use Current Location'}
+                                </button>
+                                {form.lat !== '' && form.lon !== '' && (
+                                    <p className="mt-2 text-[11px] text-[#8b90a0] font-medium">
+                                        Lat: {form.lat}, Lon: {form.lon}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {message && (
+                            <div className="text-sm text-[#dce3f0] bg-[#151c25] border border-[#414755]/30 rounded-xl px-4 py-3">
+                                {message}
+                            </div>
+                        )}
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button
+                                onClick={handleSave}
+                                disabled={isSaving}
+                                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black py-3 rounded-xl disabled:opacity-60 transition-all shadow-lg shadow-[#adc6ff]/10 text-sm uppercase tracking-widest"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">save</span>
+                                {isSaving ? 'Saving...' : 'Save Changes'}
+                            </button>
+                            <button
+                                onClick={() => router.push('/shop/dashboard')}
+                                className="flex-1 flex items-center justify-center gap-2 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-[#c1c6d7] font-semibold py-3 rounded-xl transition-all text-sm"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                                Back to Dashboard
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Right: Credentials + QR */}
+                    <div className="space-y-4">
+                        {/* Shop Code */}
+                        <div className="bg-[#151c25] rounded-xl p-5">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">Shop Code</p>
+                            <div className="flex items-center justify-between">
+                                <span className="font-mono font-black text-2xl text-white tracking-widest">{shop.shop_code || '—'}</span>
+                                <div className="w-10 h-10 rounded-xl bg-[#adc6ff]/10 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-[#adc6ff]">tag</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* PIN */}
+                        <div className="bg-[#151c25] rounded-xl p-5">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">Access PIN</p>
+                            <div className="flex items-center justify-between">
+                                <span className="font-mono font-black text-2xl text-white tracking-widest">{shop.pin || '—'}</span>
+                                <div className="w-10 h-10 rounded-xl bg-[#adc6ff]/10 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-[#adc6ff]">pin</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* QR Code */}
+                        <div className="bg-[#151c25] rounded-xl p-6 flex flex-col items-center text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-4">Shop QR Code</p>
+                            <div className="p-3 bg-white rounded-xl shadow-lg shadow-black/30 mb-4">
+                                <img src={qrImageUrl} alt="shop-qr" className="w-40 h-40 object-contain" />
+                            </div>
+                            <div className="w-full flex gap-2">
                                 <button
                                     onClick={downloadQr}
-                                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 transition-colors text-white text-sm font-semibold px-4 py-2.5 rounded-lg"
+                                    className="flex-1 flex items-center justify-center gap-2 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-[#c1c6d7] text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    Download PNG
+                                    <span className="material-symbols-outlined text-[16px] text-[#adc6ff]">download</span>
+                                    Download
+                                </button>
+                                <button
+                                    onClick={printQr}
+                                    className="flex-1 flex items-center justify-center gap-2 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-[#c1c6d7] text-xs font-bold py-2.5 rounded-xl transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-[16px] text-[#adc6ff]">print</span>
+                                    Print
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    {message && (
-                        <div className="mt-4 text-sm text-white/80 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-                            {message}
-                        </div>
-                    )}
-
-                    <div className="mt-6">
-                        <button onClick={handleSave} disabled={isSaving} className="w-full bg-blue-600 py-3 rounded-xl font-bold disabled:opacity-70 mb-3">
-                            {isSaving ? 'Updating...' : 'Update'}
-                        </button>
-
-                        <button onClick={() => router.push('/shop/dashboard')} className="w-full bg-white/10 py-3 rounded-xl font-bold">Back to Dashboard</button>
-                    </div>
                 </div>
             </div>
         </div>

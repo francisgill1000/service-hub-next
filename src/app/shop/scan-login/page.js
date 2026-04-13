@@ -147,7 +147,7 @@ export default function ScanLoginPage() {
     if (loading || !shop) return null;
 
     return (
-        <div className="min-h-screen bg-brand-dark text-white px-4 py-6 max-w-[480px] mx-auto pb-28">
+        <div className="min-h-screen bg-brand-dark text-white px-4 py-6 max-w-[480px] md:max-w-2xl mx-auto pb-28">
             <div className="mb-5 flex items-center gap-3">
                 <div className="size-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                     <QrCode className="text-primary" size={22} />

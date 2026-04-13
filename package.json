@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "serve-backend": "cd backend && php artisan serve --host 192.168.1.205",
+    "serve-backend": "backend/php/php.exe artisan serve --host 0.0.0.0",
     "dev:all": "concurrently \"npm run serve-backend\" \"npm run dev\"",
     "build": "next build",
     "start": "next start"

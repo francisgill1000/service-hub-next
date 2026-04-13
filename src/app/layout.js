@@ -30,12 +30,10 @@ export default function RootLayout({ children }) {
             mobile-app width (480px) across your whole site 
         */}
         <ShopProviders>
-          <div className="max-w-[480px] mx-auto min-h-screen relative shadow-2xl">
-            <div className="relative flex min-h-screen w-full flex-col bg-brand-dark max-w-[480px] mx-auto overflow-x-hidden shadow-2xl pb-24">
-              <Header />
-              {children}
-              <BottomNav />
-            </div>
+          <div className="relative flex min-h-screen w-full flex-col bg-brand-dark overflow-x-hidden">
+            <Header />
+            {children}
+            <BottomNav />
           </div>
         </ShopProviders>
       </body>

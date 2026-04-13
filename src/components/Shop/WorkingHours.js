@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Clock, Save } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import api from '@/utils/api';
 import { notify } from '@/utils/alerts';
 import { useShop } from '@/context/ShopContext';
@@ -136,43 +136,61 @@ const WorkingHours = () => {
     };
 
     return (
-        <div className="relative mt-5 flex h-screen w-full flex-col max-w-[430px] mx-auto bg-slate-50 dark:bg-[#101722] overflow-hidden shadow-2xl font-sans">
+        <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+            <div className="max-w-[1024px] mx-auto px-4 md:px-8 pt-6 md:pt-8">
 
-            {/* Main List */}
-            <main className="flex-1 overflow-y-auto px-4 pb-48">
-                <div className="flex flex-col gap-4 mt-2">
+                {/* Page heading */}
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+                    <div>
+                        <h2 className="text-2xl font-black text-white tracking-tight">Working Hours</h2>
+                        <p className="text-[#8b90a0] font-semibold mt-1 text-sm">Set the days and times your shop is open for bookings.</p>
+                    </div>
+                    <button
+                        onClick={handleSaveWorkingHours}
+                        disabled={loading}
+                        className="flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black px-6 py-3 rounded-xl disabled:opacity-60 transition-all shadow-lg shadow-[#adc6ff]/10 text-[10px] uppercase tracking-widest shrink-0"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">save</span>
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+
+                {/* Days grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {days.map((item, index) => (
                         <div
                             key={item.day}
-                            className={`flex flex-col gap-3 p-4 bg-white dark:bg-[#1b232e] rounded-xl border border-slate-100 dark:border-slate-800 transition-all ${!item.isOpen ? 'opacity-70' : 'opacity-100'}`}
+                            className={`bg-[#151c25] rounded-xl p-5 border transition-all ${item.isOpen ? 'border-[#414755]/30' : 'border-[#414755]/10 opacity-60'}`}
                         >
-                            <div className="flex items-center justify-between">
-                                <span className="text-slate-900 dark:text-white font-semibold">{item.day}</span>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-2 h-2 rounded-full ${item.isOpen ? 'bg-[#4edea3]' : 'bg-[#8b90a0]'}`} />
+                                    <span className="font-bold text-white">{item.day}</span>
+                                </div>
                                 <div className="flex items-center gap-3">
                                     {!item.isOpen && (
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Closed</span>
+                                        <span className="text-[10px] text-[#8b90a0] font-bold uppercase tracking-widest">Closed</span>
                                     )}
                                     <button
                                         onClick={() => toggleDay(index)}
                                         disabled={loading}
-                                        className={`relative flex h-[30px] w-[52px] items-center rounded-full p-0.5 transition-colors duration-300 disabled:opacity-50 ${item.isOpen ? 'bg-[#257bf4]' : 'bg-slate-300 dark:bg-[#2d3846]'}`}
+                                        className={`relative flex h-7 w-12 items-center rounded-full p-0.5 transition-colors duration-300 disabled:opacity-50 ${item.isOpen ? 'bg-[#4b8eff]' : 'bg-[#2e353f]'}`}
                                     >
-                                        <div className={`h-6 w-6 rounded-full bg-white shadow-md transition-transform duration-300 ${item.isOpen ? 'translate-x-[22px]' : 'translate-x-0'}`} />
+                                        <div className={`h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-300 ${item.isOpen ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Conditional Rendering for Time Inputs */}
                             {item.isOpen && (
-                                <div className="grid grid-cols-2 gap-3 mt-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="grid grid-cols-2 gap-3">
                                     <TimeInput
-                                        label="Opening Time"
+                                        label="Opens"
                                         value={item.openTime}
                                         onChange={(value) => handleTimeChange(index, 'openTime', value)}
                                         disabled={loading}
                                     />
                                     <TimeInput
-                                        label="Closing Time"
+                                        label="Closes"
                                         value={item.closeTime}
                                         onChange={(value) => handleTimeChange(index, 'closeTime', value)}
                                         disabled={loading}
@@ -181,19 +199,21 @@ const WorkingHours = () => {
                             )}
                         </div>
                     ))}
-
-                    <div className="flex flex-col gap-3">
-                        <button
-                            onClick={handleSaveWorkingHours}
-                            disabled={loading}
-                            className="w-full h-14 bg-gradient-to-r from-[#257bf4] to-[#1a65d1] text-white font-bold rounded-xl shadow-[0_0_15px_rgba(37,123,244,0.3)] flex items-center justify-center gap-2 active:scale-[0.97] transition-transform disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                            <Save size={18} />
-                            {loading ? 'Saving...' : 'Save Changes'}
-                        </button>
-                    </div>
                 </div>
-            </main>
+
+                {/* Mobile save button */}
+                <div className="mt-6 md:hidden">
+                    <button
+                        onClick={handleSaveWorkingHours}
+                        disabled={loading}
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black py-4 rounded-xl disabled:opacity-60 shadow-lg text-[10px] uppercase tracking-widest"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">save</span>
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+
+            </div>
         </div>
     );
 };
@@ -201,18 +221,16 @@ const WorkingHours = () => {
 // Reusable Input Sub-component
 const TimeInput = ({ label, value, onChange, disabled }) => (
     <div className="flex flex-col gap-1.5">
-        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-            {label}
-        </span>
-        <div className="relative group">
+        <span className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">{label}</span>
+        <div className="relative">
             <input
                 type="time"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}
-                className="w-full bg-slate-50 dark:bg-[#101722] border border-slate-200 dark:border-[#3b4554] text-slate-900 dark:text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#257bf4]/20 focus:border-[#257bf4] outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#080f17] border border-[#414755]/40 text-white rounded-xl px-3 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <Clock className="absolute right-3 top-2.5 text-slate-400 pointer-events-none" size={16} />
+            <Clock className="absolute right-3 top-3 text-[#8b90a0] pointer-events-none" size={14} />
         </div>
     </div>
 );

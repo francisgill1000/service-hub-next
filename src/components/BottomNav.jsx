@@ -38,7 +38,7 @@ export default function BottomNav() {
   const navItems = isShopRoute ? SHOP_NAV_ITEMS : GUEST_NAV_ITEMS;
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/10 backdrop-blur-2xl border-t border-white/10 rounded-t-[32px] flex items-center justify-around px-2 z-[100] pb-2">
+    <nav className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/10 backdrop-blur-2xl border-t border-white/10 rounded-t-[32px] flex items-center justify-around px-2 z-[100] pb-2 ${isShopRoute ? "md:hidden" : ""}`}>
       {navItems.map((item, index) => {
         const active = pathname === item.path;
 

@@ -66,109 +66,121 @@ const CatalogList = () => {
   };
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-[#0B121B] text-white font-sans">
+    <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+      <div className="max-w-[1024px] mx-auto px-4 md:px-8 pt-6 md:pt-8">
 
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-[#0B121B] px-5 py-4 border-b border-white/10">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">My Services</h2>
+        {/* Page heading */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tight">Service Catalog</h2>
+            <p className="text-[#8b90a0] font-semibold mt-1 text-sm">
+              {catalogs.length > 0
+                ? `${catalogs.length} service${catalogs.length !== 1 ? 's' : ''} listed`
+                : 'Manage the services your shop offers.'}
+            </p>
+          </div>
           <button
             onClick={() => router.push('/shop/catalog')}
-            className="material-symbols-outlined text-2xl hover:text-primary transition-colors"
+            className="flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black px-5 py-3 rounded-xl shadow-lg shadow-[#adc6ff]/10 text-[10px] uppercase tracking-widest shrink-0 transition-all hover:shadow-[#adc6ff]/20"
           >
-            add
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            Add Service
           </button>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto no-scrollbar pb-20">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
-              <p className="text-navy-muted text-sm">Loading services...</p>
-            </div>
+        {/* Loading */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <div className="animate-spin w-10 h-10 border-4 border-[#414755] border-t-[#adc6ff] rounded-full" />
+            <p className="text-[#8b90a0] text-sm font-semibold">Loading services...</p>
           </div>
-        ) : catalogs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-4">
-            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-              <span className="material-symbols-outlined text-4xl text-navy-muted">
-                add_circle
-              </span>
+        )}
+
+        {/* Empty state */}
+        {!loading && catalogs.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-32 gap-5 text-center">
+            <div className="w-20 h-20 rounded-2xl bg-[#151c25] border border-[#414755]/30 flex items-center justify-center">
+              <span className="material-symbols-outlined text-4xl text-[#8b90a0]">category</span>
             </div>
-            <div className="text-center px-4">
-              <h3 className="text-lg font-bold mb-2">No Services Yet</h3>
-              <p className="text-sm text-navy-muted mb-6">
-                Create your first service to get started
+            <div>
+              <h3 className="text-lg font-black text-white mb-1">No Services Yet</h3>
+              <p className="text-sm text-[#8b90a0] font-semibold max-w-xs">
+                Add your first service to start accepting bookings from customers.
               </p>
-              <button
-                onClick={() => router.push('/shop/catalog')}
-                className="px-6 py-2 bg-primary text-white rounded-full font-bold hover:opacity-90 transition-all inline-flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined">add</span>
-                Add Service
-              </button>
             </div>
+            <button
+              onClick={() => router.push('/shop/catalog')}
+              className="flex items-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black px-6 py-3 rounded-xl shadow-lg text-[10px] uppercase tracking-widest"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Add First Service
+            </button>
           </div>
-        ) : (
-          <div className="px-5 flex flex-col gap-4 pt-6">
+        )}
+
+        {/* Catalog grid */}
+        {!loading && catalogs.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {catalogs.map((catalog) => (
               <div
                 key={catalog.id}
-                className="glass-card rounded-2xl p-4 flex gap-4 items-start hover:bg-white/10 transition-all duration-300 group"
+                className="bg-[#151c25] rounded-xl border border-[#414755]/20 overflow-hidden flex flex-col group hover:border-[#414755]/50 transition-all"
               >
                 {/* Image */}
                 <div
-                  className="size-20 rounded-xl bg-cover bg-center shrink-0 border border-white/5 group-hover:border-white/20 transition-all"
+                  className="h-40 w-full bg-[#19202a] bg-cover bg-center relative shrink-0"
                   style={{
                     backgroundImage: catalog.image ? `url(${catalog.image})` : 'none',
-                    backgroundColor: !catalog.image ? '#1e293b' : undefined
                   }}
                 >
                   {!catalog.image && (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="material-symbols-outlined text-xl text-navy-muted">
-                        image
-                      </span>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-3xl text-[#414755]">image</span>
+                      <span className="text-[10px] font-bold text-[#414755] uppercase tracking-widest">No image</span>
                     </div>
                   )}
+                  {/* Price badge */}
+                  <div className="absolute bottom-3 left-3 bg-[#0d141d]/80 backdrop-blur-sm px-3 py-1 rounded-xl border border-[#414755]/30">
+                    <span className="text-sm font-black text-[#adc6ff]">
+                      AED {parseFloat(catalog.price).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-base line-clamp-2">{catalog.title}</h3>
-                  <p className="text-xs text-navy-muted mt-0.5 line-clamp-2">
-                    {catalog.description}
-                  </p>
-                  <p className="text-primary font-bold mt-2 text-lg">
-                    AED {parseFloat(catalog.price).toFixed(2)}
+                {/* Body */}
+                <div className="flex-1 p-4">
+                  <h3 className="font-bold text-white text-sm leading-snug line-clamp-1">{catalog.title}</h3>
+                  <p className="text-xs text-[#8b90a0] mt-1.5 line-clamp-2 leading-relaxed font-medium">
+                    {catalog.description || 'No description provided.'}
                   </p>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col gap-2 shrink-0">
+                <div className="flex gap-2 px-4 pb-4">
                   <button
                     onClick={() => router.push(`/shop/catalog/edit?id=${catalog.id}`)}
-                    className="flex h-9 items-center justify-center rounded-lg px-3 bg-primary/20 text-primary hover:bg-primary/30 transition-all duration-300 text-xs font-bold"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#adc6ff]/10 hover:bg-[#adc6ff]/20 text-[#adc6ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
                   >
-                    <span className="material-symbols-outlined text-base">edit</span>
+                    <span className="material-symbols-outlined text-[16px]">edit</span>
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDeleteCatalog(catalog.id)}
                     disabled={deleting === catalog.id}
-                    className="flex h-9 items-center justify-center rounded-lg px-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all duration-300 text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span className="material-symbols-outlined text-base">
+                    <span className="material-symbols-outlined text-[16px]">
                       {deleting === catalog.id ? 'more_horiz' : 'delete'}
                     </span>
+                    {deleting === catalog.id ? '...' : 'Delete'}
                   </button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </main>
+
+      </div>
     </div>
   );
 };

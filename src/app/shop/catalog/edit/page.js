@@ -141,7 +141,7 @@ const EditCatalogContent = () => {
 
   if (pageLoading) {
     return (
-      <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-[#0B121B] text-white font-sans items-center justify-center">
+      <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md md:max-w-5xl mx-auto bg-[#0B121B] text-white font-sans items-center justify-center">
         <div className="text-center">
           <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
           <p className="text-navy-muted text-sm">Loading service...</p>
@@ -151,7 +151,7 @@ const EditCatalogContent = () => {
   }
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-[#0B121B] text-white font-sans">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md md:max-w-5xl mx-auto bg-[#0B121B] text-white font-sans">
 
       {/* Header */}
       <div className="sticky top-0 z-40 bg-[#0B121B] px-5 py-4 border-b border-white/10 flex items-center gap-3">
@@ -273,7 +273,7 @@ const EditCatalog = () => {
   return (
     <Suspense
       fallback={
-        <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto bg-[#0B121B] text-white font-sans items-center justify-center">
+        <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md md:max-w-5xl mx-auto bg-[#0B121B] text-white font-sans items-center justify-center">
           <div className="text-center">
             <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
             <p className="text-navy-muted text-sm">Loading service...</p>

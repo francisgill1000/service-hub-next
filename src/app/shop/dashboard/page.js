@@ -195,7 +195,7 @@ export default function ShopDashboard() {
                <div className="flex items-end justify-between">
                   <div>
                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-1">{todayStr}</p>
-                     <h2 className="text-3xl font-black text-white tracking-tight leading-none">{shop?.name ?? 'Shop Dashboard'}</h2>
+                     <h2 className="text-3xl font-black text-white tracking-tight leading-none">{shop?.name ?? 'Dashboard'}</h2>
                      <p className="text-[#8b90a0] font-semibold mt-2 text-sm">Real-time overview of your service operations.</p>
                   </div>
                   <span className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-black uppercase tracking-widest ${shop?.is_open ? 'bg-[#4edea3]/10 border-[#4edea3]/20 text-[#4edea3]' : 'bg-[#414755]/20 border-[#414755]/30 text-[#8b90a0]'}`}>
@@ -413,7 +413,7 @@ export default function ShopDashboard() {
                            { label: 'All Bookings',    sub: 'View & manage',       icon: 'event_note',  path: '/shop/bookings',      color: 'text-[#adc6ff] bg-[#adc6ff]/10 group-hover:bg-[#adc6ff] group-hover:text-[#002e69]' },
                            { label: 'Service Catalog', sub: 'Add or edit',         icon: 'category',    path: '/shop/catalogs',      color: 'text-[#4edea3] bg-[#4edea3]/10 group-hover:bg-[#4edea3] group-hover:text-[#003824]' },
                            { label: 'Working Hours',   sub: 'Set open & close',    icon: 'schedule',    path: '/shop/working_hours', color: 'text-[#ffb690] bg-[#ffb690]/10 group-hover:bg-[#ffb690] group-hover:text-[#341100]' },
-                           { label: 'Shop Profile',    sub: 'Edit info & images',  icon: 'storefront',  path: '/shop/profile',       color: 'text-[#c1c6d7] bg-[#414755]/30 group-hover:bg-[#414755] group-hover:text-white' },
+                           { label: 'Business Profile', sub: 'Edit info & images',  icon: 'storefront',  path: '/shop/profile',       color: 'text-[#c1c6d7] bg-[#414755]/30 group-hover:bg-[#414755] group-hover:text-white' },
                         ].map((item) => (
                            <button key={item.path} onClick={() => router.push(item.path)} className="flex items-center gap-3 p-3 hover:bg-[#19202a] rounded-xl transition-all group text-left">
                               <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${item.color}`}>

@@ -29,7 +29,7 @@ export default function ShopLayout({ children }) {
           />
           <div className="min-w-0">
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Welcome back,</p>
-            <h2 className="text-sm font-bold truncate">{shop?.name ?? "Your Shop"}</h2>
+            <h2 className="text-sm font-bold truncate">{shop?.name ?? "Your Business"}</h2>
           </div>
         </div>
 

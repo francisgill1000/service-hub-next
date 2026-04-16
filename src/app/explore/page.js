@@ -74,7 +74,9 @@ export default function Main() {
   const fetchShops = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await api.get(`/shops?page=${page}&per_page=${perPage}`);
+      const params = { page, per_page: perPage };
+      if (searchTerm.trim()) params.search = searchTerm.trim();
+      const response = await api.get('/shops', { params });
       setShops(response.data.data);
 
       // Extract pagination metadata from response
@@ -156,7 +158,7 @@ export default function Main() {
           </span>
           <input
             className="w-full h-14 bg-card-dark border border-white/5 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-            placeholder="Search services or shops..."
+            placeholder="Search services or businesses..."
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

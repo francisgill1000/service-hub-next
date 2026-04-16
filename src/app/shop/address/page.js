@@ -32,8 +32,8 @@ const App = () => {
             await api.post("shops", form);
 
             await notify({
-                title: 'Shop Created!',
-                text: 'Congrations your shop has been created.',
+                title: 'Business Created!',
+                text: 'Congratulations, your business has been created.',
                 icon: 'success',
                 confirmButtonText: 'Ok',
                 background: 'dark:bg-slate-800 text-white rounded-2xl',
@@ -44,7 +44,7 @@ const App = () => {
         } catch ({ response }) {
 
             notify({
-                title: 'Shop Cannot Created!',
+                title: 'Registration Failed!',
                 text: response?.data?.message,
                 icon: 'error',
                 confirmButtonText: 'Ok',

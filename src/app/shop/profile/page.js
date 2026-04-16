@@ -352,12 +352,12 @@ export default function ShopProfile() {
                             <h3 className="text-sm font-bold text-white">Basic Information</h3>
 
                             <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-2">Shop Name</label>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-2">Business Name</label>
                                 <input
                                     value={form.name}
                                     onChange={(e) => handleChange('name', e.target.value)}
                                     className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
-                                    placeholder="Enter shop name"
+                                    placeholder="Enter business name"
                                 />
                             </div>
 
@@ -367,7 +367,7 @@ export default function ShopProfile() {
                                     value={form.location}
                                     onChange={(e) => handleChange('location', e.target.value || "")}
                                     className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
-                                    placeholder="Shop address or area"
+                                    placeholder="Business address or area"
                                 />
                                 <button
                                     type="button"

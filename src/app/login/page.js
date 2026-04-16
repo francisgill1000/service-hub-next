@@ -82,7 +82,7 @@ const Login = () => {
         e.preventDefault();
 
         if (!shopCode.trim()) {
-            setError('Please enter your shop ID.');
+            setError('Please enter your business ID.');
             return;
         }
 
@@ -236,7 +236,7 @@ const Login = () => {
                             <QrCode size={38} className="text-primary" />
                         </div>
                         <h1 className="text-3xl font-extrabold text-white mb-3">Login with QR</h1>
-                        <p className="text-muted-text text-sm px-4">Open Service Hub on your mobile, scan this code, then confirm login.</p>
+                        <p className="text-muted-text text-sm px-4">Open Rezzy on your mobile, scan this code, then confirm login.</p>
                     </div>
 
                     <div className="bg-card-dark border border-white/10 rounded-3xl p-6 flex flex-col items-center">
@@ -270,7 +270,7 @@ const Login = () => {
                             <Smartphone size={16} />
                             <span className="font-bold">How to scan</span>
                         </div>
-                        <p>1) Open Service Hub on your phone and login.</p>
+                        <p>1) Open Rezzy on your phone and login.</p>
                         <p>2) Scan this QR code from your phone camera/browser.</p>
                         <p>3) Tap “Approve login” on phone.</p>
                     </div>
@@ -281,17 +281,18 @@ const Login = () => {
                         <div className="size-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-4 border border-primary/20">
                             <KeyRound size={38} className="text-primary" />
                         </div>
-                        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-text font-bold">Service Hub</div>
+                        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-text font-bold">Rezzy</div>
+                        <div className="text-[9px] text-muted-text/60 tracking-wider mt-1">powered by Eloquent</div>
                     </div>
 
                     <div className="mb-8 text-center">
                         <h1 className="text-3xl font-extrabold text-white mb-3">
-                            {step === 'code' ? 'Enter your shop ID' : 'Enter your PIN'}
+                            {step === 'code' ? 'Enter your Business ID' : 'Enter your PIN'}
                         </h1>
                         <p className="text-muted-text text-sm leading-relaxed px-4">
                             {step === 'code'
-                                ? 'Use your shop code to continue.'
-                                : 'Verify your PIN to access your shop dashboard.'}
+                                ? 'Use your business code to continue.'
+                                : 'Verify your PIN to access your dashboard.'}
                         </p>
                     </div>
 
@@ -305,7 +306,7 @@ const Login = () => {
 
                             <div className="space-y-2">
                                 <label className="text-[10px] uppercase tracking-widest text-muted-text font-bold ml-1">
-                                    Shop ID
+                                    Business ID
                                 </label>
                                 <div className="relative group">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors">
@@ -318,7 +319,7 @@ const Login = () => {
                                             setError('');
                                         }}
                                         className="w-full h-14 bg-card-dark border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                        placeholder="Enter shop code"
+                                        placeholder="Enter business code"
                                         type="text"
                                         required
                                     />
@@ -350,11 +351,11 @@ const Login = () => {
                                 className="inline-flex items-center gap-2 text-xs font-semibold text-muted-text hover:text-white transition-colors"
                             >
                                 <ChevronLeft size={14} />
-                                Change Shop ID
+                                Change Business ID
                             </button>
 
                             <div className="bg-card-dark border border-white/10 rounded-2xl px-4 py-3 text-sm">
-                                <div className="text-muted-text text-[10px] uppercase tracking-widest mb-1">Current Shop ID</div>
+                                <div className="text-muted-text text-[10px] uppercase tracking-widest mb-1">Current Business ID</div>
                                 <div className="font-bold text-white">{shopCode}</div>
                             </div>
 

@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-import ServiceSelector from '@/components/ServiceSelector';
 import LogoUploader from '@/components/LogoUploader';
 import HeroImageUploader from '@/components/HeroImageUploader';
 import api from '@/utils/api';
 import { useRouter } from 'next/navigation';
 
 // ===== Custom Modal Component =====
-const ShopCreatedModal = ({ shop, onClose }) => {
+const BusinessCreatedModal = ({ shop, onClose }) => {
     const [copied, setCopied] = useState(false);
 
     const copyCode = async () => {
@@ -17,7 +16,6 @@ const ShopCreatedModal = ({ shop, onClose }) => {
             setCopied(true);
             setTimeout(() => setCopied(false), 1200);
         } catch {
-            // fallback for older browsers
             const textarea = document.createElement("textarea");
             textarea.value = shop.shop_code;
             document.body.appendChild(textarea);
@@ -33,10 +31,10 @@ const ShopCreatedModal = ({ shop, onClose }) => {
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
             <div className="bg-[#151921] p-6 rounded-xl max-w-sm w-full text-white shadow-lg animate-fade-in">
                 <h2 className="text-xl font-bold mb-4 text-center">Welcome!</h2>
-                <p className="text-center mb-4">Your shop profile is ready.</p>
+                <p className="text-center mb-4">Your business profile is ready.</p>
 
                 <div className="flex justify-center mb-2 items-center gap-2">
-                    <span>Shop Code: <b>{shop.shop_code}</b></span>
+                    <span>Business Code: <b>{shop.shop_code}</b></span>
                     <span
                         className={`cursor-pointer text-sm opacity-60 hover:opacity-100 transition-all ${copied ? 'font-bold scale-110' : ''}`}
                         onClick={copyCode}
@@ -75,7 +73,7 @@ const App = () => {
         website: "",
         is_verified: true,
         logo: null,
-        hero_image: null // New Field
+        hero_image: null
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,7 +99,7 @@ const App = () => {
                 router.push('/login');
             }
         } catch (err) {
-            alert(err.response?.data?.message || "Something went wrong"); // fallback alert
+            alert(err.response?.data?.message || "Something went wrong");
         } finally {
             setIsSubmitting(false);
         }
@@ -117,7 +115,9 @@ const App = () => {
 
                     {/* Header */}
                     <header className="text-center space-y-2">
-                        <h1 className="text-3xl font-bold tracking-tight">Set up your shop</h1>
+                        <p className="text-[11px] text-white/40 uppercase tracking-[0.2em] font-bold">Rezzy</p>
+                        <p className="text-[9px] text-white/30 tracking-wider">powered by Eloquent</p>
+                        <h1 className="text-3xl font-bold tracking-tight">Register Your Business</h1>
                         <p className="text-white/40 text-sm">Tell us about your business to get started.</p>
                     </header>
 
@@ -133,10 +133,6 @@ const App = () => {
                                 value={form.name}
                                 onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                             />
-                            {/* <ServiceSelector
-                                category={form.category_id}
-                                setCategory={(id) => setForm(prev => ({ ...prev, category_id: Number(id) }))}
-                            /> */}
                         </section>
 
                         {/* Branding & Visuals Section */}
@@ -194,11 +190,11 @@ const App = () => {
 
             {/* Custom Modal */}
             {shopModal && (
-                <ShopCreatedModal
+                <BusinessCreatedModal
                     shop={shopModal}
                     onClose={() => {
                         setShopModal(null);
-                        router.push('/login'); // redirect after modal closes
+                        router.push('/login');
                     }}
                 />
             )}

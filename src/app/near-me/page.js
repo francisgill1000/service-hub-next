@@ -74,13 +74,13 @@ export default function Main() {
 
     try {
       setLoading(true);
-      const response = await api.get(`/shops/nearby`, {
-        params: {
+      const params = {
           lat: coords.lat,
           lon: coords.lon,
           per_page: 50,
-        },
-      });
+      };
+      if (searchTerm.trim()) params.search = searchTerm.trim();
+      const response = await api.get(`/shops/nearby`, { params });
       setShops(response.data.data || []);
     } catch (err) {
       console.error(err);
@@ -110,7 +110,7 @@ export default function Main() {
         });
       },
       () => {
-        setLocationError("Please allow location access to see nearby shops.");
+        setLocationError("Please allow location access to see nearby businesses.");
         setLoading(false);
       },
       {
@@ -187,7 +187,7 @@ export default function Main() {
           </span>
           <input
             className="w-full h-14 bg-card-dark border border-white/5 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-            placeholder="Search services or shops..."
+            placeholder="Search services or businesses..."
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -197,7 +197,7 @@ export default function Main() {
 
       {/* Shops Main List */}
       <main className="flex-1 px-4 space-y-4 pt-4 pb-28">
-        {loading && <p className="text-slate-400 text-sm">Loading nearby shops...</p>}
+        {loading && <p className="text-slate-400 text-sm">Loading nearby businesses...</p>}
         {locationError && <p className="text-amber-400 text-sm">{locationError}</p>}
 
         {shops.length > 0 ? (

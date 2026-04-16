@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  TextInput, ActivityIndicator, Alert, Dimensions,
+  TextInput, ActivityIndicator, Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
@@ -13,53 +13,68 @@ import { useNavigation } from '@react-navigation/native';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SCANNER_SIZE = SCREEN_WIDTH - 80;
 
+// status: 'idle' | 'scanning' | 'approving' | 'success' | 'error'
+
+const extractToken = (data) => {
+  if (!data) return '';
+  try {
+    const url = new URL(data);
+    const t = url.searchParams.get('token');
+    if (t) return t;
+  } catch {}
+  // Try UUID match like web app
+  const uuidMatch = String(data).match(
+    /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i
+  );
+  if (uuidMatch?.[0]) return uuidMatch[0];
+  return data.trim();
+};
+
 export default function ScanLoginScreen() {
   const navigation = useNavigation();
   const [mode, setMode] = useState('camera'); // 'camera' | 'manual'
-  const [token, setToken] = useState('');
-  const [approving, setApproving] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [scanned, setScanned] = useState(false);
+  const [manualToken, setManualToken] = useState('');
+  const [status, setStatus] = useState('scanning');
+  const [message, setMessage] = useState('Point your camera at the QR code on the desktop login screen.');
   const [permission, requestPermission] = useCameraPermissions();
 
-  const extractToken = (data) => {
-    // QR encodes a URL like: https://eloquentservice.com/login/qr?token=ABC123
-    try {
-      const url = new URL(data);
-      const t = url.searchParams.get('token');
-      if (t) return t;
-    } catch {}
-    // Fallback: treat raw data as token
-    return data.trim();
-  };
+  const statusRef = useRef('scanning');
+  const [cameraKey, setCameraKey] = useState(0);
 
-  const handleApprove = async (approveToken) => {
-    const tok = approveToken || token.trim();
-    if (!tok) { setError('Please enter or scan a QR token.'); return; }
-    setApproving(true);
-    setError('');
-    setMessage('');
+  const approveToken = useCallback(async (token) => {
+    if (!token || statusRef.current === 'approving' || statusRef.current === 'success') return;
+
+    statusRef.current = 'approving';
+    setStatus('approving');
+    setMessage('Approving desktop login...');
+
     try {
-      await api.post(`/shops/qr-login/approve`, { token: tok });
-      setMessage('Login approved! The desktop session has been authenticated.');
-      setToken('');
-      setScanned(false);
+      await api.post(`/shops/qr-login/approve/${token}`);
+      statusRef.current = 'success';
+      setStatus('success');
+      setMessage('Desktop login approved! You can return to your desktop now.');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to approve login. Token may be invalid or expired.');
-      setScanned(false);
-    } finally {
-      setApproving(false);
+      statusRef.current = 'error';
+      setStatus('error');
+      setMessage(err.response?.data?.message || 'Could not approve login. Please scan a fresh QR and try again.');
     }
-  };
+  }, []);
 
-  const handleBarCodeScanned = ({ data }) => {
-    if (scanned || approving) return;
-    setScanned(true);
-    const tok = extractToken(data);
-    setToken(tok);
-    handleApprove(tok);
-  };
+  const handleBarCodeScanned = useCallback(({ data }) => {
+    if (statusRef.current !== 'scanning') return;
+
+    const token = extractToken(data);
+    if (!token) return;
+
+    approveToken(token);
+  }, [approveToken]);
+
+  const resetScanner = useCallback(() => {
+    statusRef.current = 'scanning';
+    setStatus('scanning');
+    setCameraKey(k => k + 1);
+    setMessage('Point your camera at the QR code on the desktop login screen.');
+  }, []);
 
   const renderCamera = () => {
     if (!permission) {
@@ -84,20 +99,22 @@ export default function ScanLoginScreen() {
     }
 
     return (
-      <View style={styles.cameraContainer}>
-        <CameraView
-          style={styles.camera}
-          facing="back"
-          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-        />
+      <View style={styles.cameraOuter}>
+        <View style={styles.cameraContainer}>
+          <CameraView
+            key={cameraKey}
+            style={styles.camera}
+            facing="back"
+            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+            onBarcodeScanned={status === 'scanning' ? handleBarCodeScanned : undefined}
+          />
+        </View>
         {/* Scanner overlay */}
         <View style={styles.overlay}>
           <View style={styles.overlayTop} />
           <View style={styles.overlayMiddle}>
             <View style={styles.overlaySide} />
             <View style={styles.scanBox}>
-              {/* Corner markers */}
               <View style={[styles.corner, styles.cornerTL]} />
               <View style={[styles.corner, styles.cornerTR]} />
               <View style={[styles.corner, styles.cornerBL]} />
@@ -108,10 +125,17 @@ export default function ScanLoginScreen() {
           <View style={styles.overlayBottom} />
         </View>
 
-        {approving && (
+        {status === 'approving' && (
           <View style={styles.scanningOverlay}>
             <ActivityIndicator color={Colors.white} size="large" />
             <Text style={styles.scanningText}>Approving...</Text>
+          </View>
+        )}
+
+        {status === 'success' && (
+          <View style={styles.scanningOverlay}>
+            <MaterialIcons name="check-circle" size={48} color={Colors.green} />
+            <Text style={styles.scanningText}>Approved!</Text>
           </View>
         )}
       </View>
@@ -133,7 +157,7 @@ export default function ScanLoginScreen() {
         <View style={styles.modeToggle}>
           <TouchableOpacity
             style={[styles.modeBtn, mode === 'camera' && styles.modeBtnActive]}
-            onPress={() => { setMode('camera'); setScanned(false); }}
+            onPress={() => { setMode('camera'); resetScanner(); }}
           >
             <MaterialIcons name="qr-code-scanner" size={16} color={mode === 'camera' ? '#002e69' : Colors.mutedText} />
             <Text style={[styles.modeBtnText, mode === 'camera' && styles.modeBtnTextActive]}>Scan QR</Text>
@@ -147,52 +171,59 @@ export default function ScanLoginScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Status messages */}
-        {!!message && (
-          <View style={styles.successBox}>
-            <MaterialIcons name="check-circle" size={20} color={Colors.green} />
-            <Text style={styles.successText}>{message}</Text>
-          </View>
-        )}
-        {!!error && (
-          <View style={styles.errorBox}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        )}
+        {/* Status message */}
+        <View style={[
+          styles.messageBox,
+          status === 'success' && styles.messageBoxSuccess,
+          status === 'error' && styles.messageBoxError,
+        ]}>
+          <MaterialIcons
+            name={status === 'success' ? 'check-circle' : status === 'error' ? 'error' : 'info'}
+            size={18}
+            color={status === 'success' ? Colors.green : status === 'error' ? '#ef4444' : Colors.mutedText}
+          />
+          <Text style={[
+            styles.messageText,
+            status === 'success' && styles.messageTextSuccess,
+            status === 'error' && styles.messageTextError,
+          ]}>{message}</Text>
+        </View>
 
         {mode === 'camera' ? (
           <>
             {renderCamera()}
-            <Text style={styles.scanHint}>Point your camera at the QR code on the desktop login screen</Text>
-            {scanned && !approving && (
-              <TouchableOpacity style={styles.rescanBtn} onPress={() => { setScanned(false); setError(''); }}>
+
+            {(status === 'error' || status === 'success') && (
+              <TouchableOpacity style={styles.rescanBtn} onPress={resetScanner}>
                 <MaterialIcons name="refresh" size={16} color={Colors.primary} />
-                <Text style={styles.rescanBtnText}>Scan Again</Text>
+                <Text style={styles.rescanBtnText}>
+                  {status === 'success' ? 'Scan Another' : 'Try Again'}
+                </Text>
               </TouchableOpacity>
             )}
           </>
         ) : (
           <>
-            <Text style={styles.inputLabel}>QR Token</Text>
+            <Text style={styles.inputLabel}>QR Token or URL</Text>
             <View style={styles.inputRow}>
               <MaterialIcons name="vpn-key" size={20} color={Colors.mutedText} style={{ marginRight: 10 }} />
               <TextInput
                 style={styles.input}
-                placeholder="Paste token from desktop..."
+                placeholder="Paste token or URL from desktop..."
                 placeholderTextColor={Colors.mutedText}
-                value={token}
-                onChangeText={(v) => { setToken(v); setError(''); }}
+                value={manualToken}
+                onChangeText={setManualToken}
                 autoCapitalize="none"
                 autoCorrect={false}
               />
             </View>
 
             <TouchableOpacity
-              style={[styles.approveBtn, (approving || !token.trim()) && styles.approveBtnDisabled]}
-              onPress={() => handleApprove()}
-              disabled={approving || !token.trim()}
+              style={[styles.approveBtn, (status === 'approving' || !manualToken.trim()) && styles.approveBtnDisabled]}
+              onPress={() => approveToken(extractToken(manualToken))}
+              disabled={status === 'approving' || !manualToken.trim()}
             >
-              {approving ? (
+              {status === 'approving' ? (
                 <ActivityIndicator color={Colors.white} />
               ) : (
                 <>
@@ -260,23 +291,31 @@ const styles = StyleSheet.create({
   modeBtnText: { color: Colors.mutedText, fontWeight: '700', fontSize: 13 },
   modeBtnTextActive: { color: '#002e69' },
 
-  // Status
-  successBox: {
+  // Status message
+  messageBox: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: 'rgba(78,222,163,0.1)', borderWidth: 1,
-    borderColor: 'rgba(78,222,163,0.2)', borderRadius: 12, padding: 14, marginBottom: 16,
+    backgroundColor: Colors.cardDark, borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: 14, marginBottom: 16,
   },
-  successText: { color: Colors.green, fontSize: 13, flex: 1 },
-  errorBox: {
-    backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.2)', borderRadius: 12, padding: 12, marginBottom: 16,
+  messageBoxSuccess: {
+    backgroundColor: 'rgba(78,222,163,0.1)',
+    borderColor: 'rgba(78,222,163,0.2)',
   },
-  errorText: { color: '#ef4444', fontSize: 13, textAlign: 'center' },
+  messageBoxError: {
+    backgroundColor: 'rgba(239,68,68,0.1)',
+    borderColor: 'rgba(239,68,68,0.2)',
+  },
+  messageText: { color: Colors.mutedText, fontSize: 13, flex: 1 },
+  messageTextSuccess: { color: Colors.green },
+  messageTextError: { color: '#ef4444' },
 
   // Camera
+  cameraOuter: {
+    width: '100%', height: SCANNER_SIZE, borderRadius: 20,
+    overflow: 'hidden', backgroundColor: '#000', marginBottom: 16,
+  },
   cameraContainer: {
-    width: '100%', aspectRatio: 1, borderRadius: 20, overflow: 'hidden',
-    backgroundColor: '#000', marginBottom: 16, position: 'relative',
+    ...StyleSheet.absoluteFillObject,
   },
   camera: { flex: 1 },
   cameraPlaceholder: {
@@ -318,10 +357,6 @@ const styles = StyleSheet.create({
   },
   scanningText: { color: Colors.white, fontSize: 15, fontWeight: '700' },
 
-  scanHint: {
-    color: Colors.mutedText, fontSize: 13, textAlign: 'center',
-    fontWeight: '500', marginBottom: 12,
-  },
   rescanBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     paddingVertical: 10, marginBottom: 16,

@@ -31,6 +31,18 @@ export default function LoginScreen({ navigation }) {
       const biometric = compatible && enrolled;
       setBiometricAvailable(biometric);
 
+      // Post-reset prefill (from ForgotPinScreen) takes priority over remembered creds
+      const prefill = await storage.getItem('post_reset_login_prefill');
+      if (prefill) {
+        try {
+          const obj = JSON.parse(prefill);
+          if (obj.shopCode) setShopCode(obj.shopCode);
+          if (obj.pin) { setPin(obj.pin); setStep('pin'); }
+        } catch {}
+        await storage.removeItem('post_reset_login_prefill');
+        return;
+      }
+
       // Load saved credentials
       const remembered = await storage.getItem('remember_shop_login');
       if (remembered === 'true') {
@@ -183,6 +195,13 @@ export default function LoginScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
 
+              <TouchableOpacity
+                style={styles.forgotPinBtn}
+                onPress={() => navigation.navigate('ForgotPin', { shopCode })}
+              >
+                <Text style={styles.forgotPinText}>Forgot PIN?</Text>
+              </TouchableOpacity>
+
               {!biometricAvailable && (
                 <View style={styles.rememberRow}>
                   <Switch
@@ -271,6 +290,8 @@ const styles = StyleSheet.create({
   shopIdValue: { color: Colors.white, fontWeight: '700', fontSize: 15 },
   rememberRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
   rememberText: { color: Colors.mutedText, fontSize: 13 },
+  forgotPinBtn: { alignSelf: 'flex-end', marginBottom: 16, paddingVertical: 4 },
+  forgotPinText: { color: Colors.primary, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5 },
   biometricBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
     marginTop: 20, paddingVertical: 16,

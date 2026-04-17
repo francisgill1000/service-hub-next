@@ -13,7 +13,7 @@ import { storage } from '../../utils/storage';
 
 export default function CustomerLoginScreen({ navigation }) {
   const { loginCustomer } = useCustomer();
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -34,14 +34,14 @@ export default function CustomerLoginScreen({ navigation }) {
       const remembered = await storage.getItem('remember_customer_login');
       if (remembered === 'true') {
         setRememberMe(true);
-        const savedEmail = await storage.getItem('remember_customer_email') || '';
+        const savedPhone = await storage.getItem('remember_customer_phone') || '';
         const savedPassword = await storage.getItem('remember_customer_password') || '';
-        if (biometric && savedEmail && savedPassword) {
+        if (biometric && savedPhone && savedPassword) {
           // Don't pre-fill — require fingerprint to unlock
           setHasSavedCredentials(true);
         } else {
           // No biometric — pre-fill as before
-          setEmail(savedEmail);
+          setPhone(savedPhone);
           setPassword(savedPassword);
         }
       }
@@ -55,20 +55,20 @@ export default function CustomerLoginScreen({ navigation }) {
     }
   }, [biometricAvailable, hasSavedCredentials]);
 
-  const doLogin = async (loginEmail, loginPassword) => {
+  const doLogin = async (loginPhone, loginPassword) => {
     setLoading(true);
     setError('');
     try {
-      const res = await api.post('/login', { email: loginEmail.trim(), password: loginPassword });
+      const res = await api.post('/login', { phone: loginPhone.trim(), password: loginPassword });
       if (res.data?.token && res.data?.user) {
         const shouldSave = biometricAvailable || rememberMe;
         if (shouldSave) {
           await storage.setItem('remember_customer_login', 'true');
-          await storage.setItem('remember_customer_email', loginEmail.trim());
+          await storage.setItem('remember_customer_phone', loginPhone.trim());
           await storage.setItem('remember_customer_password', loginPassword);
         } else {
           await storage.removeItem('remember_customer_login');
-          await storage.removeItem('remember_customer_email');
+          await storage.removeItem('remember_customer_phone');
           await storage.removeItem('remember_customer_password');
         }
         await loginCustomer(res.data.user, res.data.token);
@@ -77,7 +77,7 @@ export default function CustomerLoginScreen({ navigation }) {
         setError('Invalid response from server.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.errors?.email?.[0] || 'Login failed. Check your credentials.');
+      setError(err.response?.data?.message || err.response?.data?.errors?.phone?.[0] || 'Login failed. Check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -91,10 +91,10 @@ export default function CustomerLoginScreen({ navigation }) {
         disableDeviceFallback: true,
       });
       if (result.success) {
-        const savedEmail = await storage.getItem('remember_customer_email');
+        const savedPhone = await storage.getItem('remember_customer_phone');
         const savedPassword = await storage.getItem('remember_customer_password');
-        if (savedEmail && savedPassword) {
-          await doLogin(savedEmail, savedPassword);
+        if (savedPhone && savedPassword) {
+          await doLogin(savedPhone, savedPassword);
         }
       }
     } catch {
@@ -103,9 +103,9 @@ export default function CustomerLoginScreen({ navigation }) {
   }, [rememberMe]);
 
   const handleLogin = async () => {
-    if (!email.trim()) { setError('Please enter your email.'); return; }
+    if (!phone.trim()) { setError('Please enter your mobile number.'); return; }
     if (!password) { setError('Please enter your password.'); return; }
-    await doLogin(email, password);
+    await doLogin(phone, password);
   };
 
   return (
@@ -132,16 +132,16 @@ export default function CustomerLoginScreen({ navigation }) {
             </View>
           )}
 
-          <Text style={styles.inputLabel}>Email</Text>
+          <Text style={styles.inputLabel}>Mobile Number</Text>
           <View style={styles.inputRow}>
-            <MaterialIcons name="email" size={20} color={Colors.mutedText} style={{ marginRight: 10 }} />
+            <MaterialIcons name="phone" size={20} color={Colors.mutedText} style={{ marginRight: 10 }} />
             <TextInput
               style={styles.input}
-              placeholder="you@example.com"
+              placeholder="e.g. 0501234567"
               placeholderTextColor={Colors.mutedText}
-              value={email}
-              onChangeText={(v) => { setEmail(v); setError(''); }}
-              keyboardType="email-address"
+              value={phone}
+              onChangeText={(v) => { setPhone(v); setError(''); }}
+              keyboardType="phone-pad"
               autoCapitalize="none"
               autoCorrect={false}
             />

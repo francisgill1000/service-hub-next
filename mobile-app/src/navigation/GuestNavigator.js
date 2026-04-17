@@ -18,6 +18,7 @@ import CustomerRegisterScreen from '../screens/customer/CustomerRegisterScreen';
 import CustomerProfileScreen from '../screens/customer/CustomerProfileScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
+import ForgotPinScreen from '../screens/auth/ForgotPinScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -113,6 +114,7 @@ export default function GuestNavigator() {
       <Stack.Screen name="CustomerRegister" component={CustomerRegisterScreen} />
       <Stack.Screen name="Login"            component={LoginScreen} />
       <Stack.Screen name="Register"         component={RegisterScreen} />
+      <Stack.Screen name="ForgotPin"        component={ForgotPinScreen} />
     </Stack.Navigator>
   );
 }

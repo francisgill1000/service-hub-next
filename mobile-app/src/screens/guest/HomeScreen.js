@@ -33,6 +33,12 @@ function ShopCard({ item, onFavourite, onPress }) {
           </View>
         </View>
         <Text style={styles.shopName}>{item.name}</Text>
+        {!!item.shop_code && (
+          <View style={styles.shopCodePill}>
+            <MaterialIcons name="tag" size={11} color={Colors.primary} />
+            <Text style={styles.shopCodeText}>{item.shop_code}</Text>
+          </View>
+        )}
         <View style={styles.locationRow}>
           <Text style={styles.locationText}>{item.location}</Text>
           {!!item.distance && <Text style={styles.distanceText}>{item.distance}</Text>}
@@ -192,6 +198,12 @@ const styles = StyleSheet.create({
   ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   ratingText: { color: Colors.white, fontWeight: '700', fontSize: 13 },
   shopName: { fontSize: 17, fontWeight: '800', color: Colors.white, marginTop: 2 },
+  shopCodePill: {
+    flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 3,
+    backgroundColor: 'rgba(0,122,255,0.1)', borderWidth: 1, borderColor: 'rgba(0,122,255,0.2)',
+    paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginTop: 4,
+  },
+  shopCodeText: { color: Colors.primary, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
   locationRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
   locationText: { fontSize: 11, color: Colors.slateGray, fontWeight: '600' },
   distanceText: { fontSize: 11, color: Colors.slateGray, fontWeight: '600' },

@@ -11,7 +11,7 @@ import { useCustomer } from '../../context/CustomerContext';
 
 export default function CustomerRegisterScreen({ navigation }) {
   const { loginCustomer } = useCustomer();
-  const [form, setForm] = useState({ name: '', email: '', password: '', password_confirmation: '' });
+  const [form, setForm] = useState({ name: '', phone: '', password: '', password_confirmation: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -20,7 +20,7 @@ export default function CustomerRegisterScreen({ navigation }) {
 
   const handleRegister = async () => {
     if (!form.name.trim()) { setError('Name is required.'); return; }
-    if (!form.email.trim()) { setError('Email is required.'); return; }
+    if (!form.phone.trim()) { setError('Mobile number is required.'); return; }
     if (!form.password) { setError('Password is required.'); return; }
     if (form.password.length < 5) { setError('Password must be at least 5 characters.'); return; }
     if (form.password !== form.password_confirmation) { setError('Passwords do not match.'); return; }
@@ -73,7 +73,7 @@ export default function CustomerRegisterScreen({ navigation }) {
 
           {[
             { key: 'name', label: 'Full Name', placeholder: 'John Smith', icon: 'person' },
-            { key: 'email', label: 'Email', placeholder: 'you@example.com', icon: 'email', keyboardType: 'email-address' },
+            { key: 'phone', label: 'Mobile Number', placeholder: 'e.g. 0501234567', icon: 'phone', keyboardType: 'phone-pad' },
           ].map(field => (
             <View key={field.key}>
               <Text style={styles.inputLabel}>{field.label}</Text>

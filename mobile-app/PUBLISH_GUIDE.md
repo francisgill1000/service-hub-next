@@ -20,7 +20,7 @@ eas login
 ## Step 2: Configure EAS Build
 
 ```bash
-cd D:/Francis/projects/2026/service-hub-next/mobile-app
+cd D:/Francis/projects/2026/Rezzy/mobile-app
 eas build:configure
 ```
 

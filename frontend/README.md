@@ -1,4 +1,4 @@
-# Service Hub Next
+# Rezzy
 
 Service Hub is a Next.js + Laravel project for service shops, bookings, favourites, near-me discovery, and shop-side dashboard management.
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Service Hub Next is a full-stack service booking and shop management platform. Shops register and manage bookings/catalogs/customers; customers discover nearby shops, make bookings, and save favorites. It includes a WhatsApp-style QR login system and CRM features (leads, deals, invoices).
+Rezzy is a full-stack service booking and shop management platform. Shops register and manage bookings/catalogs/customers; customers discover nearby shops, make bookings, and save favorites. It includes a WhatsApp-style QR login system and CRM features (leads, deals, invoices).
 
 ## Development Commands
 

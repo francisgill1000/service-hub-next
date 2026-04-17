@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.borderDark,
     borderTopWidth: 1,
     height: 110,
-    paddingBottom: 46,
+    paddingBottom: 60,
     paddingTop: 10,
   },
   tabLabel: {

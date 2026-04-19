@@ -8,6 +8,7 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/colors';
 import api from '../../utils/api';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import WhatsAppSupportButton from '../../components/WhatsAppSupportButton';
 
 const STATUS_COLORS = {
   booked: Colors.primary,
@@ -77,6 +78,7 @@ export default function BookingsScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <Text style={styles.title}>My Bookings</Text>
+        <WhatsAppSupportButton />
       </View>
       <FlatList
         data={bookings}
@@ -105,7 +107,10 @@ export default function BookingsScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.brandDark },
-  header: { paddingHorizontal: 16, paddingVertical: 12 },
+  header: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 16, paddingVertical: 12,
+  },
   title: { fontSize: 24, fontWeight: '800', color: Colors.white },
   list: { paddingHorizontal: 16, paddingBottom: 100 },
   card: {

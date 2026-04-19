@@ -17,7 +17,8 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Rezzy uses your location to find nearby businesses.",
         "NSCameraUsageDescription": "Rezzy uses the camera to scan QR codes and upload images.",
-        "NSPhotoLibraryUsageDescription": "Rezzy accesses your photo library to upload images."
+        "NSPhotoLibraryUsageDescription": "Rezzy accesses your photo library to upload images.",
+        "NSMicrophoneUsageDescription": "Rezzy uses the microphone for voice search to find services and shops."
       }
     },
     "android": {
@@ -52,7 +53,13 @@
           "cameraPermission": "Rezzy uses the camera to take photos."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Rezzy uses the microphone for voice search to find services and shops."
+        }
+      ]
     ],
     "extra": {
       "eas": {

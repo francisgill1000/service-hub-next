@@ -7,6 +7,7 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/colors';
 import { useCustomer } from '../../context/CustomerContext';
 import { useNavigation } from '@react-navigation/native';
+import WhatsAppSupportButton from '../../components/WhatsAppSupportButton';
 
 export default function CustomerProfileScreen() {
   const { customer, logoutCustomer } = useCustomer();
@@ -31,9 +32,12 @@ export default function CustomerProfileScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <Text style={styles.title}>My Account</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <MaterialIcons name="logout" size={22} color={Colors.slateGray} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <WhatsAppSupportButton />
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
+            <MaterialIcons name="logout" size={22} color={Colors.slateGray} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -113,4 +117,5 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(239,68,68,0.3)', backgroundColor: 'rgba(239,68,68,0.08)',
   },
   signOutText: { color: Colors.red, fontSize: 15, fontWeight: '700' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
 });

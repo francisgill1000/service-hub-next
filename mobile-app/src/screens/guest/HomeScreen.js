@@ -8,6 +8,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '../../theme/colors';
 import api from '../../utils/api';
 import { useNavigation } from '@react-navigation/native';
+import WhatsAppSupportButton from '../../components/WhatsAppSupportButton';
 
 function ShopCard({ item, onFavourite, onPress }) {
   return (
@@ -115,6 +116,7 @@ export default function HomeScreen() {
           <Text style={styles.headerTitle}>Rezzy</Text>
           {/* <Text style={styles.poweredBy}>powered by Eloquent</Text> */}
         </View>
+        <WhatsAppSupportButton />
       </View>
 
       {/* Search */}
@@ -123,16 +125,11 @@ export default function HomeScreen() {
           <MaterialIcons name="search" size={22} color={Colors.primary} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search services or businesses..."
+            placeholder="Search..."
             placeholderTextColor={Colors.mutedText}
             value={searchTerm}
             onChangeText={setSearchTerm}
           />
-          {!!searchTerm && (
-            <TouchableOpacity onPress={() => setSearchTerm('')}>
-              <MaterialIcons name="close" size={18} color={Colors.mutedText} />
-            </TouchableOpacity>
-          )}
         </View>
       </View>
 
@@ -183,6 +180,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: { marginRight: 8 },
   searchInput: { flex: 1, color: Colors.white, fontSize: 15 },
+  clearBtn: { marginRight: 6 },
   list: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 100 },
   card: {
     flexDirection: 'row', gap: 14,

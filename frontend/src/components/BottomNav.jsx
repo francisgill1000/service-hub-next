@@ -6,11 +6,11 @@ import { useShop } from '@/context/ShopContext';
 import { useState, useEffect } from 'react';
 
 const GUEST_NAV_ITEMS = [
-  { label: 'Explore', icon: 'explore', path: '/explore' },
-  { label: 'Bookings', icon: 'calendar_today', path: '/bookings' },
   { label: 'Home', icon: 'home', path: '/' },
+  { label: 'Bookings', icon: 'calendar_today', path: '/bookings' },
   { label: 'Favourites', icon: 'favorite', path: '/favourites' },
   { label: 'Near Me', icon: 'near_me', path: '/near-me' },
+  { label: 'Account', icon: 'person', path: '/account' },
 ];
 
 const SHOP_NAV_ITEMS = [
@@ -30,7 +30,9 @@ export default function BottomNav() {
     setIsClient(true);
   }, []);
 
-  const hideNav = ['/login', '/register', '/forgot-password'].includes(pathname);
+  const hideNav =
+    ['/login', '/register', '/forgot-password'].includes(pathname) ||
+    pathname?.startsWith('/customer/');
   if (!isClient || hideNav) return null;
 
   // Determine if shop owner or guest

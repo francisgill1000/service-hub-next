@@ -106,7 +106,7 @@ const AddToCatalog = () => {
   };
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden max-w-md md:max-w-5xl mx-auto bg-[#0B121B] text-white font-sans">
+    <div className="relative flex min-h-screen w-full flex-col max-w-md md:max-w-3xl mx-auto bg-[#0B121B] text-white font-sans">
 
       {/* Header */}
       <div className="sticky top-0 z-40 bg-[#0B121B] px-5 py-4 border-b border-white/10 flex items-center gap-3">
@@ -120,11 +120,11 @@ const AddToCatalog = () => {
       </div>
 
       {/* Main Form Content */}
-      <main className="flex-1 overflow-y-auto px-5 pb-40 no-scrollbar">
+      <main className="flex-1 px-5 pb-20">
 
         {/* Image Upload Area */}
         <div className="mt-4 group">
-          <label className="relative flex flex-col items-center justify-center w-full aspect-square rounded-2xl border-2 border-dashed border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 transition-all cursor-pointer overflow-hidden">
+          <label className="relative flex flex-col items-center justify-center w-full aspect-square md:aspect-[16/9] md:max-h-80 rounded-2xl border-2 border-dashed border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 transition-all cursor-pointer overflow-hidden">
             <input
               ref={fileInputRef}
               type="file"

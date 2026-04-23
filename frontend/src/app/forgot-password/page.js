@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { KeyRound, Lock, ShieldCheck } from 'lucide-react';
+import { Lock, ShieldCheck } from 'lucide-react';
 import api from '@/utils/api';
 
 const ForgotPin = () => {
@@ -104,22 +104,17 @@ const ForgotPin = () => {
               <label className="text-[10px] uppercase tracking-widest text-muted-text font-bold ml-1">
                 Business ID
               </label>
-              <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors">
-                  <KeyRound size={20} />
-                </span>
-                <input
-                  value={shopCode}
-                  onChange={(e) => {
-                    setShopCode(e.target.value);
-                    setError('');
-                  }}
-                  className="w-full h-14 bg-card-dark border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                  placeholder="Enter business code"
-                  type="text"
-                  required
-                />
-              </div>
+              <input
+                value={shopCode}
+                onChange={(e) => {
+                  setShopCode(e.target.value);
+                  setError('');
+                }}
+                className="w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                placeholder="Enter business code"
+                type="text"
+                required
+              />
             </div>
 
             <button

@@ -102,7 +102,7 @@ export default function ShopBookingsPage() {
 
   return (
     <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
-      <div className="max-w-[1024px] mx-auto px-4 md:px-8 pt-6 md:pt-8 space-y-6">
+      <div className="w-full px-4 md:px-6 pt-6 md:pt-8 space-y-6">
 
         {/* Page heading */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">

@@ -189,7 +189,7 @@ export default function ShopDashboard() {
 
          {/* ─── DESKTOP / TABLET layout ─── */}
          <div className="hidden md:block">
-            <div className="max-w-[1024px] mx-auto px-8 pt-8 pb-10 space-y-6">
+            <div className="w-full px-6 pt-8 pb-10 space-y-6">
 
                {/* ── Page heading ── */}
                <div className="flex items-end justify-between">

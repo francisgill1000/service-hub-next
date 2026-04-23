@@ -1,5 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
+import WhatsAppSupportButton from "./WhatsAppSupportButton";
 
 export default function GuestHeader() {
   const pathname = usePathname();
@@ -11,7 +12,8 @@ export default function GuestHeader() {
     "/booking",
     "/explore",
     "/near-me",
-    "/favourites"
+    "/favourites",
+    "/account"
   ].some(route => pathname?.startsWith(route));
 
   // Hide on auth routes and shop routes
@@ -31,13 +33,16 @@ export default function GuestHeader() {
     if (pathname === "/explore") return "Explore";
     if (pathname === "/near-me") return "Near Me";
     if (pathname === "/favourites") return "Favorites";
+    if (pathname === "/account") return "Account";
     return "ServiceHub";
   };
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-b from-[#0B121B] via-[#0B121B]/95 to-[#0B121B]/80 backdrop-blur-xl border-b border-white/10 py-4">
-      <div className="max-w-[480px] mx-auto px-4">
-        <h1 className="text-center text-lg font-bold text-white">{getHeaderTitle()}</h1>
+      <div className="max-w-[480px] mx-auto px-4 flex items-center">
+        <div className="w-10" aria-hidden="true" />
+        <h1 className="flex-1 text-center text-lg font-bold text-white">{getHeaderTitle()}</h1>
+        <WhatsAppSupportButton />
       </div>
     </header>
   );

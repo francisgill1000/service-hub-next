@@ -25,7 +25,7 @@ export default function ShopLayout({ children }) {
         <div className="flex items-center gap-3 p-5 border-b border-slate-200 dark:border-slate-800">
           <div
             className="size-10 rounded-full border-2 border-blue-600/30 bg-slate-300 bg-cover bg-center shrink-0"
-            style={{ backgroundImage: `url(${shop?.hero_image || "/barber-shop-image.png"})` }}
+            style={{ backgroundImage: `url(${shop?.logo || "/barber-shop-image.png"})` }}
           />
           <div className="min-w-0">
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Welcome back,</p>

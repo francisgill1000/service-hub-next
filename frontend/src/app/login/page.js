@@ -2,7 +2,7 @@
 
 import api from '@/utils/api';
 import QRCode from 'qrcode';
-import { ChevronLeft, KeyRound, Lock, QrCode, RefreshCw, Smartphone } from 'lucide-react';
+import { ChevronLeft, KeyRound, QrCode, RefreshCw, Smartphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -308,22 +308,17 @@ const Login = () => {
                                 <label className="text-[10px] uppercase tracking-widest text-muted-text font-bold ml-1">
                                     Business ID
                                 </label>
-                                <div className="relative group">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors">
-                                        <KeyRound size={20} />
-                                    </span>
-                                    <input
-                                        value={shopCode}
-                                        onChange={(e) => {
-                                            setShopCode(e.target.value);
-                                            setError('');
-                                        }}
-                                        className="w-full h-14 bg-card-dark border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                        placeholder="Enter business code"
-                                        type="text"
-                                        required
-                                    />
-                                </div>
+                                <input
+                                    value={shopCode}
+                                    onChange={(e) => {
+                                        setShopCode(e.target.value);
+                                        setError('');
+                                    }}
+                                    className="w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                    placeholder="Enter business code"
+                                    type="text"
+                                    required
+                                />
                             </div>
 
                             <button
@@ -363,17 +358,14 @@ const Login = () => {
                                 <label className="text-[10px] uppercase tracking-widest text-muted-text font-bold ml-1">
                                     PIN
                                 </label>
-                                <div className="relative group">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors">
-                                        <Lock size={20} />
-                                    </span>
+                                <div className="relative">
                                     <input
                                         value={pin}
                                         onChange={(e) => {
                                             setPin(e.target.value);
                                             setError('');
                                         }}
-                                        className="w-full h-14 bg-card-dark border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                        className="w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 pr-16 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                                         placeholder="Enter your PIN"
                                         type={showPin ? 'text' : 'password'}
                                         required
@@ -381,7 +373,7 @@ const Login = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowPin((v) => !v)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-text hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest"
                                         aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
                                     >
                                         {showPin ? 'Hide' : 'Show'}

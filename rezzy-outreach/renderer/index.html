@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-900 h-screen flex flex-col overflow-hidden">
+
+
+    <header
+        class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-sm sticky top-0 z-20">
+        <div class="flex items-center gap-4">
+            <div>
+                <h1 class="text-xl font-black text-slate-800 tracking-tight">Rezzy <span
+                        class="text-blue-600">Outreach</span></h1>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Sharjah Salon Campaign</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-8">
+            <div class="flex flex-col items-end">
+                <div class="flex items-center gap-3 mb-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Daily Limit</span>
+                    <span class="text-sm font-black text-slate-700"><span id="count">0</span> / 35</span>
+                </div>
+                <div class="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div id="progress-bar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%">
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-10 w-[1px] bg-slate-200"></div>
+            <div class="flex flex-col">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">Database Size</span>
+                <span id="total-leads" class="text-sm font-black text-slate-700">0 Leads</span>
+            </div>
+
+            <button id="import-btn"
+                class="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95 shadow-lg shadow-slate-200">
+                IMPORT CSV
+            </button>
+        </div>
+    </header>
+
+    <div class="bg-white border-b border-slate-200 px-8 py-3">
+        <div class="max-w-5xl mx-auto flex gap-4">
+            <div class="flex-1 relative">
+                <span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+                <input type="text" id="search-input" placeholder="Search by name, area, or phone..."
+                    class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+            </div>
+
+            <select id="filter-select"
+                class="bg-slate-50 border border-slate-200 text-slate-600 text-sm font-semibold rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer">
+                <option value="all">ALL STATUSES</option>
+                <option value="new">NEW</option>
+                <option value="sent">SENT</option>
+                <option value="interested">INTERESTED</option>
+                <option value="invalid">INVALID</option>
+                <option value="ignore">IGNORE</option>
+            </select>
+        </div>
+    </div>
+
+    <main class="flex-1 overflow-auto p-6">
+        <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase">#</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase">Salon Name</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase">Area</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="lead-list" class="divide-y divide-slate-100 bg-white">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 px-8 py-3 flex justify-between items-center">
+        <span class="text-xs text-slate-500 font-medium" id="page-info">Showing page 1 of 1</span>
+        <div class="flex gap-2">
+            <button id="prev-page"
+                class="px-3 py-1 border border-slate-300 rounded text-xs font-bold hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed">Prev</button>
+            <button id="next-page"
+                class="px-3 py-1 border border-slate-300 rounded text-xs font-bold hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed">Next</button>
+        </div>
+    </footer>
+
+    <script src="renderer.js"></script>
+</body>
+
+</html>

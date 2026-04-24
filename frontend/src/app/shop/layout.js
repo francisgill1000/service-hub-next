@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useShop } from "@/context/ShopContext";
+import { useNotifications } from "@/context/NotificationsContext";
 
 const SHOP_NAV_ITEMS = [
   { label: "Dashboard", icon: "dashboard", path: "/shop/dashboard" },
@@ -16,6 +17,8 @@ export default function ShopLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { shop, logoutShop } = useShop();
+  const { notifications } = useNotifications();
+  const bookingCount = notifications.length;
 
   return (
     <div className="flex min-h-screen">
@@ -38,6 +41,7 @@ export default function ShopLayout({ children }) {
           {SHOP_NAV_ITEMS.map((item) => {
             const active =
               pathname === item.path || pathname?.startsWith(item.path + "/");
+            const isBookings = item.path === "/shop/bookings";
             return (
               <Link
                 key={item.path}
@@ -55,7 +59,12 @@ export default function ShopLayout({ children }) {
                 >
                   {item.icon}
                 </span>
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {isBookings && bookingCount > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none">
+                    {bookingCount > 99 ? "99+" : bookingCount}
+                  </span>
+                )}
               </Link>
             );
           })}

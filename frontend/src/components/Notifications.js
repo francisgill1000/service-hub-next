@@ -1,86 +1,14 @@
 "use client";
 
-import { useShop } from "@/context/ShopContext";
 import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
+import { useNotifications } from "@/context/NotificationsContext";
 
 export default function Notifications() {
 
     const router = useRouter();
-    const { shop } = useShop();
-
-    const [notifications, setNotifications] = useState([]);
-    const audioCtxRef = useRef(null);
-
-    function ensureAudioContext() {
-        if (!audioCtxRef.current) {
-            const Ctx = window.AudioContext || window.webkitAudioContext;
-            if (!Ctx) return null;
-            audioCtxRef.current = new Ctx();
-        }
-        return audioCtxRef.current;
-    }
-
-    function playChime() {
-        const ctx = ensureAudioContext();
-        if (!ctx) return;
-        if (ctx.state === 'suspended') {
-            ctx.resume().catch(() => { });
-        }
-
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1200, now);
-        osc.frequency.exponentialRampToValueAtTime(500, now + 0.45);
-
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.12, now + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 1.0);
-    }
-
-    let clientId = shop?.id;
-
-
-
-    useEffect(() => {
-        if (!clientId) return;
-
-        // const evtSource = new EventSource(`http://localhost:5000/stream?clientId=${clientId}`);
-        const evtSource = new EventSource(`https://push.eloquentservice.com/stream?clientId=${clientId}`);
-
-
-
-        evtSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            setNotifications((prev) => [data, ...prev]);
-            try {
-                playChime();
-            } catch (e) {
-                // ignore audio errors
-            }
-        };
-
-        evtSource.onerror = () => {
-            evtSource.close();
-            setTimeout(() => {
-                // reconnect on error
-                // new EventSource(`http://localhost:5000/stream?clientId=${clientId}`);
-                new EventSource(`https://push.eloquentservice.com/stream?clientId=${clientId}`);
-            }, 1000);
-        };
-
-        return () => evtSource.close();
-    }, [clientId]);
+    const { notifications, ensureAudioContext } = useNotifications();
     const [open, setOpen] = useState(false);
 
     const bellStyle = {
@@ -122,7 +50,6 @@ export default function Notifications() {
         width: 320,
         maxHeight: 320,
         overflowY: 'auto',
-        // background: '#fff',
         borderRadius: 8,
         boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
         padding: 8,

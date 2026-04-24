@@ -97,3 +97,208 @@
 .fill-icon {
   font-variation-settings: 'FILL' 1 !important;
 }
+
+/* ──────────────────────────────────────────────
+   Bookings page date-range picker — dark theme
+   ────────────────────────────────────────────── */
+
+/* Wrapper fills the container so the input picks up our Tailwind classes fully */
+.booking-range-picker .react-datepicker-wrapper,
+.booking-range-picker .react-datepicker__input-container {
+  display: block;
+  width: 100%;
+}
+
+/* The input itself */
+.booking-range-picker .react-datepicker__input-container input {
+  width: 100%;
+  background-color: #080f17;
+  border: 1px solid rgba(65, 71, 85, 0.4);
+  border-radius: 12px;
+  color: #ffffff;
+  height: 44px;
+  padding-left: 44px;
+  padding-right: 36px;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: none;
+}
+.booking-range-picker .react-datepicker__input-container input::placeholder {
+  color: #8b90a0;
+  font-weight: 600;
+}
+.booking-range-picker .react-datepicker__input-container input:focus {
+  border-color: rgba(173, 198, 255, 0.4);
+  box-shadow: 0 0 0 3px rgba(173, 198, 255, 0.2);
+}
+
+/* Clear (×) icon */
+.booking-range-picker .react-datepicker__close-icon {
+  right: 8px;
+  padding: 0 8px;
+}
+.booking-range-picker .react-datepicker__close-icon::after {
+  background-color: rgba(139, 144, 160, 0.15);
+  color: #dce3f0;
+  font-size: 14px;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+  padding: 0;
+}
+.booking-range-picker .react-datepicker__close-icon:hover::after {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* ── Popup calendar ── */
+.booking-range-cal.react-datepicker {
+  background-color: #151c25;
+  border: 1px solid rgba(65, 71, 85, 0.4);
+  border-radius: 14px;
+  color: #dce3f0;
+  font-family: inherit;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  padding: 4px;
+}
+.react-datepicker-popper {
+  z-index: 60;
+}
+
+/* Header */
+.booking-range-cal .react-datepicker__header {
+  background-color: #19202a;
+  border-bottom: 1px solid rgba(65, 71, 85, 0.3);
+  border-radius: 10px 10px 0 0;
+  padding-top: 12px;
+}
+.booking-range-cal .react-datepicker__current-month {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.booking-range-cal .react-datepicker__day-name {
+  color: #8b90a0;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  width: 2.2rem;
+  margin: 0.2rem;
+}
+
+/* Navigation arrows */
+.booking-range-cal .react-datepicker__navigation {
+  top: 12px;
+}
+.booking-range-cal .react-datepicker__navigation-icon::before {
+  border-color: #8b90a0;
+  border-width: 2px 2px 0 0;
+  height: 7px;
+  width: 7px;
+}
+.booking-range-cal .react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
+  border-color: #adc6ff;
+}
+
+/* Day cells */
+.booking-range-cal .react-datepicker__day {
+  color: #dce3f0;
+  font-weight: 600;
+  font-size: 13px;
+  width: 2.2rem;
+  height: 2.2rem;
+  line-height: 2.2rem;
+  margin: 0.2rem;
+  border-radius: 10px;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+.booking-range-cal .react-datepicker__day:hover {
+  background-color: #d4c5f9;
+  color: #0d141d;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.booking-range-cal .react-datepicker__day--today {
+  border: 1px solid rgba(173, 198, 255, 0.4);
+  color: #adc6ff;
+  background-color: transparent;
+}
+
+/* Range mid-values */
+.booking-range-cal .react-datepicker__day--in-range,
+.booking-range-cal .react-datepicker__day--in-selecting-range {
+  background-color: rgba(173, 198, 255, 0.15);
+  color: #adc6ff;
+  border-radius: 0;
+}
+
+/* Range edges */
+.booking-range-cal .react-datepicker__day--range-start,
+.booking-range-cal .react-datepicker__day--range-end,
+.booking-range-cal .react-datepicker__day--selecting-range-start,
+.booking-range-cal .react-datepicker__day--selecting-range-end,
+.booking-range-cal .react-datepicker__day--selected {
+  background-color: #adc6ff !important;
+  color: #0d141d !important;
+  border-radius: 10px !important;
+  font-weight: 800;
+}
+.booking-range-cal .react-datepicker__day--range-start:hover,
+.booking-range-cal .react-datepicker__day--range-end:hover {
+  background-color: #adc6ff;
+  color: #0d141d;
+}
+
+/* Outside-month / disabled */
+.booking-range-cal .react-datepicker__day--outside-month {
+  color: #414755;
+}
+.booking-range-cal .react-datepicker__day--disabled {
+  color: #414755;
+  opacity: 0.4;
+}
+
+/* Hide default little arrow */
+.booking-range-cal .react-datepicker__triangle,
+.react-datepicker__triangle {
+  display: none;
+}
+
+/* Month container spacing */
+.booking-range-cal .react-datepicker__month {
+  margin: 6px;
+}
+
+/* Two-month layout — always horizontal */
+.booking-range-cal.react-datepicker {
+  display: inline-flex;
+  flex-wrap: nowrap;
+}
+.booking-range-cal .react-datepicker__month-container {
+  float: none;
+  display: inline-block;
+  vertical-align: top;
+  padding: 4px;
+  flex: 0 0 auto;
+}
+.booking-range-cal .react-datepicker__month-container + .react-datepicker__month-container {
+  border-left: 1px solid rgba(65, 71, 85, 0.3);
+  margin-left: 4px;
+  padding-left: 8px;
+}
+
+/* Week rows */
+.booking-range-cal .react-datepicker__week {
+  display: flex;
+  justify-content: center;
+}
+.booking-range-cal .react-datepicker__day-names {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}

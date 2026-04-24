@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
 import api from '@/utils/api';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import CreateBookingModal from '@/components/Shop/CreateBookingModal';
 
 const STATUS_CHIP = {
   "Booked":    "bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20",
@@ -23,23 +26,6 @@ const STATUS_FILTERS = [
   { label: 'Cancelled', value: 'cancelled' },
 ];
 
-const today = () => new Date().toISOString().slice(0, 10);
-const weekStart = () => {
-  const d = new Date();
-  d.setDate(d.getDate() - d.getDay());
-  return d.toISOString().slice(0, 10);
-};
-const monthStart = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
-};
-
-const QUICK_DATES = [
-  { label: 'Today',      from: today,      to: today },
-  { label: 'This week',  from: weekStart,  to: today },
-  { label: 'This month', from: monthStart, to: today },
-];
-
 export default function ShopBookingsPage() {
   const router = useRouter();
   const { shop } = useShop();
@@ -51,6 +37,7 @@ export default function ShopBookingsPage() {
   const [searchTerm, setSearchTerm]       = useState('');
   const [dateFrom, setDateFrom]           = useState('');
   const [dateTo, setDateTo]               = useState('');
+  const [createOpen, setCreateOpen]       = useState(false);
 
   useEffect(() => { fetchBookings(); }, [selectedStatus]);
 
@@ -70,14 +57,16 @@ export default function ShopBookingsPage() {
     }
   };
 
-  const applyQuickDate = (preset) => {
-    setDateFrom(preset.from());
-    setDateTo(preset.to());
-  };
-
-  const clearDates = () => { setDateFrom(''); setDateTo(''); };
-
   const hasDateFilter = dateFrom || dateTo;
+
+  const toISO = (d) => {
+    if (!d) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+  const fromISO = (s) => (s ? new Date(`${s}T00:00:00`) : null);
 
   const filteredBookings = bookings.filter((b) => {
     const ref      = b.booking_reference?.toString().toLowerCase() ?? '';
@@ -112,8 +101,8 @@ export default function ShopBookingsPage() {
               Manage and track all your service appointments.
             </p>
           </div>
-          {/* Summary pills */}
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Summary pills */}
             <span className="px-3 py-1.5 bg-[#151c25] border border-[#414755]/30 rounded-xl text-[11px] font-bold text-[#c1c6d7]">
               {counts.total} total
             </span>
@@ -123,13 +112,20 @@ export default function ShopBookingsPage() {
             <span className="px-3 py-1.5 bg-[#4edea3]/10 border border-[#4edea3]/20 rounded-xl text-[11px] font-bold text-[#4edea3]">
               {counts.completed} done
             </span>
+            {/* New booking */}
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="h-9 px-3 rounded-xl bg-[#adc6ff] hover:bg-[#adc6ff]/90 text-[11px] font-black text-[#0d141d] inline-flex items-center gap-1.5 transition-all"
+            >
+              <span className="material-symbols-outlined text-[16px]">add</span>
+              New booking
+            </button>
           </div>
         </div>
 
         {/* Filter card */}
-        <div className="bg-[#151c25] rounded-xl p-4 md:p-5 space-y-4 border border-[#414755]/20">
+        <div className="bg-[#151c25] rounded-xl p-4 md:p-5 border border-[#414755]/20">
 
-          {/* Row 1 — search + date range */}
           <div className="flex flex-col md:flex-row gap-3">
             {/* Search */}
             <div className="relative flex-1">
@@ -143,73 +139,42 @@ export default function ShopBookingsPage() {
               />
             </div>
 
-            {/* Date from */}
+            {/* Status dropdown */}
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none">calendar_today</span>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="h-11 w-full md:w-44 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-3 text-sm font-semibold text-white focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all [color-scheme:dark]"
-              />
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none">filter_list</span>
+              <select
+                value={selectedStatus ?? ''}
+                onChange={(e) => setSelectedStatus(e.target.value === '' ? null : e.target.value)}
+                className="h-11 w-full md:w-52 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-10 text-sm font-semibold text-white focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all appearance-none cursor-pointer [color-scheme:dark]"
+              >
+                {STATUS_FILTERS.map((f) => (
+                  <option key={String(f.value)} value={f.value ?? ''}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[20px] pointer-events-none">expand_more</span>
             </div>
 
-            {/* Date to */}
-            <div className="relative">
-              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none">event</span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="h-11 w-full md:w-44 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-3 text-sm font-semibold text-white focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all [color-scheme:dark]"
+            {/* Date range */}
+            <div className="relative booking-range-picker w-full md:w-64">
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none z-10">date_range</span>
+              <DatePicker
+                selectsRange
+                startDate={fromISO(dateFrom)}
+                endDate={fromISO(dateTo)}
+                onChange={([start, end]) => {
+                  setDateFrom(toISO(start));
+                  setDateTo(toISO(end));
+                }}
+                isClearable
+                placeholderText="Select date range"
+                dateFormat="yyyy-MM-dd"
+                calendarClassName="booking-range-cal"
+                popperPlacement="bottom-start"
+                monthsShown={2}
               />
             </div>
-
-            {/* Clear dates */}
-            {hasDateFilter && (
-              <button
-                onClick={clearDates}
-                className="h-11 px-4 flex items-center gap-1.5 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 rounded-xl text-[#8b90a0] hover:text-white text-xs font-bold transition-all whitespace-nowrap"
-              >
-                <span className="material-symbols-outlined text-[16px]">close</span>
-                Clear
-              </button>
-            )}
-          </div>
-
-          {/* Row 2 — quick date presets + status pills */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#414755] mr-1">Quick:</span>
-            {QUICK_DATES.map((p) => (
-              <button
-                key={p.label}
-                onClick={() => applyQuickDate(p)}
-                className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all border ${
-                  dateFrom === p.from() && dateTo === p.to()
-                    ? 'bg-[#adc6ff]/20 text-[#adc6ff] border-[#adc6ff]/30'
-                    : 'bg-[#19202a] text-[#8b90a0] border-[#414755]/30 hover:text-white hover:bg-[#242a34]'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-
-            <div className="w-px h-5 bg-[#414755]/40 mx-1" />
-
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#414755] mr-1">Status:</span>
-            {STATUS_FILTERS.map((f) => (
-              <button
-                key={String(f.value)}
-                onClick={() => setSelectedStatus(f.value)}
-                className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all border whitespace-nowrap ${
-                  selectedStatus === f.value
-                    ? 'bg-[#adc6ff]/20 text-[#adc6ff] border-[#adc6ff]/30'
-                    : 'bg-[#19202a] text-[#8b90a0] border-[#414755]/30 hover:text-white hover:bg-[#242a34]'
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -282,7 +247,12 @@ export default function ShopBookingsPage() {
                             </div>
                             <div>
                               <p className="text-sm font-bold text-white group-hover:text-[#adc6ff] transition-colors">{customerName}</p>
-                              <p className="text-[10px] text-[#8b90a0] font-medium">{booking.booking_reference}</p>
+                              <p className="text-[10px] text-[#8b90a0] font-medium">
+                                {booking.booking_reference}
+                                {booking.customer_whatsapp && (
+                                  <span className="ml-2 text-[#4edea3]">· {booking.customer_whatsapp}</span>
+                                )}
+                              </p>
                             </div>
                           </div>
                         </td>
@@ -361,6 +331,9 @@ export default function ShopBookingsPage() {
 
                     <div>
                       <p className="text-sm font-bold text-white">{customerName}</p>
+                      {booking.customer_whatsapp && (
+                        <p className="text-[11px] text-[#4edea3] mt-0.5 font-semibold">{booking.customer_whatsapp}</p>
+                      )}
                       <p className="text-xs text-[#8b90a0] mt-0.5 font-medium">{services}</p>
                     </div>
 
@@ -381,6 +354,13 @@ export default function ShopBookingsPage() {
         )}
 
       </div>
+
+      <CreateBookingModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        shopId={shop?.id}
+        onCreated={() => fetchBookings()}
+      />
     </div>
   );
 }

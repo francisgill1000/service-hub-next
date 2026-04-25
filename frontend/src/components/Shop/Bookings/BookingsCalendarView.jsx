@@ -99,6 +99,7 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
           bookings={bookings}
           onBookingClick={handleBookingClick}
           onMoreClick={handleMonthMore}
+          onSlotClick={handleSlotClick}
         />
       )}
       {subView === "week" && (

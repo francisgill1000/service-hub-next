@@ -16,8 +16,8 @@ const toISO = (d) => {
 
 const fromISO = (s) => (s ? new Date(`${s}T00:00:00`) : null);
 
-export default function CreateBookingModal({ open, onClose, shopId, onCreated }) {
-    const [date, setDate] = useState(toISO(new Date()));
+export default function CreateBookingModal({ open, onClose, shopId, onCreated, initialDate, initialSlot }) {
+    const [date, setDate] = useState(initialDate || toISO(new Date()));
     const [slot, setSlot] = useState("");
     const [selectedServices, setSelectedServices] = useState([]);
     const [chargesOverride, setChargesOverride] = useState(null);
@@ -51,6 +51,9 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated })
                 if (cancelled) return;
                 setCatalogs(data?.catalogs || []);
                 setSlots(data?.slots || []);
+                if (initialSlot && (data?.slots || []).includes(initialSlot)) {
+                    setSlot(initialSlot);
+                }
             } catch (e) {
                 if (!cancelled) {
                     setCatalogs([]);
@@ -64,18 +67,20 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated })
         return () => {
             cancelled = true;
         };
-    }, [open, date, shopId]);
+    }, [open, date, shopId, initialSlot]);
 
     useEffect(() => {
-        if (!open) {
-            setDate(toISO(new Date()));
+        if (open) {
+            if (initialDate) setDate(initialDate);
+        } else {
+            setDate(initialDate || toISO(new Date()));
             setSlot("");
             setSelectedServices([]);
             setChargesOverride(null);
             setCustomerName("");
             setCustomerWhatsapp("");
         }
-    }, [open]);
+    }, [open, initialDate]);
 
     const toggleService = (id) => {
         setSelectedServices((prev) =>

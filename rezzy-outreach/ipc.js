@@ -2,6 +2,34 @@ const { ipcMain, shell, dialog } = require('electron');
 const fs = require('fs');
 const { db } = require('./db');
 
+function parseCsvRow(row) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+        const ch = row[i];
+
+        if (inQuotes) {
+            if (ch === '"') {
+                if (row[i + 1] === '"') { current += '"'; i++; }
+                else { inQuotes = false; }
+            } else {
+                current += ch;
+            }
+        } else if (ch === '"') {
+            inQuotes = true;
+        } else if (ch === ',') {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += ch;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
 ipcMain.handle('leads:list', (event, filter) => {
     return db.prepare('SELECT * FROM leads ORDER BY id ASC').all();
 });
@@ -28,13 +56,12 @@ ipcMain.handle('leads:import', async () => {
         const row = rows[i].trim();
         if (!row) continue;
 
-        // Smart Split: Handles commas inside quotes
-        const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-        if (!cols || cols.length < 4) continue;
+        const cols = parseCsvRow(row);
+        if (cols.length < 4) continue;
 
-        const name = cols[1]?.replace(/"/g, '').trim();
-        const area = cols[2]?.replace(/"/g, '').trim();
-        let phone = cols[3]?.replace(/\D/g, '');
+        const name = cols[1];
+        const area = cols[2];
+        let phone = (cols[3] || '').replace(/\D/g, '');
 
         if (phone && name) {
             if (phone.startsWith('05')) phone = '971' + phone.substring(1);

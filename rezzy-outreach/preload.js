@@ -6,6 +6,11 @@ contextBridge.exposeInMainWorld('api', {
   importCSV: () => ipcRenderer.invoke('leads:import'),
   openWA: (data) => ipcRenderer.send('leads:open-whatsapp', data),
   getTodayCount: () => ipcRenderer.invoke('stats:today'),
-  getTotalCount: () => ipcRenderer.invoke('leads:total-count'), // ADD THIS
-  updateStatus: (data) => ipcRenderer.invoke('leads:update-status', data)
+  getTotalCount: () => ipcRenderer.invoke('leads:total-count'),
+  updateStatus: (data) => ipcRenderer.invoke('leads:update-status', data),
+  createLead: (data) => ipcRenderer.invoke('leads:create', data),
+  openUrl: (url) => ipcRenderer.invoke('app:open-url', url),
+  downloadSampleCsv: () => ipcRenderer.invoke('leads:download-sample'),
+  getTemplate: () => ipcRenderer.invoke('template:get'),
+  saveTemplate: (body) => ipcRenderer.invoke('template:save', body),
 });

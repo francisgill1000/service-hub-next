@@ -4,7 +4,7 @@ import React from "react";
 import { buildMonthMatrix, groupBookingsByDate, toISO, isSameDay, isSameMonth, format } from "./utils";
 
 const STATUS_DOT = {
-  Booked:    "bg-[#adc6ff]",
+  Booked:    "bg-blue-500",
   Completed: "bg-[#4edea3]",
   Cancelled: "bg-[#8b90a0]",
 };
@@ -45,7 +45,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
             <div
               key={iso + idx}
               onClick={handleCellClick}
-              className={`hidden md:flex flex-col min-h-[112px] border-b border-r border-[#414755]/10 p-2 cursor-pointer hover:bg-[#adc6ff]/5 transition-colors group/cell ${
+              className={`hidden md:flex flex-col min-h-[112px] border-b border-r border-[#414755]/10 p-2 cursor-pointer hover:bg-[#4b8eff]/5 transition-colors group/cell ${
                 inMonth ? "bg-[#19202a]" : "bg-[#151c25]/50"
               }`}
             >
@@ -53,7 +53,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                 <span
                   className={`inline-flex items-center justify-center w-6 h-6 rounded-lg text-[11px] font-black ${
                     isToday
-                      ? "bg-[#adc6ff] text-[#0d141d]"
+                      ? "bg-[#4b8eff] text-white"
                       : inMonth
                         ? "text-white"
                         : "text-[#8b90a0]"
@@ -67,7 +67,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                       {dayBookings.length}
                     </span>
                   )}
-                  <span className="material-symbols-outlined text-[14px] text-[#adc6ff] opacity-0 group-hover/cell:opacity-100 transition-opacity">add_circle</span>
+                  <span className="material-symbols-outlined text-[14px] text-[#4b8eff] opacity-0 group-hover/cell:opacity-100 transition-opacity">add_circle</span>
                 </div>
               </div>
 
@@ -79,7 +79,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                     <button
                       key={b.id}
                       onClick={(e) => { e.stopPropagation(); onBookingClick(b); }}
-                      className="flex items-center gap-1.5 px-1.5 py-1 rounded-lg bg-[#080f17] hover:bg-[#2e353f]/40 text-left transition-colors"
+                      className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg ${dotClass} hover:bg-[#2e353f]/40 text-left transition-colors`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}`} />
                       <span className="text-[10px] font-semibold text-[#dce3f0] truncate">
@@ -91,7 +91,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                 {overflow > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onMoreClick(day); }}
-                    className="text-[10px] font-bold text-[#adc6ff] text-left px-1.5"
+                    className="text-[10px] font-bold text-[#4b8eff] text-left px-1.5"
                   >
                     +{overflow} more
                   </button>
@@ -125,7 +125,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
               <span
                 className={`inline-flex items-center justify-center w-6 h-6 rounded-lg text-[11px] font-black mb-1 ${
                   isToday
-                    ? "bg-[#adc6ff] text-[#0d141d]"
+                    ? "bg-[#4b8eff] text-white"
                     : inMonth
                       ? "text-white"
                       : "text-[#8b90a0]"

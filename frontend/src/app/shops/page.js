@@ -118,25 +118,179 @@ export default function Main() {
   return (
     <>
     <LandingPage />
+    <div className="md:hidden">
+      {/* Services Horizontal List */}
+      {/* <section className="flex gap-2 px-8 py-4 mt-5 overflow-x-auto no-scrollbar">
+        {services.map((service) => {
+          const isActive = activeService === service.id;
+          const Icon = ICON_MAP[service.icon];
+
+
+          return (
+            <button
+              key={service.id}
+              onClick={() => setActiveService(isActive ? null : service.id)}
+              className={`
+                flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 
+                transition-all duration-300 cursor-pointer
+                ${isActive
+                  ? "bg-primary text-white shadow-lg scale-105"
+                  : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"
+                }
+              `}
+            >
+
+              {Icon && <Icon size={16} className={isActive ? "text-white" : "text-slate-500"} />}
+
+              <span className="text-xs font-bold uppercase tracking-wider">
+                {service.name}
+              </span>
+            </button>
+          );
+        })}
+      </section> */}
+
+      {/* Search Input Section */}
+      <section className="flex gap-2 px-4 py-4 overflow-x-auto no-scrollbar">
+        <div className="relative group w-full">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">
+            search
+          </span>
+          <input
+            className="w-full h-14 bg-card-dark border border-white/5 rounded-2xl pl-12 pr-4 text-white placeholder:text-muted-text focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+            placeholder="Search services or shops..."
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </section>
+
+      {/* Shops Main List */}
+      <main className="flex-1 px-4 space-y-4 pt-4 pb-28">
+        {shops.length > 0 ? (
+          shops.map((item) => (
+            <div
+              key={item.id}
+
+              className="flex items-center gap-4 rounded-2xl bg-card-dark p-4 border border-white/5 shadow-lg active:scale-[0.98] transition-all"
+            >
+              <div
+                className="w-24 h-24 shrink-0 bg-center bg-no-repeat bg-cover rounded-xl"
+                style={{ backgroundImage: `url(${item.logo})` }}
+                onClick={() => router.push(`/detail?id=${item.id}`)}
+              />
+
+              <div className="flex-1 flex flex-col justify-between min-h-[96px]">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${item.is_open ? 'text-green-500' : 'text-orange-500'}`}>
+                      {item.is_open ? "Open" : "Close"}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => toggleFavourite(item.id)}>
+                        <Heart
+                          className={`${item.is_favourite
+                            ? "text-primary fill-primary"
+                            : "text-slate-500 fill-none"
+                            }`}
+                        />
+                      </button>
+                      <span className="text-sm font-bold">{item.rating}</span>
+                    </div>
+                  </div>
+
+                  <h3 className="text-lg font-bold mt-0.5">{item.name}</h3>
+
+                  <div className="flex items-center gap-2 mt-1 text-slate-400">
+                    <span className="text-[11px] font-semibold">{item.location}</span>
+                    <span className="text-[11px] font-semibold">{item.distance}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex text-sm text-white/80 gap-1">
+                    {item.today_working_hours?.start_time} - {item.today_working_hours?.end_time}
+                  </div>
+                  <button
+
+                    className="bg-primary px-5 py-2 rounded-full text-xs font-bold uppercase shadow-lg shadow-primary/20">
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-10 text-slate-500">
+            No results found for "{searchTerm}"
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && shops.length > 0 && (
+          <div className="flex items-center justify-between gap-4 mt-8 pb-8">
+            <button
+              onClick={() => {
+                if (currentPage > 1) {
+                  const newPage = currentPage - 1;
+                  setCurrentPage(newPage);
+                  fetchShops(newPage);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              disabled={currentPage === 1 || loading}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/30 transition-all"
+            >
+              <span className="material-symbols-outlined text-lg">
+                chevron_left
+              </span>
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2 text-sm text-slate-400">
+              <span className="font-semibold text-white">{currentPage}</span>
+              <span>/</span>
+              <span>{totalPages}</span>
+            </div>
+
+            <button
+              onClick={() => {
+                if (currentPage < totalPages) {
+                  const newPage = currentPage + 1;
+                  setCurrentPage(newPage);
+                  fetchShops(newPage);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              disabled={currentPage === totalPages || loading}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/30 transition-all"
+            >
+              Next
+              <span className="material-symbols-outlined text-lg">
+                chevron_right
+              </span>
+            </button>
+          </div>
+        )}
+      </main>
+    </div>
     </>
   );
 }
 
 function LandingPage() {
   return (
-    <div className="md:block min-h-screen relative bg-[#0d141d] text-[#dce3f0] overflow-x-hidden selection:bg-[#4b8eff] selection:text-white">
-      {/* Background Effects */}
-      <div className="fixed inset-0 landing-bg-grid pointer-events-none opacity-40" />
+    <div className="hidden md:block min-h-screen relative bg-[#0d141d] text-[#dce3f0] overflow-x-hidden">
+      <div className="fixed inset-0 landing-bg-grid pointer-events-none" />
       <div className="fixed top-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#4b8eff]/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#4edea3]/5 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* Landing Nav */}
+      {/* Landing nav */}
       <nav className="fixed top-0 z-[100] w-full h-20 flex items-center justify-between px-6 md:px-12 bg-[#0d141d]/80 backdrop-blur-md border-b border-[#414755]/20">
         <div className="text-2xl font-black tracking-tighter text-[#4b8eff]">REZZY</div>
         <div className="hidden md:flex items-center gap-8">
           <a href="#network" className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0] hover:text-white transition-colors">The Network</a>
-          <a href="#workflow" className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0] hover:text-white transition-colors">The Logic</a>
-          <a href="#tech" className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0] hover:text-white transition-colors">Protocol</a>
+          <a href="#tech" className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0] hover:text-white transition-colors">The Protocol</a>
           <a href="/login" className="h-10 px-6 rounded-xl bg-[#4b8eff] text-white font-black text-xs uppercase tracking-widest hover:bg-[#4b8eff]/90 transition-all flex items-center">
             Access Now
           </a>
@@ -145,11 +299,8 @@ function LandingPage() {
 
       <main className="relative z-10 pt-32">
 
-        {/* Hero Section */}
+        {/* Hero */}
         <section className="max-w-7xl mx-auto px-6 text-center mb-32">
-          <div className="inline-block px-4 py-1.5 mb-8 rounded-full border border-[#4b8eff]/30 bg-[#4b8eff]/5">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4b8eff]">v3.0 protocol live across uae</p>
-          </div>
           <h1 className="text-6xl md:text-[120px] font-black tracking-tighter text-white leading-[0.85] mb-12">
             SYNCING THE <br />
             <span className="text-transparent" style={{ WebkitTextStroke: "1.5px #4b8eff" }}>EMIRATES.</span>
@@ -159,42 +310,24 @@ function LandingPage() {
           </p>
         </section>
 
-        {/* Metrics Strip */}
-        <section className="border-y border-[#414755]/10 bg-[#0d141d] mb-40">
-          <div className="max-w-7xl mx-auto px-6 py-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { label: "Daily Syncs", value: "12.4k+" },
-                { label: "Avg Latency", value: "140ms" },
-                { label: "Active Partners", value: "850+" },
-                { label: "Success Rate", value: "99.9%" }
-              ].map((stat, i) => (
-                <div key={i} className="text-center md:text-left">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4b8eff] mb-2">{stat.label}</p>
-                  <p className="text-3xl md:text-4xl font-black text-white tracking-tighter">{stat.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Network Grid */}
+        {/* Network */}
         <section id="network" className="max-w-7xl mx-auto px-6 mb-40">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="lg:col-span-2 landing-card p-10 rounded-3xl relative overflow-hidden group border border-[#414755]/20 bg-[#151c25]/30">
-              <div className="absolute -right-4 -bottom-4 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
+
+            <div className="lg:col-span-2 landing-card p-10 rounded-3xl relative overflow-hidden group">
+              <div className="absolute -right-4 -bottom-4 opacity-[0.03] pointer-events-none">
                 <span className="material-symbols-outlined text-[200px] text-[#4b8eff]">hub</span>
               </div>
               <div className="flex items-center gap-4 mb-8">
-                <div className="size-3 rounded-full bg-[#4b8eff] animate-pulse" />
+                <div className="size-3 rounded-full bg-[#4b8eff] landing-pulse-dot" />
                 <p className="text-[10px] font-black uppercase tracking-widest text-[#4b8eff]">Primary Cluster</p>
               </div>
               <h3 className="text-4xl font-black text-white mb-4">Dubai & <br />Abu Dhabi</h3>
               <p className="text-[#8b90a0] font-semibold">Instant confirmation active across the capital and business hubs.</p>
             </div>
 
-            <div className="landing-card p-10 rounded-3xl relative overflow-hidden border border-[#414755]/20 bg-[#151c25]/30 group">
-              <div className="absolute -right-4 -bottom-4 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
+            <div className="landing-card p-10 rounded-3xl relative overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 opacity-[0.03] pointer-events-none">
                 <span className="material-symbols-outlined text-[150px] text-[#4edea3]">museum</span>
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest text-[#4edea3] mb-8">Legacy Center</p>
@@ -202,43 +335,21 @@ function LandingPage() {
               <p className="text-[#8b90a0] font-semibold text-sm">Deep cultural integration with 100+ verified spots.</p>
             </div>
 
-            <div className="landing-card p-10 rounded-3xl relative overflow-hidden border border-[#414755]/20 bg-[#151c25]/30 group">
+            <div className="landing-card p-10 rounded-3xl relative overflow-hidden">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#ffb690] mb-8">Expansion</p>
               <h3 className="text-3xl font-black text-white mb-4">Northern <br />States</h3>
               <div className="flex flex-wrap gap-2 mt-6">
-                {['AJM', 'RAK', 'UAQ', 'FUJ'].map((state) => (
-                  <span key={state} className="px-2 py-1 rounded-md bg-[#0d141d] text-[#8b90a0] text-[9px] font-black border border-[#414755]/40 uppercase">
-                    {state}
-                  </span>
-                ))}
+                <span className="px-2 py-1 rounded-md bg-[#19202a] text-[#8b90a0] text-[9px] font-black border border-[#414755]/40">AJM</span>
+                <span className="px-2 py-1 rounded-md bg-[#19202a] text-[#8b90a0] text-[9px] font-black border border-[#414755]/40">RAK</span>
+                <span className="px-2 py-1 rounded-md bg-[#19202a] text-[#8b90a0] text-[9px] font-black border border-[#414755]/40">UAQ</span>
+                <span className="px-2 py-1 rounded-md bg-[#19202a] text-[#8b90a0] text-[9px] font-black border border-[#414755]/40">FUJ</span>
               </div>
             </div>
+
           </div>
         </section>
 
-        {/* Workflow / "The Logic" */}
-        <section id="workflow" className="max-w-7xl mx-auto px-6 mb-40">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-            <h2 className="text-5xl font-black text-white tracking-tighter">The Three-Way <br /> Handshake.</h2>
-            <p className="text-[#8b90a0] font-semibold max-w-md">Our proprietary protocol eliminates the middleman, connecting your request directly to the venue's local engine.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              { step: "01", title: "Initialize", desc: "User triggers a sync request through our encrypted API gateway with sub-ms verification." },
-              { step: "02", title: "Protocol Match", desc: "The Rezzy engine finds the lowest-latency path to the provider's local dashboard." },
-              { step: "03", title: "Instant Confirm", desc: "The booking is written to the secure ledger and confirmed in under 300ms total." }
-            ].map((item, i) => (
-              <div key={i} className="relative p-8 rounded-3xl border border-[#414755]/20 bg-[#151c25]/30 group hover:border-[#4b8eff]/40 transition-colors">
-                <span className="text-6xl font-black text-[#4b8eff]/5 absolute top-4 right-8 group-hover:text-[#4b8eff]/10 transition-colors">{item.step}</span>
-                <h4 className="text-xl font-black text-white mb-4 uppercase tracking-tight">{item.title}</h4>
-                <p className="text-sm text-[#8b90a0] font-medium leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Tech / Protocol Section */}
+        {/* Tech / Protocol */}
         <section id="tech" className="max-w-7xl mx-auto px-6 mb-40">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-12">
@@ -267,18 +378,15 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* Visual Phone Mockup */}
-            <div className="p-4 rounded-[40px] rotate-2 shadow-2xl bg-[#151c25]/50 border border-[#414755]/40 backdrop-blur-sm">
-              <div className="bg-[#080f17] rounded-[32px] p-8 aspect-[9/12] border border-[#414755]/20 overflow-hidden relative">
+            <div className="landing-card p-4 rounded-[40px] rotate-2 shadow-2xl" style={{ borderColor: "rgba(65,71,85,0.4)" }}>
+              <div className="bg-[#080f17] rounded-[32px] p-8 aspect-[9/12] border border-[#414755]/20">
                 <div className="w-12 h-1 bg-[#414755]/40 mx-auto rounded-full mb-12" />
                 <div className="space-y-6">
-                  <div className="h-4 w-1/3 bg-[#19202a] rounded-full animate-pulse" />
-                  <div className="h-12 w-full bg-[#4b8eff]/10 rounded-2xl border border-[#4b8eff]/20 flex items-center px-4">
-                    <div className="h-2 w-2/3 bg-[#4b8eff]/40 rounded-full" />
-                  </div>
+                  <div className="h-4 w-1/3 bg-[#19202a] rounded-full" />
+                  <div className="h-12 w-full bg-[#4b8eff]/10 rounded-2xl border border-[#4b8eff]/20" />
                   <div className="grid grid-cols-4 gap-2">
                     <div className="h-10 bg-[#19202a] rounded-xl" />
-                    <div className="h-10 bg-[#4b8eff] rounded-xl shadow-[0_0_15px_rgba(75,142,255,0.4)]" />
+                    <div className="h-10 bg-[#4b8eff] rounded-xl" />
                     <div className="h-10 bg-[#19202a] rounded-xl" />
                     <div className="h-10 bg-[#19202a] rounded-xl" />
                   </div>
@@ -292,44 +400,12 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Trust Section / Partner Bar */}
-        <section className="max-w-7xl mx-auto px-6 mb-40 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#414755] mb-12">Powering the UAE's Premier Groups</p>
-          <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-            {['EMAAR', 'MERAAS', 'JUMEIRAH', 'AL-FUTTAIM', 'AL-DAR'].map((brand) => (
-              <span key={brand} className="text-2xl font-black tracking-tighter text-white">{brand}</span>
-            ))}
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="max-w-3xl mx-auto px-6 mb-40">
-          <h2 className="text-3xl font-black text-white mb-12 text-center tracking-tight uppercase">System Intel</h2>
-          <div className="space-y-4">
-            {[
-              { q: "Is this a blockchain protocol?", a: "No. Rezzy uses high-speed WebSocket bridges and edge computing to ensure speed that legacy blockchain cannot match." },
-              { q: "How do I become a Verified Provider?", a: "Applications are open for venues in the UAE with an annual volume exceeding 10,000 bookings. Contact our sync team." },
-              { q: "Can I integrate Rezzy into my own app?", a: "Yes, our SDK allows you to embed the Sync engine directly into your existing infrastructure via private API keys." }
-            ].map((faq, i) => (
-              <details key={i} className="group border border-[#414755]/20 rounded-2xl bg-[#151c25]/20 transition-all overflow-hidden">
-                <summary className="list-none p-6 cursor-pointer flex justify-between items-center hover:bg-[#4b8eff]/5">
-                  <span className="font-black text-xs uppercase tracking-widest text-white">{faq.q}</span>
-                  <span className="text-[#4b8eff] transition-transform group-open:rotate-45 font-bold text-xl">+</span>
-                </summary>
-                <div className="px-6 pb-6 text-sm text-[#8b90a0] font-medium leading-relaxed">
-                  {faq.a}
-                </div>
-              </details>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA Section */}
+        {/* CTA */}
         <section className="max-w-5xl mx-auto px-6 py-40">
-          <div className="p-12 md:p-24 rounded-[48px] text-center relative overflow-hidden border border-[#4b8eff]/20 bg-[#4b8eff]/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#4b8eff]/10 to-transparent pointer-events-none" />
+          <div className="landing-card p-12 md:p-24 rounded-[48px] text-center relative overflow-hidden" style={{ borderColor: "rgba(75,142,255,0.2)" }}>
+            <div className="absolute inset-0 bg-[#4b8eff]/5 pointer-events-none" />
             <h2 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tighter">Ready to experience <br /> the Sync?</h2>
-            <a href="/login" className="inline-flex items-center justify-center h-16 px-12 rounded-2xl bg-[#4b8eff] text-white font-black text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#4b8eff]/20 active:scale-95">
+            <a href="/login" className="inline-flex items-center justify-center h-16 px-12 rounded-2xl bg-[#4b8eff] text-white font-black text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#4b8eff]/20">
               Access Now
             </a>
           </div>
@@ -338,7 +414,7 @@ function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-20 border-t border-[#414755]/10 relative z-10 bg-[#080f17]/50">
+      <footer className="py-20 border-t border-[#414755]/10 relative z-10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-10">
           <div className="text-xl font-black text-white">REZZY<span className="text-[#4b8eff]">.</span></div>
           <div className="flex gap-10 text-[10px] font-black uppercase tracking-widest text-[#414755]">

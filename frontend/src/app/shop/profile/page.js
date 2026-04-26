@@ -41,7 +41,7 @@ export default function ShopProfile() {
         });
     }, [shop]);
 
-    const qrTarget = shop?.id ? `https://eloquent-services-hub.netlify.app/detail?id=${shop.id}` : '';
+    const qrTarget = shop?.id ? `https://eloquentservice.com/detail?id=${shop.id}` : '';
 
     const googleQrUrl = qrTarget
         ? `https://chart.googleapis.com/chart?cht=qr&chs=600x600&chl=${encodeURIComponent(qrTarget)}`
@@ -309,8 +309,8 @@ export default function ShopProfile() {
                             </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                        <div className="absolute top-4 right-4 bg-[#4b8eff] hover:bg-[#adc6ff] p-2.5 rounded-xl shadow-lg transition-all">
-                            <Camera size={18} className="text-[#002e69]" />
+                        <div className="absolute top-4 right-4 bg-[#4b8eff] hover:bg-[#4b8eff] p-2.5 rounded-xl shadow-lg transition-all">
+                            <Camera size={18} className="text-white" />
                         </div>
                         <input type="file" accept="image/*" className="hidden"
                             onChange={async (e) => {
@@ -328,7 +328,7 @@ export default function ShopProfile() {
                             <img src={logo} alt={`${shop.name || 'shop'} logo`} className="absolute inset-0 w-full h-full object-cover rounded-full" />
                         ) : (
                             <div className="absolute inset-0 rounded-full bg-[#4b8eff]/20 flex items-center justify-center">
-                                <span className="text-[10px] text-[#adc6ff] font-bold uppercase tracking-wider">Logo</span>
+                                <span className="text-[10px] text-[#4b8eff] font-bold uppercase tracking-wider">Logo</span>
                             </div>
                         )}
                         <div className="absolute bottom-1 right-1 z-40 bg-[#4b8eff] p-1.5 rounded-full shadow-lg border-2 border-[#0d141d]">
@@ -356,7 +356,7 @@ export default function ShopProfile() {
                                 <input
                                     value={form.name}
                                     onChange={(e) => handleChange('name', e.target.value)}
-                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
+                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
                                     placeholder="Enter business name"
                                 />
                             </div>
@@ -366,16 +366,15 @@ export default function ShopProfile() {
                                 <input
                                     value={form.location}
                                     onChange={(e) => handleChange('location', e.target.value || "")}
-                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
+                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
                                     placeholder="Business address or area"
                                 />
                                 <button
                                     type="button"
                                     onClick={handleUseCurrentLocation}
                                     disabled={isLocating}
-                                    className="mt-2 flex items-center gap-2 w-full bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 py-2.5 px-4 rounded-xl text-sm font-semibold text-[#c1c6d7] disabled:opacity-50 transition-all"
+                                    className="mt-2 flex items-center justify-center w-full bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 py-2.5 px-4 rounded-xl text-sm font-semibold text-white disabled:opacity-50 transition-all"
                                 >
-                                    <span className="material-symbols-outlined text-[18px] text-[#adc6ff]">my_location</span>
                                     {isLocating ? 'Fetching location...' : 'Use Current Location'}
                                 </button>
                                 {form.lat !== '' && form.lon !== '' && (
@@ -396,16 +395,14 @@ export default function ShopProfile() {
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving}
-                                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black py-3 rounded-xl disabled:opacity-60 transition-all shadow-lg shadow-[#adc6ff]/10 text-sm uppercase tracking-widest"
+                                className="flex-1 flex items-center justify-center bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white font-black py-3 rounded-xl disabled:opacity-60 transition-all text-sm uppercase tracking-widest"
                             >
-                                <span className="material-symbols-outlined text-[18px]">save</span>
                                 {isSaving ? 'Saving...' : 'Save Changes'}
                             </button>
                             <button
                                 onClick={() => router.push('/shop/dashboard')}
-                                className="flex-1 flex items-center justify-center gap-2 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-[#c1c6d7] font-semibold py-3 rounded-xl transition-all text-sm"
+                                className="flex-1 flex items-center justify-center bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-white font-semibold py-3 rounded-xl transition-all text-sm"
                             >
-                                <span className="material-symbols-outlined text-[18px]">arrow_back</span>
                                 Back to Dashboard
                             </button>
                         </div>
@@ -418,8 +415,8 @@ export default function ShopProfile() {
                             <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">Shop Code</p>
                             <div className="flex items-center justify-between">
                                 <span className="font-mono font-black text-2xl text-white tracking-widest">{shop.shop_code || '—'}</span>
-                                <div className="w-10 h-10 rounded-xl bg-[#adc6ff]/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[20px] text-[#adc6ff]">tag</span>
+                                <div className="w-10 h-10 rounded-xl bg-[#4b8eff]/10 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-[#4b8eff]">tag</span>
                                 </div>
                             </div>
                         </div>
@@ -429,8 +426,8 @@ export default function ShopProfile() {
                             <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">Access PIN</p>
                             <div className="flex items-center justify-between">
                                 <span className="font-mono font-black text-2xl text-white tracking-widest">{shop.pin || '—'}</span>
-                                <div className="w-10 h-10 rounded-xl bg-[#adc6ff]/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[20px] text-[#adc6ff]">pin</span>
+                                <div className="w-10 h-10 rounded-xl bg-[#4b8eff]/10 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-[#4b8eff]">pin</span>
                                 </div>
                             </div>
                         </div>
@@ -444,16 +441,14 @@ export default function ShopProfile() {
                             <div className="w-full flex gap-2">
                                 <button
                                     onClick={downloadQr}
-                                    className="flex-1 flex items-center justify-center gap-2 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-[#c1c6d7] text-xs font-bold py-2.5 rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
-                                    <span className="material-symbols-outlined text-[16px] text-[#adc6ff]">download</span>
                                     Download
                                 </button>
                                 <button
                                     onClick={printQr}
-                                    className="flex-1 flex items-center justify-center gap-2 bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-[#c1c6d7] text-xs font-bold py-2.5 rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
-                                    <span className="material-symbols-outlined text-[16px] text-[#adc6ff]">print</span>
                                     Print
                                 </button>
                             </div>

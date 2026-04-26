@@ -12,7 +12,7 @@ const ROW_HEIGHT = 64;
 const TIME_COL_W = 60;
 
 const STATUS_BG = {
-  Booked:    "bg-[#adc6ff]/20 border-[#adc6ff]/40 text-[#adc6ff]",
+  Booked:    "bg-[#4b8eff]/20 border-[#4b8eff]/40 text-[#4b8eff]",
   Completed: "bg-[#4edea3]/20 border-[#4edea3]/40 text-[#4edea3]",
   Cancelled: "bg-[#414755]/40 border-[#414755]/40 text-[#8b90a0]",
 };
@@ -39,7 +39,7 @@ export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotCl
             </div>
             <button
               onClick={() => onSlotClick({ date: toISO(cursorDate), time: `${String(h).padStart(2, "0")}:00` })}
-              className="border-l border-b border-[#414755]/10 hover:bg-[#adc6ff]/5 transition-colors"
+              className="border-l border-b border-[#414755]/10 hover:bg-[#4b8eff]/5 transition-colors"
               aria-label={`Create booking at ${h}:00`}
             />
           </React.Fragment>

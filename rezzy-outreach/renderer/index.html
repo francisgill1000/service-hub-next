@@ -13,6 +13,7 @@
     <script>
         tailwind.config = { darkMode: 'class' };
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         ::-webkit-scrollbar {
             width: 6px;
@@ -105,6 +106,84 @@
         .dark .dropdown-item.is-selected .check {
             color: #60a5fa;
         }
+
+        /* --- SweetAlert2 theme overrides --- */
+        .rezzy-swal {
+            border-radius: 0.875rem !important;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            padding: 1.25rem !important;
+        }
+        .dark .rezzy-swal {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+            border-color: #334155;
+        }
+        .rezzy-swal .swal2-title {
+            font-weight: 800 !important;
+            font-size: 1rem !important;
+            color: inherit !important;
+            padding: 0.25rem 0 !important;
+        }
+        .rezzy-swal .swal2-html-container {
+            font-size: 0.875rem !important;
+            color: inherit !important;
+            opacity: 0.85;
+        }
+        .rezzy-swal .swal2-confirm {
+            border-radius: 0.625rem !important;
+            padding: 0.5rem 1.25rem !important;
+            font-weight: 700 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: #2563eb !important;
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.4) !important;
+        }
+        .rezzy-swal .swal2-confirm:focus {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+        }
+        .rezzy-swal .swal2-cancel {
+            border-radius: 0.625rem !important;
+            padding: 0.5rem 1.25rem !important;
+            font-weight: 700 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: transparent !important;
+            color: #475569 !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+        .dark .rezzy-swal .swal2-cancel {
+            color: #cbd5e1 !important;
+            border-color: #334155 !important;
+        }
+        .rezzy-swal .swal2-cancel:hover {
+            background: #f1f5f9 !important;
+        }
+        .dark .rezzy-swal .swal2-cancel:hover {
+            background: #334155 !important;
+        }
+        .rezzy-swal .swal2-actions {
+            gap: 0.5rem;
+        }
+        .rezzy-toast {
+            border-radius: 0.75rem !important;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 12px 28px -8px rgba(15, 23, 42, 0.18) !important;
+            font-family: inherit;
+        }
+        .dark .rezzy-toast {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+            border-color: #334155;
+            box-shadow: 0 12px 28px -8px rgba(0,0,0,0.6) !important;
+        }
+        .rezzy-toast .swal2-title {
+            font-size: 0.85rem !important;
+            font-weight: 700 !important;
+            color: inherit !important;
+        }
     </style>
 </head>
 
@@ -115,44 +194,72 @@
         class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center shadow-sm sticky top-0 z-20">
         <div class="flex items-center gap-4">
             <div>
-                <h1 class="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Rezzy <span
-                        class="text-blue-600 dark:text-blue-400">Outreach</span></h1>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.2em]">Sharjah Salon Campaign</p>
+                <h1 class="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Eloquent<span
+                        class="text-blue-600 dark:text-blue-400">CRM</span></h1>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.2em]">Your Personal Sales Assistant</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-8">
-            <div class="flex flex-col items-end">
-                <div class="flex items-center gap-3 mb-1">
-                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">Daily Limit</span>
-                    <span class="text-sm font-black text-slate-700 dark:text-slate-200"><span id="count">0</span> / 35</span>
-                </div>
-                <div class="w-32 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
-                    <div id="progress-bar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%">
+        <div class="flex items-center gap-6">
+            <!-- Stats group -->
+            <div class="flex items-center gap-5">
+                <div class="flex flex-col items-end">
+                    <div class="flex items-center gap-3 mb-1">
+                        <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">Daily Limit</span>
+                        <span class="text-sm font-black text-slate-700 dark:text-slate-200"><span id="count">0</span> / 35</span>
                     </div>
+                    <div class="w-32 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
+                        <div id="progress-bar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="h-10 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
+
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">Database Size</span>
+                    <span id="total-leads" class="text-sm font-black text-slate-700 dark:text-slate-200">0 Leads</span>
                 </div>
             </div>
 
             <div class="h-10 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
-            <div class="flex flex-col">
-                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">Database Size</span>
-                <span id="total-leads" class="text-sm font-black text-slate-700 dark:text-slate-200">0 Leads</span>
+
+            <!-- Utility icons -->
+            <div class="flex items-center gap-2">
+                <button id="theme-toggle" title="Toggle theme"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
+                    <svg class="w-4 h-4 dark:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clip-rule="evenodd" />
+                    </svg>
+                    <svg class="w-4 h-4 hidden dark:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+                    </svg>
+                </button>
+
+                <button id="sample-csv-btn" title="Download sample CSV"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v8.69l1.97-1.97a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0l-3.25-3.25a.75.75 0 111.06-1.06l1.97 1.97V3.75A.75.75 0 0110 3zM3.75 14.5a.75.75 0 01.75.75v.5a.75.75 0 00.75.75h9.5a.75.75 0 00.75-.75v-.5a.75.75 0 011.5 0v.5A2.25 2.25 0 0114.75 18h-9.5A2.25 2.25 0 013 15.75v-.5a.75.75 0 01.75-.75z" clip-rule="evenodd"/></svg>
+                </button>
+
+                <button id="template-btn" title="Edit WhatsApp message template"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M3.43 2.524A41.29 41.29 0 0110 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 01-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 01-1.33 0l-1.713-3.293a.783.783 0 00-.642-.413 41.108 41.108 0 01-3.55-.414C2.993 13.245 2 11.986 2 10.574V5.426c0-1.413.993-2.67 2.43-2.902zM5 7.5a.75.75 0 01.75-.75h6.5a.75.75 0 010 1.5h-6.5A.75.75 0 015 7.5zm.75 2.25a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5z" clip-rule="evenodd"/></svg>
+                </button>
             </div>
 
-            <button id="theme-toggle" title="Toggle theme"
-                class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
-                <svg class="w-4 h-4 dark:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clip-rule="evenodd" />
-                </svg>
-                <svg class="w-4 h-4 hidden dark:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
-                </svg>
-            </button>
+            <!-- Primary actions -->
+            <div class="flex items-center gap-2">
+                <button id="import-btn"
+                    class="inline-flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-5 py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 011.06 0l3.25 3.25a.75.75 0 11-1.06 1.06l-1.97-1.97v6.69a.75.75 0 01-1.5 0V8.81L7.28 10.78a.75.75 0 01-1.06-1.06l3.25-3.25z" clip-rule="evenodd"/><path d="M3.75 4.5a.75.75 0 01.75-.75h11a.75.75 0 010 1.5h-11a.75.75 0 01-.75-.75z"/></svg>
+                    IMPORT CSV
+                </button>
 
-            <button id="import-btn"
-                class="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 disabled:bg-slate-400 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95 shadow-lg shadow-slate-200 dark:shadow-blue-900/30">
-                IMPORT CSV
-            </button>
+                <button id="add-lead-btn"
+                    class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95 shadow-lg shadow-blue-500/20 dark:shadow-blue-900/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/></svg>
+                    ADD LEAD
+                </button>
+            </div>
         </div>
     </header>
 
@@ -170,7 +277,7 @@
                     class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
             </div>
 
-            <button type="button" id="filter-trigger"
+            <button type="button" id="filter-trigger" data-dropdown-trigger
                 class="inline-flex items-center justify-between gap-3 min-w-[180px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-lg pl-4 pr-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer transition-colors">
                 <span id="filter-label">ALL STATUSES</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -197,6 +304,8 @@
                         <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">#</th>
                         <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Salon Name</th>
                         <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Contact</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Location</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Created</th>
                         <th class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Status</th>
                         <th class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Action</th>
                     </tr>
@@ -216,6 +325,75 @@
                 class="px-3 py-1 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed">Next</button>
         </div>
     </footer>
+
+    <!-- Lead Side Panel -->
+    <div id="panel-backdrop"
+        class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 z-30"></div>
+
+    <aside id="lead-panel" data-mode="create"
+        class="fixed top-0 right-0 h-full w-[420px] max-w-[95vw] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl translate-x-full transition-transform duration-200 ease-out z-40 flex flex-col">
+        <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div>
+                <h2 id="panel-title" class="text-base font-black text-slate-900 dark:text-slate-100 tracking-tight">Add New Lead</h2>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.2em] mt-0.5">Manual entry</p>
+            </div>
+            <button id="panel-close" type="button" title="Close (Esc)"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>
+            </button>
+        </div>
+
+        <form id="lead-form" class="flex-1 overflow-y-auto px-6 py-5 space-y-4" novalidate>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Salon Name <span class="text-red-500">*</span></label>
+                <input name="name" type="text" autocomplete="off" required
+                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    placeholder="e.g. AL BAHAR AL HADI Ladies Salon">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Area <span class="text-red-500">*</span></label>
+                <input name="area" type="text" autocomplete="off" required
+                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    placeholder="e.g. Al Nahda">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Phone <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500 text-sm font-mono pointer-events-none">+971</span>
+                    <input name="phone" type="tel" autocomplete="off" required
+                        class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg pl-14 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        placeholder="50 123 4567">
+                </div>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Accepts 05X..., 5X..., or 9715X... — auto-normalized.</p>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Address <span class="text-slate-400 font-normal normal-case tracking-normal">(optional)</span></label>
+                <textarea name="address" rows="2"
+                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+                    placeholder="Building, street, landmark..."></textarea>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Google Maps URL <span class="text-slate-400 font-normal normal-case tracking-normal">(optional)</span></label>
+                <input name="mapUrl" type="url" autocomplete="off"
+                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    placeholder="https://maps.google.com/...">
+            </div>
+
+            <div id="form-error"
+                class="hidden text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg px-3 py-2"></div>
+        </form>
+
+        <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50/50 dark:bg-slate-900/60">
+            <button type="button" id="panel-cancel"
+                class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">CANCEL</button>
+            <button type="submit" form="lead-form" id="panel-save"
+                class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 disabled:bg-slate-400 rounded-lg transition-colors active:scale-95 shadow-md shadow-blue-200 dark:shadow-blue-900/30">SAVE LEAD</button>
+        </div>
+    </aside>
 
     <script src="renderer.js"></script>
 </body>

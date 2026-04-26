@@ -1,7 +1,7 @@
 {
-  "name": "rezzy-outreach",
+  "name": "eloquent-crm",
   "version": "1.0.0",
-  "description": "WhatsApp Outreach Tool for Sharjah Salons",
+  "description": "Personal CRM application built with Electron and Better-SQLite3",
   "main": "main.js",
   "author": "Francis",
   "scripts": {
@@ -9,8 +9,8 @@
     "build": "electron-builder"
   },
   "build": {
-    "appId": "com.rezzy.outreach",
-    "productName": "Rezzy Outreach",
+    "appId": "com.eloquent.crm",
+    "productName": "Eloquent CRM",
     "copyright": "Copyright © 2026 Francis",
     "directories": {
       "output": "dist"
@@ -23,7 +23,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Rezzy Outreach"
+      "shortcutName": "Eloquent CRM"
     },
     "npmRebuild": true,
     "asar": true,

@@ -6,6 +6,31 @@ const WA_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
 
 const CHEVRON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.4a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>`;
 
+// --- Notifications (SweetAlert2, theme-matched) ---
+function toast(icon, title) {
+    return Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon,
+        title,
+        showConfirmButton: false,
+        timer: 2400,
+        timerProgressBar: true,
+        customClass: { popup: 'rezzy-toast' },
+    });
+}
+
+function notifyModal(icon, title, text) {
+    return Swal.fire({
+        icon,
+        title,
+        text,
+        confirmButtonText: 'OK',
+        buttonsStyling: false,
+        customClass: { popup: 'rezzy-swal' },
+    });
+}
+
 // --- Theme Toggle ---
 document.getElementById('theme-toggle').addEventListener('click', () => {
     const isDark = document.documentElement.classList.toggle('dark');
@@ -23,7 +48,7 @@ function closeMenu() {
 }
 
 function openDropdown(triggerEl, items, currentValue, onSelect) {
-    if (activeMenu && activeMenu.dataset.trigger === triggerEl.dataset.dropdownId) {
+    if (activeMenu && activeMenu._trigger === triggerEl) {
         closeMenu();
         return;
     }
@@ -31,7 +56,7 @@ function openDropdown(triggerEl, items, currentValue, onSelect) {
 
     const menu = document.createElement('div');
     menu.className = 'dropdown-menu';
-    menu.dataset.trigger = triggerEl.dataset.dropdownId || '';
+    menu._trigger = triggerEl;
 
     const checkSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="check w-3.5 h-3.5"><path fill-rule="evenodd" d="M16.704 5.296a1 1 0 010 1.408l-7.997 8a1 1 0 01-1.414 0l-3.997-4a1 1 0 011.414-1.408L8 12.582l7.29-7.286a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>`;
 
@@ -109,6 +134,127 @@ window.openStatusDropdown = (trigger, id, current) => {
     openDropdown(trigger, STATUS_ITEMS, current, (val) => window.updateLeadStatus(id, val));
 };
 
+// --- Lead Side Panel ---
+const panel = document.getElementById('lead-panel');
+const backdrop = document.getElementById('panel-backdrop');
+const leadForm = document.getElementById('lead-form');
+const formError = document.getElementById('form-error');
+const saveBtn = document.getElementById('panel-save');
+
+function openPanel(mode = 'create', prefill = null) {
+    panel.dataset.mode = mode;
+    document.getElementById('panel-title').textContent =
+        mode === 'edit' ? 'Edit Lead' : 'Add New Lead';
+    leadForm.reset();
+    formError.classList.add('hidden');
+    formError.textContent = '';
+    if (prefill) {
+        for (const [key, val] of Object.entries(prefill)) {
+            const field = leadForm.elements[key];
+            if (field) field.value = val ?? '';
+        }
+    }
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    panel.classList.remove('translate-x-full');
+    setTimeout(() => leadForm.elements.name.focus(), 220);
+}
+
+function closePanel() {
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    panel.classList.add('translate-x-full');
+}
+
+document.getElementById('add-lead-btn').addEventListener('click', () => openPanel('create'));
+document.getElementById('panel-close').addEventListener('click', closePanel);
+document.getElementById('panel-cancel').addEventListener('click', closePanel);
+backdrop.addEventListener('click', closePanel);
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.classList.contains('translate-x-full')) closePanel();
+});
+
+leadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formError.classList.add('hidden');
+
+    const data = Object.fromEntries(new FormData(leadForm).entries());
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'SAVING...';
+
+    try {
+        const result = await window.api.createLead(data);
+        if (result?.ok) {
+            closePanel();
+            await refresh();
+        } else {
+            formError.textContent = result?.error || 'Could not save lead.';
+            formError.classList.remove('hidden');
+        }
+    } catch (err) {
+        formError.textContent = err.message || 'Unexpected error.';
+        formError.classList.remove('hidden');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'SAVE LEAD';
+    }
+});
+
+window.openMap = (url) => window.api.openUrl(url);
+
+function mapsLinkFor(lead) {
+    if (lead.map_url && /^https?:\/\//i.test(lead.map_url)) return lead.map_url;
+    const parts = [lead.name, lead.area, 'Sharjah', 'UAE'].filter(Boolean);
+    if (!parts.length) return '';
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts.join(', '))}`;
+}
+
+document.getElementById('sample-csv-btn').addEventListener('click', async () => {
+    try {
+        const ok = await window.api.downloadSampleCsv();
+        if (ok) toast('success', 'Sample CSV saved');
+    } catch (err) {
+        notifyModal('error', 'Could not save', err.message || 'Unexpected error.');
+    }
+});
+
+// --- Date formatters ---
+function parseSqliteDate(s) {
+    // SQLite stores "YYYY-MM-DD HH:MM:SS"; convert to ISO for reliable parsing
+    return s ? new Date(s.replace(' ', 'T')) : null;
+}
+
+function formatRelative(s) {
+    const d = parseSqliteDate(s);
+    if (!d || isNaN(d)) return '—';
+    const sec = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (sec < 45) return 'just now';
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h ago`;
+    const day = Math.floor(hr / 24);
+    if (day < 7) return `${day}d ago`;
+    if (day < 30) return `${Math.floor(day / 7)}w ago`;
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function escapeHtml(s) {
+    return String(s ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatAbsolute(s) {
+    const d = parseSqliteDate(s);
+    if (!d || isNaN(d)) return '';
+    return d.toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
+}
+
 // --- Event Listeners for Real-Time Search & Filter ---
 document.getElementById('search-input').addEventListener('input', () => {
     currentPage = 1; // Always reset to page 1 when searching
@@ -120,13 +266,78 @@ document.getElementById('filter-select').addEventListener('change', () => {
     renderTable();
 });
 
-// --- WhatsApp Action ---
-window.sendWA = (phone, name, id) => {
-    const msg = `Hi ${name}, I saw your salon and wanted to reach out from Rezzy!`;
-    window.api.openWA({ phone, message: msg, leadId: id });
-    // Small delay to let the IPC message clear before refreshing UI
+// --- WhatsApp Template + Send ---
+const DEFAULT_TEMPLATE = 'Hi {name}, I saw your salon in {area} and wanted to reach out from Rezzy!';
+
+function fillTemplate(tpl, lead) {
+    return String(tpl || '')
+        .replace(/\{name\}/gi, lead.name || '')
+        .replace(/\{shop_name\}/gi, lead.name || '')
+        .replace(/\{area\}/gi, lead.area || '')
+        .replace(/\{address\}/gi, lead.address || '')
+        .replace(/\{phone\}/gi, lead.phone || '');
+}
+
+window.sendWA = async (phone, name, id) => {
+    const lead = allLeads.find(l => l.id === id) || { name, phone };
+    let tpl = '';
+    try { tpl = await window.api.getTemplate(); } catch (_) {}
+    const message = fillTemplate(tpl || DEFAULT_TEMPLATE, lead);
+
+    let copied = false;
+    try {
+        await navigator.clipboard.writeText(message);
+        copied = true;
+    } catch (_) {}
+
+    window.api.openWA({ phone, message, leadId: id });
+    toast(copied ? 'success' : 'warning',
+        copied ? 'Message copied — paste in WhatsApp' : 'Opened WhatsApp (clipboard blocked)');
     setTimeout(refresh, 1000);
 };
+
+document.getElementById('template-btn').addEventListener('click', async () => {
+    let current = '';
+    try { current = await window.api.getTemplate(); } catch (_) {}
+    if (!current) current = DEFAULT_TEMPLATE;
+
+    const result = await Swal.fire({
+        title: 'WhatsApp Message Template',
+        html: `
+            <div class="text-left">
+                <textarea id="tpl-body" rows="6"
+                    class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none font-mono"
+                    placeholder="Hi {name}, ...">${escapeHtml(current)}</textarea>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                    Placeholders: <code class="font-mono text-blue-600 dark:text-blue-400">{name}</code>
+                    <code class="font-mono text-blue-600 dark:text-blue-400">{area}</code>
+                    <code class="font-mono text-blue-600 dark:text-blue-400">{address}</code>
+                    <code class="font-mono text-blue-600 dark:text-blue-400">{phone}</code>
+                </p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        buttonsStyling: false,
+        customClass: { popup: 'rezzy-swal' },
+        preConfirm: () => {
+            const v = document.getElementById('tpl-body').value.trim();
+            if (!v) {
+                Swal.showValidationMessage('Template cannot be empty');
+                return false;
+            }
+            return v;
+        },
+    });
+
+    if (result.isConfirmed && result.value) {
+        const res = await window.api.saveTemplate(result.value);
+        if (res?.ok) toast('success', 'Template saved');
+        else notifyModal('error', 'Could not save', res?.error || 'Unknown error');
+    }
+});
 
 // --- Manual Status Update ---
 window.updateLeadStatus = async (id, newStatus) => {
@@ -168,12 +379,12 @@ document.getElementById('import-btn').onclick = async () => {
     try {
         const count = await window.api.importCSV();
         if (count > 0) {
-            alert(`✅ Success! Added ${count} new leads.`);
+            toast('success', `Added ${count} new leads`);
         } else if (count === 0) {
-            alert(`ℹ️ No new leads found. All contacts were already in the list.`);
+            notifyModal('info', 'Nothing to import', 'All contacts in the file were already in your list.');
         }
     } catch (err) {
-        alert("❌ Error: Could not read CSV. Please check the file format.");
+        notifyModal('error', 'Import failed', 'Could not read the CSV. Please check the file format.');
     } finally {
         btn.disabled = false;
         btn.innerText = originalText;
@@ -208,7 +419,7 @@ function renderTable() {
 
     // 3. Handle Empty State
     if (pageLeads.length === 0) {
-        list.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-slate-400 dark:text-slate-500 italic font-medium">No leads match your search criteria.</td></tr>`;
+        list.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-slate-400 dark:text-slate-500 italic font-medium">No leads match your search criteria.</td></tr>`;
     }
 
     // 4. Generate Rows
@@ -219,27 +430,38 @@ function renderTable() {
 
         const safeName = String(l.name).replace(/'/g, "").replace(/"/g, '&quot;');
 
+        const mapHref = mapsLinkFor(l);
+        const safeMapUrl = escapeHtml(mapHref);
+        const isCustomMap = !!(l.map_url && /^https?:\/\//i.test(l.map_url));
+
         tr.innerHTML = `
-            <td class="px-6 py-4 text-sm  text-slate-900 dark:text-slate-700 group-hover:text-blue-300 dark:group-hover:text-blue-500 transition-colors">#${absoluteSerial}</td>
-            <td class="px-6 py-4">
-                <div class="text-sm font-bold text-slate-900 dark:text-slate-100">${l.name}</div>
-                <div class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-0.5">${l.area}</div>
+            <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-700 group-hover:text-blue-300 dark:group-hover:text-blue-500 transition-colors">#${absoluteSerial}</td>
+            <td class="px-6 py-4 max-w-xs">
+                <div class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate" title="${escapeHtml(l.name)}">${escapeHtml(l.name)}</div>
+                <div class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-0.5 truncate">${escapeHtml(l.area)}</div>
+                ${l.address ? `<div class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate" title="${escapeHtml(l.address)}">${escapeHtml(l.address)}</div>` : ''}
             </td>
             <td class="px-6 py-4">
                 <span class="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">+${l.phone}</span>
             </td>
             <td class="px-6 py-4">
-                <div class="relative inline-block">
-                    <select onchange="window.updateLeadStatus(${l.id}, this.value)"
-                        class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg pl-2.5 pr-7 py-1.5 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer uppercase transition-colors">
-                        <option value="new" ${l.status === 'new' ? 'selected' : ''}>NEW</option>
-                        <option value="sent" ${l.status === 'sent' ? 'selected' : ''}>SENT</option>
-                        <option value="interested" ${l.status === 'interested' ? 'selected' : ''}>INTERESTED</option>
-                        <option value="invalid" ${l.status === 'invalid' ? 'selected' : ''}>INVALID</option>
-                        <option value="ignore" ${l.status === 'ignore' ? 'selected' : ''}>IGNORE</option>
-                    </select>
-                    ${CHEVRON_SVG}
-                </div>
+                ${mapHref ? `<button type="button" onclick="window.openMap('${safeMapUrl}')"
+                    title="${escapeHtml(l.address || (isCustomMap ? 'Open saved map link' : `Search "${l.name}, ${l.area}" on Google Maps`))}"
+                    class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 px-2.5 py-1.5 rounded-md transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
+                    View Map
+                </button>` : `<span class="text-xs text-slate-400 dark:text-slate-600">—</span>`}
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400" title="${formatAbsolute(l.created_at)}">${formatRelative(l.created_at)}</span>
+            </td>
+            <td class="px-6 py-4">
+                <button type="button" data-dropdown-trigger
+                    onclick="event.stopPropagation(); window.openStatusDropdown(this, ${l.id}, '${l.status}')"
+                    class="inline-flex items-center justify-between gap-2 min-w-[110px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg pl-2.5 pr-2 py-1.5 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer uppercase transition-colors">
+                    <span>${(l.status || 'new').toUpperCase()}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 text-slate-400 dark:text-slate-500"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.4a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+                </button>
             </td>
             <td class="px-6 py-4 text-right">
                 <button onclick="window.sendWA('${l.phone}', '${safeName}', ${l.id})"

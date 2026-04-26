@@ -1,6 +1,5 @@
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
-import { Bell } from "lucide-react";
 import Header from "@/components/Header";
 import GuestHeader from "@/components/GuestHeader";
 import ShopProviders from "./ShopProviders";
@@ -32,8 +31,9 @@ export default function RootLayout({ children }) {
         <ShopProviders>
           <div className="relative flex min-h-screen w-full flex-col bg-brand-dark overflow-x-hidden">
             <Header />
+            {/* <GuestHeader /> */}
             {children}
-            <BottomNav />
+            {/* <BottomNav /> */}
           </div>
         </ShopProviders>
       </body>

@@ -25,6 +25,7 @@ export default function ShopDashboard() {
    const { shop, loading } = useShop();
    const [totalBookings, setTotalBookings] = useState(null);
    const [totalRevenue, setTotalRevenue] = useState(null);
+   const [cancelledCount, setCancelledCount] = useState(null);
    const [bookings, setBookings] = useState([]);
 
    useEffect(() => {
@@ -48,17 +49,24 @@ export default function ShopDashboard() {
 
             const data = response.data || {};
             const list = Array.isArray(data.data) ? data.data : [];
-            const calculatedRevenue = list.reduce((sum, booking) => sum + Number(booking?.charges || 0), 0);
+            const isCancelled = (b) => String(b?.status).toLowerCase() === 'cancelled';
+            const calculatedRevenue = list.reduce(
+               (sum, booking) => sum + (isCancelled(booking) ? 0 : Number(booking?.charges || 0)),
+               0,
+            );
+            const calculatedCancelled = list.filter(isCancelled).length;
 
             setBookings(list);
             setTotalBookings(data.total_bookings ?? list.length);
             setTotalRevenue(data.total_revenue ?? calculatedRevenue);
+            setCancelledCount(data.cancelled_count ?? calculatedCancelled);
          } catch (err) {
             if (cancelled) return;
             console.error('Failed to fetch booking totals', err);
             setBookings([]);
             setTotalBookings(0);
             setTotalRevenue(0);
+            setCancelledCount(0);
          }
       };
 
@@ -102,22 +110,26 @@ export default function ShopDashboard() {
 
    const todayStr  = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
    const todayISO  = new Date().toISOString().slice(0, 10);
+   const isCancelled    = (b) => String(b?.status).toLowerCase() === 'cancelled';
    const todayBookings  = bookings.filter(b => b.date === todayISO);
-   const todayRevenue   = todayBookings.reduce((s, b) => s + Number(b.charges || 0), 0);
+   const todayRevenue   = todayBookings.reduce((s, b) => s + (isCancelled(b) ? 0 : Number(b.charges || 0)), 0);
    const completedCount = bookings.filter(b => String(b.status).toLowerCase() === 'completed').length;
-   const cancelledCount = bookings.filter(b => String(b.status).toLowerCase() === 'cancelled').length;
-   const avgValue       = totalBookings > 0 ? (totalRevenue / totalBookings) : 0;
+   const revenueBookings = (totalBookings ?? 0) - (cancelledCount ?? 0);
+   const avgValue       = revenueBookings > 0 ? (totalRevenue / revenueBookings) : 0;
 
    // 7-day chart
    const last7Days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(); d.setDate(d.getDate() - (6 - i));
       return { date: d.toISOString().slice(0, 10), label: d.toLocaleDateString('en-US', { weekday: 'short' }) };
    });
-   const chartData = last7Days.map(({ date, label }) => ({
-      date, label,
-      count:   bookings.filter(b => b.date === date).length,
-      revenue: bookings.filter(b => b.date === date).reduce((s, b) => s + Number(b.charges || 0), 0),
-   }));
+   const chartData = last7Days.map(({ date, label }) => {
+      const dayBookings = bookings.filter(b => b.date === date);
+      return {
+         date, label,
+         count:   dayBookings.filter(b => !isCancelled(b)).length,
+         revenue: dayBookings.reduce((s, b) => s + (isCancelled(b) ? 0 : Number(b.charges || 0)), 0),
+      };
+   });
    const chartMax = Math.max(...chartData.map(d => d.count), 1);
 
    // Today's schedule (sorted by start_time)
@@ -138,6 +150,7 @@ export default function ShopDashboard() {
                <div className="flex flex-wrap gap-3 py-4">
                   <StatCard label="Total Bookings" value={totalBookings !== null ? String(totalBookings) : '—'} trend="" Icon={CalendarCheck} />
                   <StatCard label="Total Revenue" value={totalRevenue !== null ? `AED ${Number(totalRevenue).toLocaleString()}` : '—'} trend="" Icon={CircleDollarSign} />
+                  <StatCard label="Cancelled" value={cancelledCount !== null ? String(cancelledCount) : '—'} trend="" Icon={Calendar} />
                </div>
 
                <div className="pt-2">
@@ -207,12 +220,12 @@ export default function ShopDashboard() {
                {/* ── 6 KPI stat cards ── */}
                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   {[
-                     { label: 'Total Bookings', value: totalBookings ?? '—',                              icon: 'calendar_today', color: '#adc6ff', sub: 'All time' },
+                     { label: 'Total Bookings', value: totalBookings ?? '—',                              icon: 'calendar_today', color: '#4b8eff', sub: 'All time' },
                      { label: 'Total Revenue',  value: `AED ${Number(totalRevenue||0).toLocaleString()}`, icon: 'payments',       color: '#4edea3', sub: 'Cumulative' },
-                     { label: 'Today',          value: todayBookings.length,                              icon: 'today',          color: '#adc6ff', sub: `AED ${todayRevenue.toLocaleString()} today` },
+                     { label: 'Today',          value: todayBookings.length,                              icon: 'today',          color: '#4b8eff', sub: `AED ${todayRevenue.toLocaleString()} today` },
                      { label: 'Upcoming',       value: upcomingBookings.length,                           icon: 'event_upcoming', color: '#ffb690', sub: 'Scheduled ahead' },
                      { label: 'Completed',      value: completedCount,                                    icon: 'task_alt',       color: '#4edea3', sub: 'Finished services' },
-                     { label: 'Avg Value',      value: `AED ${avgValue.toFixed(0)}`,                      icon: 'trending_up',    color: '#c1c6d7', sub: 'Per booking' },
+                     { label: 'Cancelled',      value: cancelledCount ?? '—',                             icon: 'cancel',         color: '#f87171', sub: 'All time' },
                   ].map((s) => (
                      <div key={s.label} className="bg-[#151c25] rounded-xl p-6 relative overflow-hidden group hover:bg-[#19202a] transition-colors border border-[#414755]/20">
                         {/* Watermark icon — bypass global .material-symbols-outlined sizing */}
@@ -258,7 +271,7 @@ export default function ShopDashboard() {
                               <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#8b90a0]">
                                  <span className="w-2 h-2 rounded-sm bg-[#2e353f]" />Other days
                               </span>
-                              <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#adc6ff]">
+                              <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#4b8eff]">
                                  <span className="w-2 h-2 rounded-sm bg-[#4b8eff]" />Today
                               </span>
                            </div>
@@ -271,9 +284,9 @@ export default function ShopDashboard() {
                                  <div key={day.date} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group/bar">
                                     <span className="text-[9px] font-black text-[#8b90a0] opacity-0 group-hover/bar:opacity-100 transition-opacity">{day.count}</span>
                                     <div className="w-full relative" style={{ height: `${barH}%` }}>
-                                       <div className={`w-full h-full rounded-t-md transition-all ${isToday ? 'bg-gradient-to-t from-[#4b8eff] to-[#adc6ff]' : 'bg-[#2e353f] group-hover/bar:bg-[#414755]'}`} />
+                                       <div className={`w-full h-full rounded-t-md transition-all ${isToday ? 'bg-gradient-to-t from-[#4b8eff] to-[#4b8eff]' : 'bg-[#2e353f] group-hover/bar:bg-[#414755]'}`} />
                                     </div>
-                                    <span className={`text-[9px] font-black uppercase ${isToday ? 'text-[#adc6ff]' : 'text-[#8b90a0]'}`}>{day.label}</span>
+                                    <span className={`text-[9px] font-black uppercase ${isToday ? 'text-[#4b8eff]' : 'text-[#8b90a0]'}`}>{day.label}</span>
                                  </div>
                               );
                            })}
@@ -284,7 +297,7 @@ export default function ShopDashboard() {
                      <div>
                         <div className="flex items-center justify-between mb-3">
                            <h3 className="text-sm font-black text-white">Upcoming Bookings</h3>
-                           <button onClick={() => router.push('/shop/bookings')} className="text-[#adc6ff] text-[10px] font-black uppercase tracking-widest hover:underline">View All</button>
+                           <button onClick={() => router.push('/shop/bookings')} className="text-[#4b8eff] text-[10px] font-black uppercase tracking-widest hover:underline">View All</button>
                         </div>
                         <div className="bg-[#19202a] rounded-xl overflow-hidden border border-[#414755]/20 shadow-xl shadow-black/20">
                            {upcomingBookings.length > 0 ? (
@@ -309,8 +322,8 @@ export default function ShopDashboard() {
                                              <tr key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)} className="hover:bg-[#2e353f]/20 transition-colors cursor-pointer group">
                                                 <td className="px-5 py-3.5">
                                                    <div className="flex items-center gap-3">
-                                                      <div className="w-8 h-8 rounded-xl bg-[#2e353f] flex items-center justify-center font-black text-xs text-[#adc6ff] shrink-0">{initials}</div>
-                                                      <p className="text-sm font-bold text-white group-hover:text-[#adc6ff] transition-colors">{customerName}</p>
+                                                      <div className="w-8 h-8 rounded-xl bg-[#2e353f] flex items-center justify-center font-black text-xs text-[#4b8eff] shrink-0">{initials}</div>
+                                                      <p className="text-sm font-bold text-white group-hover:text-[#4b8eff] transition-colors">{customerName}</p>
                                                    </div>
                                                 </td>
                                                 <td className="px-5 py-3.5"><p className="text-sm font-semibold text-[#c1c6d7] max-w-[150px] truncate">{services}</p></td>
@@ -355,7 +368,7 @@ export default function ShopDashboard() {
                                  const name    = b.customer?.name || b.customer_name || 'Guest';
                                  const service = b.services?.[0]?.title || b.services?.[0]?.name || 'Service';
                                  const isLast  = i === scheduleToday.length - 1;
-                                 const statusColor = String(b.status).toLowerCase() === 'completed' ? 'bg-[#4edea3]' : String(b.status).toLowerCase() === 'cancelled' ? 'bg-[#8b90a0]' : 'bg-[#adc6ff]';
+                                 const statusColor = String(b.status).toLowerCase() === 'completed' ? 'bg-[#4edea3]' : String(b.status).toLowerCase() === 'cancelled' ? 'bg-[#8b90a0]' : 'bg-[#4b8eff]';
                                  return (
                                     <div key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)} className="flex gap-3 cursor-pointer group">
                                        <div className="flex flex-col items-center pt-1">
@@ -364,8 +377,8 @@ export default function ShopDashboard() {
                                        </div>
                                        <div className={`${!isLast ? 'pb-4' : ''} flex-1 min-w-0`}>
                                           <div className="flex items-center justify-between gap-2">
-                                             <p className="text-xs font-black text-white group-hover:text-[#adc6ff] transition-colors truncate">{name}</p>
-                                             <span className="text-[10px] font-bold text-[#adc6ff] shrink-0">{b.start_time || '—'}</span>
+                                             <p className="text-xs font-black text-white group-hover:text-[#4b8eff] transition-colors truncate">{name}</p>
+                                             <span className="text-[10px] font-bold text-[#4b8eff] shrink-0">{b.start_time || '—'}</span>
                                           </div>
                                           <p className="text-[11px] text-[#8b90a0] font-medium truncate mt-0.5">{service}</p>
                                        </div>
@@ -386,7 +399,7 @@ export default function ShopDashboard() {
                               {recentActivity.map((b) => {
                                  const name   = b.customer?.name || b.customer_name || 'Guest';
                                  const status = String(b.status || 'Booked');
-                                 const iconMap = { Completed: { icon: 'task_alt', color: 'text-[#4edea3] bg-[#4edea3]/10' }, Cancelled: { icon: 'cancel', color: 'text-[#8b90a0] bg-[#414755]/30' }, Booked: { icon: 'event_available', color: 'text-[#adc6ff] bg-[#adc6ff]/10' } };
+                                 const iconMap = { Completed: { icon: 'task_alt', color: 'text-[#4edea3] bg-[#4edea3]/10' }, Cancelled: { icon: 'cancel', color: 'text-[#8b90a0] bg-[#414755]/30' }, Booked: { icon: 'event_available', color: 'text-[#4b8eff] bg-[#4b8eff]/10' } };
                                  const ic = iconMap[status] || iconMap.Booked;
                                  return (
                                     <div key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)} className="flex items-center gap-3 cursor-pointer group">
@@ -394,7 +407,7 @@ export default function ShopDashboard() {
                                           <span className="material-symbols-outlined text-[16px]">{ic.icon}</span>
                                        </div>
                                        <div className="flex-1 min-w-0">
-                                          <p className="text-xs font-bold text-white group-hover:text-[#adc6ff] transition-colors truncate">{name}</p>
+                                          <p className="text-xs font-bold text-white group-hover:text-[#4b8eff] transition-colors truncate">{name}</p>
                                           <p className="text-[10px] text-[#8b90a0] font-medium">{status} · {b.show_date || b.date || '—'}</p>
                                        </div>
                                        <p className="text-xs font-black text-[#c1c6d7] shrink-0">AED {b.charges || '0'}</p>
@@ -410,7 +423,7 @@ export default function ShopDashboard() {
                      {/* Quick actions */}
                      <div className="bg-[#151c25] rounded-xl p-1.5 flex flex-col gap-0.5 border border-[#414755]/20">
                         {[
-                           { label: 'All Bookings',    sub: 'View & manage',       icon: 'event_note',  path: '/shop/bookings',      color: 'text-[#adc6ff] bg-[#adc6ff]/10 group-hover:bg-[#adc6ff] group-hover:text-[#002e69]' },
+                           { label: 'All Bookings',    sub: 'View & manage',       icon: 'event_note',  path: '/shop/bookings',      color: 'text-[#4b8eff] bg-[#4b8eff]/10 group-hover:bg-[#4b8eff] group-hover:text-white' },
                            { label: 'Service Catalog', sub: 'Add or edit',         icon: 'category',    path: '/shop/catalogs',      color: 'text-[#4edea3] bg-[#4edea3]/10 group-hover:bg-[#4edea3] group-hover:text-[#003824]' },
                            { label: 'Working Hours',   sub: 'Set open & close',    icon: 'schedule',    path: '/shop/working_hours', color: 'text-[#ffb690] bg-[#ffb690]/10 group-hover:bg-[#ffb690] group-hover:text-[#341100]' },
                            { label: 'Business Profile', sub: 'Edit info & images',  icon: 'storefront',  path: '/shop/profile',       color: 'text-[#c1c6d7] bg-[#414755]/30 group-hover:bg-[#414755] group-hover:text-white' },

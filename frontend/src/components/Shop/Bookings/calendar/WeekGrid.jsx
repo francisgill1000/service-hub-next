@@ -15,7 +15,7 @@ const ROW_HEIGHT = 56;
 const TIME_COL_W = 60;
 
 const STATUS_BG = {
-  Booked:    "bg-[#adc6ff]/20 border-[#adc6ff]/40 text-[#adc6ff]",
+  Booked:    "bg-[#4b8eff]/20 border-[#4b8eff]/40 text-[#4b8eff]",
   Completed: "bg-[#4edea3]/20 border-[#4edea3]/40 text-[#4edea3]",
   Cancelled: "bg-[#414755]/40 border-[#414755]/40 text-[#8b90a0]",
 };
@@ -35,7 +35,7 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
           return (
             <div key={toISO(d)} className="px-2 py-3 text-center border-l border-[#414755]/10">
               <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">{format(d, "EEE")}</p>
-              <p className={`text-sm font-black mt-0.5 ${isToday ? "text-[#adc6ff]" : "text-white"}`}>
+              <p className={`text-sm font-black mt-0.5 ${isToday ? "text-[#4b8eff]" : "text-white"}`}>
                 {format(d, "d")}
               </p>
             </div>
@@ -62,7 +62,7 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
                 <button
                   key={toISO(d) + h}
                   onClick={() => onSlotClick({ date: toISO(d), time: `${String(h).padStart(2, "0")}:00` })}
-                  className="border-l border-b border-[#414755]/10 hover:bg-[#adc6ff]/5 transition-colors"
+                  className="border-l border-b border-[#414755]/10 hover:bg-[#4b8eff]/5 transition-colors"
                   aria-label={`Create booking on ${toISO(d)} at ${h}:00`}
                 />
               ))}

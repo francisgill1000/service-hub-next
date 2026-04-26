@@ -177,18 +177,16 @@ const ConfirmationPageContent = () => {
                 <button
                     onClick={() => handleBookingUpdate("Completed")}
                     disabled={isCompleting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
+                    className="w-full bg-[#4b8eff] hover:bg-[#4b8eff]/90 active:scale-[0.98] text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center"
                 >
-                    <span className="material-symbols-outlined">check_circle</span>
                     {isCompleting ? "Marking Complete..." : "Mark as Complete"}
                 </button>
 
                 <button
                     onClick={() => handleBookingUpdate("Cancelled")}
                     disabled={isCancelling}
-                    className="w-full bg-[#EF4444] hover:bg-red-700 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"
+                    className="w-full bg-[#EF4444] hover:bg-red-700 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center"
                 >
-                    <span className="material-symbols-outlined">cancel</span>
                     {isCancelling ? "Marking Cancelled..." : "Mark as Cancelled"}
                 </button>
             </footer>

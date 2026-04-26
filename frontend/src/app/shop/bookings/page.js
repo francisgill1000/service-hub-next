@@ -27,7 +27,7 @@ export default function ShopBookingsPage() {
   const [dateFrom, setDateFrom]           = useState('');
   const [dateTo, setDateTo]               = useState('');
   const [createOpen, setCreateOpen]       = useState(false);
-  const [viewMode, setViewMode]           = useState('list');
+  const [viewMode, setViewMode]           = useState('calendar');
 
   useEffect(() => {
     try {
@@ -108,7 +108,7 @@ export default function ShopBookingsPage() {
               <button
                 onClick={() => setViewMode('list')}
                 className={`h-7 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                  viewMode === 'list' ? 'bg-[#adc6ff] text-[#0d141d]' : 'text-[#8b90a0] hover:text-white'
+                  viewMode === 'list' ? 'bg-[#4b8eff] text-white' : 'text-[#8b90a0] hover:text-white'
                 }`}
               >
                 List
@@ -116,7 +116,7 @@ export default function ShopBookingsPage() {
               <button
                 onClick={() => setViewMode('calendar')}
                 className={`h-7 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                  viewMode === 'calendar' ? 'bg-[#adc6ff] text-[#0d141d]' : 'text-[#8b90a0] hover:text-white'
+                  viewMode === 'calendar' ? 'bg-[#4b8eff] text-white' : 'text-[#8b90a0] hover:text-white'
                 }`}
               >
                 Calendar
@@ -126,7 +126,7 @@ export default function ShopBookingsPage() {
             <span className="px-3 py-1.5 bg-[#151c25] border border-[#414755]/30 rounded-xl text-[11px] font-bold text-[#c1c6d7]">
               {counts.total} total
             </span>
-            <span className="px-3 py-1.5 bg-[#adc6ff]/10 border border-[#adc6ff]/20 rounded-xl text-[11px] font-bold text-[#adc6ff]">
+            <span className="px-3 py-1.5 bg-[#4b8eff]/10 border border-[#4b8eff]/20 rounded-xl text-[11px] font-bold text-[#4b8eff]">
               {counts.booked} upcoming
             </span>
             <span className="px-3 py-1.5 bg-[#4edea3]/10 border border-[#4edea3]/20 rounded-xl text-[11px] font-bold text-[#4edea3]">
@@ -135,9 +135,8 @@ export default function ShopBookingsPage() {
             {/* New booking */}
             <button
               onClick={() => setCreateOpen(true)}
-              className="h-9 px-3 rounded-xl bg-[#adc6ff] hover:bg-[#adc6ff]/90 text-[11px] font-black text-[#0d141d] inline-flex items-center gap-1.5 transition-all"
+              className="h-9 px-3 rounded-xl bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-[11px] font-black text-white inline-flex items-center transition-all"
             >
-              <span className="material-symbols-outlined text-[16px]">add</span>
               New booking
             </button>
           </div>
@@ -155,7 +154,7 @@ export default function ShopBookingsPage() {
                 placeholder="Search by booking ID or customer name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-11 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all"
+                className="w-full h-11 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
               />
             </div>
 
@@ -165,7 +164,7 @@ export default function ShopBookingsPage() {
               <select
                 value={selectedStatus ?? ''}
                 onChange={(e) => setSelectedStatus(e.target.value === '' ? null : e.target.value)}
-                className="h-11 w-full md:w-52 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-10 text-sm font-semibold text-white focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all appearance-none cursor-pointer [color-scheme:dark]"
+                className="h-11 w-full md:w-52 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-10 text-sm font-semibold text-white focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all appearance-none cursor-pointer [color-scheme:dark]"
               >
                 {STATUS_FILTERS.map((f) => (
                   <option key={String(f.value)} value={f.value ?? ''}>
@@ -210,7 +209,7 @@ export default function ShopBookingsPage() {
         {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-28 gap-4">
-            <div className="animate-spin w-10 h-10 border-4 border-[#414755] border-t-[#adc6ff] rounded-full" />
+            <div className="animate-spin w-10 h-10 border-4 border-[#414755] border-t-[#4b8eff] rounded-full" />
             <p className="text-[#8b90a0] text-sm font-semibold">Loading bookings...</p>
           </div>
         )}

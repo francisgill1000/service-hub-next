@@ -13,7 +13,7 @@ const Login = () => {
 
     const [redirectTo, setRedirectTo] = useState('/shop/dashboard');
 
-    const [loginMode, setLoginMode] = useState('qr');
+    const [loginMode, setLoginMode] = useState('manual');
 
     const [shopCode, setShopCode] = useState('');
     const [pin, setPin] = useState('');

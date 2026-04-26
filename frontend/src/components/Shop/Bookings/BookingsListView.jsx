@@ -4,12 +4,12 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 const STATUS_CHIP = {
-  Booked:    "bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20",
+  Booked:    "bg-[#4b8eff]/15 text-[#4b8eff] border border-[#4b8eff]/20",
   Completed: "bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/20",
   Cancelled: "bg-[#414755]/40 text-[#8b90a0] border border-[#414755]/30",
 };
 const STATUS_DOT = {
-  Booked:    "bg-[#adc6ff]",
+  Booked:    "bg-[#4b8eff]",
   Completed: "bg-[#4edea3]",
   Cancelled: "bg-[#8b90a0]",
 };
@@ -48,11 +48,11 @@ export default function BookingsListView({ bookings, totalCount }) {
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-[#2e353f] flex items-center justify-center font-bold text-xs text-[#adc6ff] shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-[#2e353f] flex items-center justify-center font-bold text-xs text-[#4b8eff] shrink-0">
                         {initials}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-white group-hover:text-[#adc6ff] transition-colors">{customerName}</p>
+                        <p className="text-sm font-bold text-white group-hover:text-[#4b8eff] transition-colors">{customerName}</p>
                         <p className="text-[10px] text-[#8b90a0] font-medium">
                           {booking.booking_reference}
                           {booking.customer_whatsapp && (
@@ -83,7 +83,7 @@ export default function BookingsListView({ bookings, totalCount }) {
                   <td className="px-5 py-4 text-right">
                     <button
                       onClick={(e) => { e.stopPropagation(); router.push(`/shop/bookings/action?id=${booking.id}`); }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#adc6ff]/10 hover:bg-[#adc6ff]/20 text-[#adc6ff] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#4b8eff]/10 hover:bg-[#4b8eff]/20 text-[#4b8eff] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                     >
                       View
                       <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

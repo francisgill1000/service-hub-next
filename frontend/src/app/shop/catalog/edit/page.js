@@ -258,10 +258,9 @@ const EditCatalogContent = () => {
           <button
             onClick={handleUpdateCatalog}
             disabled={loading}
-            className="w-full h-12 bg-primary text-white font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full h-12 bg-primary text-white font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <span>{loading ? 'Updating...' : 'Update Service'}</span>
-            {!loading && <span className="material-symbols-outlined">check_circle</span>}
+            {loading ? 'Updating...' : 'Update Service'}
           </button>
         </div>
       </main>

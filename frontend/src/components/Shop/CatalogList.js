@@ -81,9 +81,8 @@ const CatalogList = () => {
           </div>
           <button
             onClick={() => router.push('/shop/catalog')}
-            className="flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black px-5 py-3 rounded-xl shadow-lg shadow-[#adc6ff]/10 text-[10px] uppercase tracking-widest shrink-0 transition-all hover:shadow-[#adc6ff]/20"
+            className="flex items-center justify-center bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white font-black px-5 py-3 rounded-xl text-[10px] uppercase tracking-widest shrink-0 transition-all"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
             Add Service
           </button>
         </div>
@@ -91,7 +90,7 @@ const CatalogList = () => {
         {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <div className="animate-spin w-10 h-10 border-4 border-[#414755] border-t-[#adc6ff] rounded-full" />
+            <div className="animate-spin w-10 h-10 border-4 border-[#414755] border-t-[#4b8eff] rounded-full" />
             <p className="text-[#8b90a0] text-sm font-semibold">Loading services...</p>
           </div>
         )}
@@ -110,9 +109,8 @@ const CatalogList = () => {
             </div>
             <button
               onClick={() => router.push('/shop/catalog')}
-              className="flex items-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black px-6 py-3 rounded-xl shadow-lg text-[10px] uppercase tracking-widest"
+              className="flex items-center bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white font-black px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all"
             >
-              <span className="material-symbols-outlined text-[18px]">add</span>
               Add First Service
             </button>
           </div>
@@ -141,7 +139,7 @@ const CatalogList = () => {
                   )}
                   {/* Price badge */}
                   <div className="absolute bottom-3 left-3 bg-[#0d141d]/80 backdrop-blur-sm px-3 py-1 rounded-xl border border-[#414755]/30">
-                    <span className="text-sm font-black text-[#adc6ff]">
+                    <span className="text-sm font-black text-[#4b8eff]">
                       AED {parseFloat(catalog.price).toFixed(2)}
                     </span>
                   </div>
@@ -159,7 +157,7 @@ const CatalogList = () => {
                 <div className="flex gap-2 px-4 pb-4">
                   <button
                     onClick={() => router.push(`/shop/catalog/edit?id=${catalog.id}`)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#adc6ff]/10 hover:bg-[#adc6ff]/20 text-[#adc6ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#4b8eff]/10 hover:bg-[#4b8eff]/20 text-[#4b8eff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
                   >
                     <span className="material-symbols-outlined text-[16px]">edit</span>
                     Edit

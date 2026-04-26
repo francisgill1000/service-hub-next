@@ -6,12 +6,12 @@ import api from "@/utils/api";
 import { notify } from "@/utils/alerts";
 
 const STATUS_CHIP = {
-  Booked:    "bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20",
+  Booked:    "bg-[#4b8eff]/15 text-[#4b8eff] border border-[#4b8eff]/20",
   Completed: "bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/20",
   Cancelled: "bg-[#414755]/40 text-[#8b90a0] border border-[#414755]/30",
 };
 const STATUS_DOT = {
-  Booked:    "bg-[#adc6ff]",
+  Booked:    "bg-[#4b8eff]",
   Completed: "bg-[#4edea3]",
   Cancelled: "bg-[#8b90a0]",
 };
@@ -112,26 +112,23 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
               <button
                 onClick={() => changeStatus("Completed")}
                 disabled={busy !== null}
-                className="flex-1 h-11 rounded-xl bg-[#4edea3] hover:bg-[#4edea3]/90 text-[#0d141d] text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"
+                className="flex-1 h-11 rounded-xl bg-[#4edea3] hover:bg-[#4edea3]/90 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center"
               >
-                <span className="material-symbols-outlined text-[16px]">check_circle</span>
                 {busy === "Completed" ? "Saving…" : "Mark Completed"}
               </button>
               <button
                 onClick={() => changeStatus("Cancelled")}
                 disabled={busy !== null}
-                className="flex-1 h-11 rounded-xl bg-[#414755]/40 hover:bg-[#414755]/60 text-[#dce3f0] text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"
+                className="flex-1 h-11 rounded-xl bg-[#414755]/40 hover:bg-[#414755]/60 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center"
               >
-                <span className="material-symbols-outlined text-[16px]">cancel</span>
                 {busy === "Cancelled" ? "Saving…" : "Mark Cancelled"}
               </button>
             </>
           )}
           <button
             onClick={() => { onClose?.(); router.push(`/shop/bookings/action?id=${booking.id}`); }}
-            className="flex-1 h-11 rounded-xl bg-[#adc6ff] hover:bg-[#adc6ff]/90 text-[#0d141d] text-xs font-black uppercase tracking-widest transition-all inline-flex items-center justify-center gap-1.5"
+            className="flex-1 h-11 rounded-xl bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white text-xs font-black uppercase tracking-widest transition-all inline-flex items-center justify-center"
           >
-            <span className="material-symbols-outlined text-[16px]">open_in_new</span>
             View full details
           </button>
         </div>

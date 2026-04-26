@@ -138,150 +138,175 @@ function DetailPageContent() {
 
     if (!shop) return <p>Loading...</p>;
 
+    const selectedCatalogs = (shop?.catalogs || []).filter((c) => activeServices.includes(c.id));
+    const canBook = activeServices.length > 0 && !!selectedTime && !loading;
+
+    const ServiceCard = ({ item }) => {
+        const isActive = activeServices.includes(item.id);
+        return (
+            <div
+                className={`glass-card rounded-2xl p-4 flex gap-4 items-center transition-colors ${isActive ? "ring-1 ring-primary/50 bg-primary/5" : ""}`}
+            >
+                <div
+                    className="size-20 rounded-xl bg-cover bg-center shrink-0 border border-white/5"
+                    style={{
+                        backgroundImage: item.image ? `url(${item.image})` : 'none',
+                        backgroundColor: !item.image ? '#1e293b' : undefined
+                    }}
+                >
+                    {!item.image && (
+                        <div className="w-full h-full flex items-center justify-center">
+                            <span className="material-symbols-outlined text-lg text-slate-500">image</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base truncate">{item.title}</h3>
+                    <p className="text-xs text-navy-muted mt-0.5 line-clamp-2">{item.description}</p>
+                    <p className="text-primary font-bold mt-2 text-lg">AED {parseFloat(item.price).toFixed(2)}</p>
+                </div>
+
+                <button
+                    onClick={() => toggleService(item.id)}
+                    className={`flex h-10 shrink-0 items-center justify-center rounded-full px-5 transition-all duration-300 cursor-pointer ${isActive ? "bg-primary text-white shadow-lg" : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"}`}
+                >
+                    <span className="material-symbols-outlined">{isActive ? "check" : "add"}</span>
+                </button>
+            </div>
+        );
+    };
+
+    const DatePickerCard = () => (
+        <div className="glass-card rounded-2xl p-4 flex flex-col gap-2">
+            <label className="text-xs text-navy-muted font-semibold uppercase">Appointment Date</label>
+            <div className="mt-3 overflow-x-auto no-scrollbar flex gap-3">
+                {dates.map((date) => {
+                    const isActive = selectedDate?.toDateString() === date.toDateString();
+                    const isToday = todayString === date.toDateString();
+                    return (
+                        <button
+                            key={date.toDateString()}
+                            onClick={() => setSelectedDate(date)}
+                            className={`flex flex-col items-center justify-center min-w-[70px] px-3 py-3 rounded-2xl transition-all duration-300 text-sm font-bold ${isActive ? "bg-primary text-white shadow-lg" : isToday ? "border border-primary hover:text-white" : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"}`}
+                        >
+                            <span className="text-xs font-semibold">{date.toLocaleString("en-US", { weekday: "short" })}</span>
+                            <span className="text-base font-extrabold">{date.getDate()}</span>
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+
+    const TimeSlotsCard = () => (
+        <div className="glass-card rounded-2xl p-4">
+            <p className="text-xs text-navy-muted font-semibold uppercase mb-3">Time Slot</p>
+            <div className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-visible no-scrollbar gap-2">
+                {shop?.slots.length > 0 ? shop?.slots.map((time) => {
+                    const active = selectedTime === time;
+                    return (
+                        <button
+                            key={time}
+                            onClick={() => setSelectedTime(time)}
+                            className={`py-3 px-5 md:px-2 rounded-2xl md:rounded-xl font-bold text-sm flex-shrink-0 md:flex-shrink transition-all duration-300 ${active ? "bg-primary text-white shadow-lg" : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"}`}
+                        >
+                            {time}
+                        </button>
+                    );
+                }) : <span className="text-xs text-navy-muted">No slots available</span>}
+            </div>
+        </div>
+    );
+
     return (
         <>
-            <div className="relative flex h-screen w-full flex-col overflow-x-hidden">
-                <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
+            <div className="relative flex h-screen md:h-auto md:min-h-screen w-full flex-col md:block overflow-x-hidden">
+                <div className="flex-1 md:flex-none overflow-y-auto md:overflow-visible no-scrollbar pb-32 md:pb-16 md:max-w-7xl md:mx-auto md:px-8 md:pt-6 w-full">
 
                     <BookingDetailHeader shop={shop} />
 
-                    <div className="px-5 flex flex-col gap-4 pt-6">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-bold">Service Catalog</h2>
-                            <button className="glass-card p-1.5 rounded-lg">
-                                {/* <span className="material-symbols-outlined text-navy-muted text-xl">tune</span> */}
-                            </button>
+                    <div className="md:grid md:grid-cols-12 md:gap-8 md:mt-8">
+
+                        {/* ── Left column: Service catalog ── */}
+                        <div className="md:col-span-7 lg:col-span-8 px-5 md:px-0 pt-6 md:pt-0 flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-lg md:text-2xl font-bold text-white">Service Catalog</h2>
+                                {selectedCatalogs.length > 0 && (
+                                    <span className="text-xs font-bold text-primary">
+                                        {selectedCatalogs.length} selected
+                                    </span>
+                                )}
+                            </div>
+
+                            {shop?.catalogs.length > 0 ? (
+                                <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:gap-4">
+                                    {shop.catalogs.map((item) => <ServiceCard key={item.id} item={item} />)}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-navy-muted">No catalog available</p>
+                            )}
                         </div>
-                        {shop?.catalogs.length > 0 ? shop?.catalogs.map((item) => {
-                            const isActive = activeServices.includes(item.id);
 
-                            return (
-                                <div
-                                    key={item.id}
-                                    className={`glass-card rounded-2xl p-4 flex gap-4 items-center
-                ${isActive ? "ring-1 ring-primary/50 bg-primary/5" : ""}
-            `}
-                                >
-                                    <div
-                                        className="size-20 rounded-xl bg-cover bg-center shrink-0 border border-white/5"
-                                        style={{
-                                            backgroundImage: item.image ? `url(${item.image})` : 'none',
-                                            backgroundColor: !item.image ? '#1e293b' : undefined
-                                        }}
-                                    >
-                                        {!item.image && (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-lg text-slate-500">
-                                                    image
-                                                </span>
-                                            </div>
-                                        )}
+                        {/* ── Right column: Schedule + Working Hours + Desktop Summary ── */}
+                        <div className="md:col-span-5 lg:col-span-4 px-5 md:px-0 pt-10 md:pt-0">
+                            <div className="flex flex-col gap-4 md:sticky md:top-6">
+                                <h2 className="text-lg md:text-2xl font-bold text-white md:hidden">Select Date & Time</h2>
+                                <h2 className="text-lg md:text-xl font-bold text-white hidden md:block">Booking</h2>
+
+                                <DatePickerCard />
+                                <TimeSlotsCard />
+
+                                {/* ── Desktop-only summary + continue button ── */}
+                                <div className="hidden md:block glass-card rounded-2xl p-5">
+                                    <p className="text-xs text-navy-muted font-semibold uppercase mb-3">Order Summary</p>
+
+                                    {selectedCatalogs.length > 0 ? (
+                                        <div className="space-y-2 mb-4">
+                                            {selectedCatalogs.map((c) => (
+                                                <div key={c.id} className="flex items-center justify-between text-sm">
+                                                    <span className="text-white/80 truncate pr-2">{c.title}</span>
+                                                    <span className="text-white font-bold shrink-0">AED {parseFloat(c.price).toFixed(0)}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-navy-muted mb-4">Select services to see your total.</p>
+                                    )}
+
+                                    <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                                        <span className="text-xs text-navy-muted font-semibold uppercase">Total</span>
+                                        <span className="text-xl font-extrabold text-white">AED {totalPrice.toFixed(2)}</span>
                                     </div>
 
-                                    <div className="flex-1">
-                                        <h3 className="font-bold text-base">{item.title}</h3>
-                                        <p className="text-xs text-navy-muted mt-0.5">
-                                            {item.description}
-                                        </p>
-                                        <p className="text-primary font-bold mt-2 text-lg">
-                                            AED {parseFloat(item.price).toFixed(2)}
-                                        </p>
-                                    </div>
+                                    {errorMessage && (
+                                        <div className="mt-3 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400 font-semibold">
+                                            {errorMessage}
+                                        </div>
+                                    )}
 
                                     <button
-                                        onClick={() => toggleService(item.id)}
-                                        className={`
-                    flex h-10 shrink-0 items-center justify-center rounded-full px-5 
-                    transition-all duration-300 cursor-pointer
-                    ${isActive
-                                                ? "bg-primary text-white shadow-lg scale-105"
-                                                : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"
-                                            }
-                `}
+                                        disabled={!canBook}
+                                        onClick={handleBooking}
+                                        className="mt-4 w-full h-12 rounded-xl font-bold text-sm uppercase tracking-widest transition-all bg-primary hover:bg-primary/90 text-white disabled:bg-gray-500/40 disabled:text-white/50 disabled:cursor-not-allowed"
                                     >
-                                        <span className="material-symbols-outlined">
-                                            {isActive ? "check" : "add"}
-                                        </span>
+                                        {loading ? "Booking…" : "Continue Booking"}
                                     </button>
                                 </div>
-                            );
-                        }) : "No catalog available"}
-                    </div>
 
-                    <div className="px-5 flex flex-col gap-4 pt-10">
-                        <h2 className="text-lg font-bold">Select Date & Time</h2>
-
-                        {/* Date Picker */}
-                        <div className="glass-card rounded-2xl p-4 flex flex-col gap-2">
-                            <label className="text-xs text-navy-muted font-semibold uppercase">
-                                Appointment Date
-                            </label>
-
-                            <div className="mt-3 overflow-x-auto no-scrollbar flex gap-3">
-                                {dates.map((date) => {
-                                    const isActive = selectedDate?.toDateString() === date.toDateString();
-                                    const isToday = todayString === date.toDateString();
-
-                                    return (
-                                        <button
-                                            key={date.toDateString()}
-                                            onClick={() => setSelectedDate(date)}
-                                            className={`flex flex-col items-center justify-center min-w-[70px] px-3 py-3 rounded-2xl
-            transition-all duration-300 text-sm font-bold
-            ${isActive
-                                                    ? "bg-primary text-white shadow-lg scale-105"
-                                                    : isToday
-                                                        ? "border border-primary hover:text-white"
-                                                        : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"
-                                                }`}
-                                        >
-                                            <span className="text-xs font-semibold">
-                                                {date.toLocaleString("en-US", { weekday: "short" })}
-                                            </span>
-                                            <span className="text-base font-extrabold">{date.getDate()}</span>
-                                        </button>
-                                    );
-                                })}
+                                {/* Working hours */}
+                                <div className="glass-card rounded-2xl p-5">
+                                    <WorkingHours working_hours={shop?.working_hours || []} />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Time Slots */}
-                        <div className="glass-card rounded-2xl p-4">
-                            <p className="text-xs text-navy-muted font-semibold uppercase mb-3">
-                                Time Slot
-                            </p>
-                            <div className="flex overflow-x-auto no-scrollbar gap-3">
-                                {shop?.slots.length > 0 ? shop?.slots.map((time) => {
-                                    const active = selectedTime === time;
-                                    return (
-                                        <button
-                                            key={time}
-                                            onClick={() => setSelectedTime(time)}
-                                            className={`py-3 px-5 rounded-2xl font-bold text-sm flex-shrink-0 transition-all duration-300
-              ${active
-                                                    ? "bg-primary text-white shadow-lg scale-105"
-                                                    : "bg-navy-accent text-slate-400 border border-white/5 hover:border-white/20 hover:text-white"
-                                                }`}
-                                        >
-                                            {time}
-                                        </button>
-                                    );
-                                }) : "No slots available"}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="px-5 py-10">
-                        <div className="glass-card rounded-2xl p-5">
-                            <WorkingHours working_hours={shop?.working_hours || []} />
-                        </div>
                     </div>
 
                 </div>
 
-
-                <div
-                    className="fixed bottom-20 left-0 right-0 p-5 bg-navy-deep/95 backdrop-blur-2xl border-t border-white/10 z-[60]">
+                {/* ── Mobile-only sticky bottom bar ── */}
+                <div className="md:hidden fixed bottom-20 left-0 right-0 p-5 bg-navy-deep/95 backdrop-blur-2xl border-t border-white/10 z-[60]">
                     {errorMessage && (
                         <div className="mx-5 mb-3 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400 font-semibold">
                             {errorMessage}
@@ -293,21 +318,12 @@ function DetailPageContent() {
                             <p className="text-xl font-extrabold text-white">AED {totalPrice.toFixed(2)}</p>
                         </div>
                         <button
-                            disabled={activeServices.length === 0 || !selectedTime || loading}
+                            disabled={!canBook}
                             onClick={handleBooking}
-                            className="
-        flex-1 h-14 rounded-2xl font-bold text-base flex items-center justify-center gap-2
-        transition-transform active:scale-95
-        bg-primary text-white shadow-lg shadow-primary/30
-        disabled:bg-gray-400 disabled:shadow-none
-        disabled:cursor-not-allowed disabled:active:scale-100
-    "
+                            className="flex-1 h-14 rounded-2xl font-bold text-base flex items-center justify-center transition-transform active:scale-95 bg-primary text-white shadow-lg shadow-primary/30 disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed disabled:active:scale-100"
                         >
                             Continue Booking
-                            <span className="material-symbols-outlined">arrow_forward</span>
                         </button>
-
-
                     </div>
                     <div className="h-4"></div>
                 </div>

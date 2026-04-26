@@ -55,20 +55,20 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
         <div className="flex items-center gap-2">
           <button
             onClick={goPrev}
-            className="size-9 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#adc6ff]/40 text-[#dce3f0] hover:text-[#adc6ff] flex items-center justify-center transition-all"
+            className="size-9 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#4b8eff]/40 text-[#dce3f0] hover:text-[#4b8eff] flex items-center justify-center transition-all"
             aria-label="Previous"
           >
             <span className="material-symbols-outlined text-[20px]">chevron_left</span>
           </button>
           <button
             onClick={goToday}
-            className="h-9 px-3 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#adc6ff]/40 text-[11px] font-black text-[#dce3f0] hover:text-[#adc6ff] uppercase tracking-widest transition-all"
+            className="h-9 px-3 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#4b8eff]/40 text-[11px] font-black text-[#dce3f0] hover:text-[#4b8eff] uppercase tracking-widest transition-all"
           >
             Today
           </button>
           <button
             onClick={goNext}
-            className="size-9 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#adc6ff]/40 text-[#dce3f0] hover:text-[#adc6ff] flex items-center justify-center transition-all"
+            className="size-9 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#4b8eff]/40 text-[#dce3f0] hover:text-[#4b8eff] flex items-center justify-center transition-all"
             aria-label="Next"
           >
             <span className="material-symbols-outlined text-[20px]">chevron_right</span>
@@ -83,7 +83,7 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
               onClick={() => setSubView(v.value)}
               className={`h-8 px-3 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
                 subView === v.value
-                  ? "bg-[#adc6ff] text-[#0d141d]"
+                  ? "bg-[#4b8eff] text-white"
                   : "text-[#8b90a0] hover:text-white"
               }`}
             >
@@ -164,7 +164,7 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
                   <button
                     key={b.id}
                     onClick={() => { setDaySheet(null); setQuickBooking(b); }}
-                    className="w-full flex items-center justify-between gap-3 px-3 py-3 rounded-xl bg-[#080f17] border border-[#414755]/30 hover:border-[#adc6ff]/40 transition-all text-left"
+                    className="w-full flex items-center justify-between gap-3 px-3 py-3 rounded-xl bg-[#080f17] border border-[#414755]/30 hover:border-[#4b8eff]/40 transition-all text-left"
                   >
                     <div>
                       <p className="text-xs font-bold text-white">{b.start_time || "—"} · {customerName}</p>

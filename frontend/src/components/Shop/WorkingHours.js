@@ -148,9 +148,8 @@ const WorkingHours = () => {
                     <button
                         onClick={handleSaveWorkingHours}
                         disabled={loading}
-                        className="flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black px-6 py-3 rounded-xl disabled:opacity-60 transition-all shadow-lg shadow-[#adc6ff]/10 text-[10px] uppercase tracking-widest shrink-0"
+                        className="flex items-center justify-center bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white font-black px-6 py-3 rounded-xl disabled:opacity-60 transition-all text-[10px] uppercase tracking-widest shrink-0"
                     >
-                        <span className="material-symbols-outlined text-[18px]">save</span>
                         {loading ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
@@ -206,9 +205,8 @@ const WorkingHours = () => {
                     <button
                         onClick={handleSaveWorkingHours}
                         disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4b8eff] text-[#002e69] font-black py-4 rounded-xl disabled:opacity-60 shadow-lg text-[10px] uppercase tracking-widest"
+                        className="w-full flex items-center justify-center bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white font-black py-4 rounded-xl disabled:opacity-60 text-[10px] uppercase tracking-widest"
                     >
-                        <span className="material-symbols-outlined text-[18px]">save</span>
                         {loading ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
@@ -228,7 +226,7 @@ const TimeInput = ({ label, value, onChange, disabled }) => (
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}
-                className="w-full bg-[#080f17] border border-[#414755]/40 text-white rounded-xl px-3 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-[#adc6ff]/20 focus:border-[#adc6ff]/40 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#080f17] border border-[#414755]/40 text-white rounded-xl px-3 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <Clock className="absolute right-3 top-3 text-[#8b90a0] pointer-events-none" size={14} />
         </div>

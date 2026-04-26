@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useShop } from '@/context/ShopContext';
 import { useState, useEffect } from 'react';
 
 const GUEST_NAV_ITEMS = [
@@ -15,15 +14,14 @@ const GUEST_NAV_ITEMS = [
 
 const SHOP_NAV_ITEMS = [
   { label: 'Dashboard', icon: 'dashboard', path: '/shop/dashboard' },
-  { label: 'Services', icon: 'inventory_2', path: '/shop/catalogs' },
   { label: 'Bookings', icon: 'calendar_today', path: '/shop/bookings' },
+  { label: 'Services', icon: 'inventory_2', path: '/shop/catalogs' },
   { label: 'Hours', icon: 'schedule', path: '/shop/working_hours' },
   { label: 'Profile', icon: 'person', path: '/shop/profile' },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { shop } = useShop();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -40,7 +38,7 @@ export default function BottomNav() {
   const navItems = isShopRoute ? SHOP_NAV_ITEMS : GUEST_NAV_ITEMS;
 
   return (
-    <nav className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/10 backdrop-blur-2xl border-t border-white/10 rounded-t-[32px] flex items-center justify-around px-2 z-[100] pb-2 ${isShopRoute ? "md:hidden" : ""}`}>
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] h-20 bg-white/10 backdrop-blur-2xl border-t border-white/10 rounded-t-[32px] flex items-center justify-around px-2 z-[100] pb-2 md:hidden">
       {navItems.map((item, index) => {
         const active = pathname === item.path;
 

@@ -90,6 +90,17 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
                 >
                   <p className="text-[10px] font-bold truncate">{b.start_time}</p>
                   <p className="text-[11px] font-semibold text-white truncate">{customerName}</p>
+                  {b.staff?.name && (
+                    <span className="block text-[10px] font-bold opacity-80 truncate">
+                      <span className="material-symbols-outlined text-[10px] align-middle">person</span>
+                      {b.staff.name}
+                    </span>
+                  )}
+                  {b.staff_id == null && (
+                    <span className="inline-block mt-0.5 px-1 py-0.5 rounded bg-[#f59e0b]/30 text-[#f59e0b] font-black text-[8px] uppercase tracking-wider">
+                      Queued
+                    </span>
+                  )}
                 </button>
               );
             });

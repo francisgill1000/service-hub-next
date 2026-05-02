@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/utils/api";
 import { notify } from "@/utils/alerts";
@@ -20,6 +20,16 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
   const router = useRouter();
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(null);
+  const [staffList, setStaffList] = useState([]);
+  const [reassignTo, setReassignTo] = useState("");
+  const [reassigning, setReassigning] = useState(false);
+
+  useEffect(() => {
+    if (!open || !booking?.shop_id) return;
+    api.get(`/shops/${booking.shop_id}/staff`)
+      .then(({ data }) => setStaffList((data.data || []).filter((s) => s.is_active)))
+      .catch(() => setStaffList([]));
+  }, [open, booking?.shop_id]);
 
   if (!open || !booking) return null;
 
@@ -47,6 +57,32 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
       setError(e?.response?.data?.message || e.message || "Could not update booking.");
     } finally {
       setBusy(null);
+    }
+  };
+
+  const reassign = async () => {
+    if (!reassignTo) return;
+    setError(null);
+    setReassigning(true);
+    try {
+      await api.post(`/booking/${booking.id}/reassign`, { staff_id: Number(reassignTo) });
+      await notify({
+        title: "Reassigned",
+        text: "Staff updated.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      onUpdated?.();
+      onClose?.();
+    } catch (e) {
+      if (e?.response?.status === 409) {
+        setError("That staff is already booked at this slot.");
+      } else {
+        setError(e?.response?.data?.message || e.message || "Could not reassign.");
+      }
+    } finally {
+      setReassigning(false);
     }
   };
 
@@ -96,6 +132,33 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
             <div>
               <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">WhatsApp</p>
               <p className="text-sm font-semibold text-[#4edea3] mt-1">{booking.customer_whatsapp}</p>
+            </div>
+          )}
+
+          {isBooked && staffList.length > 0 && (
+            <div className="bg-[#151c25] rounded-xl p-3 border border-[#414755]/20">
+              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest mb-2">Reassign staff</p>
+              <div className="flex gap-2">
+                <select
+                  value={reassignTo}
+                  onChange={(e) => setReassignTo(e.target.value)}
+                  className="flex-1 h-9 bg-[#080f17] border border-[#414755]/40 rounded-lg px-3 text-sm font-semibold text-white outline-none [color-scheme:dark]"
+                >
+                  <option value="">Pick a staff…</option>
+                  {staffList.map((s) => (
+                    <option key={s.id} value={s.id} disabled={s.id === booking.staff_id}>
+                      {s.name}{s.id === booking.staff_id ? " (current)" : ""}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={reassign}
+                  disabled={!reassignTo || reassigning}
+                  className="h-9 px-4 rounded-lg bg-[#4b8eff] hover:bg-[#4b8eff]/90 disabled:opacity-50 text-[11px] font-black text-white"
+                >
+                  {reassigning ? "Saving…" : "Reassign"}
+                </button>
+              </div>
             </div>
           )}
 

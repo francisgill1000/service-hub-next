@@ -433,7 +433,7 @@ function LandingPage() {
             <a href="#faq" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8b90a0] hover:text-white transition-colors">FAQ</a>
             <a href="/privacy-policy" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8b90a0] hover:text-white transition-colors">Privacy</a>
           </div>
-          <p className="text-[10px] font-bold text-[#414755] uppercase tracking-[0.2em] text-center">© 2026 REZZY · BUILT IN THE UAE</p>
+          <p className="text-[10px] font-bold text-[#414755] uppercase tracking-[0.2em] text-center">© 2026 Rezzy · Built in the UAE by Eloquent FZE LLC</p>
         </div>
       </footer>
     </div>

@@ -66,6 +66,17 @@ export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotCl
               <p className="text-[10px] font-bold">{b.start_time}{b.charges ? ` · AED ${b.charges}` : ""}</p>
               <p className="text-sm font-bold text-white truncate">{customerName}</p>
               {services && <p className="text-[10px] text-white/70 truncate">{services}</p>}
+              {b.staff?.name && (
+                <span className="block text-[10px] font-bold opacity-80 truncate">
+                  <span className="material-symbols-outlined text-[10px] align-middle">person</span>
+                  {b.staff.name}
+                </span>
+              )}
+              {b.staff_id == null && (
+                <span className="inline-block mt-0.5 px-1 py-0.5 rounded bg-[#f59e0b]/30 text-[#f59e0b] font-black text-[8px] uppercase tracking-wider">
+                  Queued
+                </span>
+              )}
             </button>
           );
         })}

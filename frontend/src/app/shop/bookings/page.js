@@ -11,6 +11,7 @@ import BookingsCalendarView from '@/components/Shop/Bookings/BookingsCalendarVie
 
 const STATUS_FILTERS = [
   { label: 'All',       value: null },
+  { label: 'Queued',    value: 'queued' },
   { label: 'Booked',    value: 'booked' },
   { label: 'Completed', value: 'completed' },
   { label: 'Cancelled', value: 'cancelled' },
@@ -28,6 +29,8 @@ export default function ShopBookingsPage() {
   const [dateTo, setDateTo]               = useState('');
   const [createOpen, setCreateOpen]       = useState(false);
   const [viewMode, setViewMode]           = useState('calendar');
+  const [staffList, setStaffList]         = useState([]);
+  const [selectedStaffId, setSelectedStaffId] = useState(null);
 
   useEffect(() => {
     try {
@@ -41,6 +44,13 @@ export default function ShopBookingsPage() {
   }, [viewMode]);
 
   useEffect(() => { fetchBookings(); }, [selectedStatus]);
+
+  useEffect(() => {
+    if (!shop?.id) return;
+    api.get(`/shops/${shop.id}/staff`)
+      .then(({ data }) => setStaffList(data.data || []))
+      .catch(() => setStaffList([]));
+  }, [shop?.id]);
 
   const fetchBookings = async () => {
     try {
@@ -80,7 +90,9 @@ export default function ShopBookingsPage() {
     const matchFrom = !dateFrom || bDate >= dateFrom;
     const matchTo   = !dateTo   || bDate <= dateTo;
 
-    return matchSearch && matchFrom && matchTo;
+    const matchStaff = selectedStaffId == null || b.staff_id === selectedStaffId;
+
+    return matchSearch && matchFrom && matchTo && matchStaff;
   });
 
   // Summary counts from full (unfiltered) list
@@ -170,6 +182,22 @@ export default function ShopBookingsPage() {
                   <option key={String(f.value)} value={f.value ?? ''}>
                     {f.label}
                   </option>
+                ))}
+              </select>
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[20px] pointer-events-none">expand_more</span>
+            </div>
+
+            {/* Staff dropdown */}
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none">person</span>
+              <select
+                value={selectedStaffId ?? ''}
+                onChange={(e) => setSelectedStaffId(e.target.value === '' ? null : Number(e.target.value))}
+                className="h-11 w-full md:w-52 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-10 text-sm font-semibold text-white focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all appearance-none cursor-pointer [color-scheme:dark]"
+              >
+                <option value="">All staff</option>
+                {staffList.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}{!s.is_active ? ' (inactive)' : ''}</option>
                 ))}
               </select>
               <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[20px] pointer-events-none">expand_more</span>

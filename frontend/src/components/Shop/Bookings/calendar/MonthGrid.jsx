@@ -85,6 +85,14 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                       <span className="text-[10px] font-semibold text-[#dce3f0] truncate">
                         {b.start_time ? `${b.start_time} ` : ""}{customerName}
                       </span>
+                      {b.staff?.name && (
+                        <span className="ml-1 text-[8px] font-black opacity-90">
+                          {b.staff.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                      {b.staff_id == null && (
+                        <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#f59e0b] inline-block" title="Queued" />
+                      )}
                     </button>
                   );
                 })}

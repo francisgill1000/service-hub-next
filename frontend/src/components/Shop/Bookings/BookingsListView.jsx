@@ -59,6 +59,18 @@ export default function BookingsListView({ bookings, totalCount }) {
                             <span className="ml-2 text-[#4edea3]">· {booking.customer_whatsapp}</span>
                           )}
                         </p>
+                        <p className="text-[10px] text-[#8b90a0] font-medium mt-0.5">
+                          {booking.staff?.name ? (
+                            <span>
+                              <span className="material-symbols-outlined text-[12px] align-middle mr-0.5">person</span>
+                              <span className="align-middle">{booking.staff.name}</span>
+                            </span>
+                          ) : booking.staff_id == null && booking.status !== "Booked" ? null : booking.staff_id == null ? (
+                            <span className="px-1.5 py-0.5 rounded bg-[#f59e0b]/20 text-[#f59e0b] font-bold text-[9px] uppercase tracking-wider">
+                              Queued — no staff
+                            </span>
+                          ) : null}
+                        </p>
                       </div>
                     </div>
                   </td>
@@ -129,6 +141,18 @@ export default function BookingsListView({ bookings, totalCount }) {
                 {booking.customer_whatsapp && (
                   <p className="text-[11px] text-[#4edea3] mt-0.5 font-semibold">{booking.customer_whatsapp}</p>
                 )}
+                <p className="text-[10px] text-[#8b90a0] font-medium mt-0.5">
+                  {booking.staff?.name ? (
+                    <span>
+                      <span className="material-symbols-outlined text-[12px] align-middle mr-0.5">person</span>
+                      <span className="align-middle">{booking.staff.name}</span>
+                    </span>
+                  ) : booking.staff_id == null && booking.status !== "Booked" ? null : booking.staff_id == null ? (
+                    <span className="px-1.5 py-0.5 rounded bg-[#f59e0b]/20 text-[#f59e0b] font-bold text-[9px] uppercase tracking-wider">
+                      Queued — no staff
+                    </span>
+                  ) : null}
+                </p>
                 <p className="text-xs text-[#8b90a0] mt-0.5 font-medium">{services}</p>
               </div>
 

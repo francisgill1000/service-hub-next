@@ -26,6 +26,7 @@ export default function BookingsListView({ bookings, totalCount }) {
             <tr className="bg-[#2e353f]/30 border-b border-[#414755]/20">
               <th className="px-5 py-4 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Customer</th>
               <th className="px-5 py-4 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Service</th>
+              <th className="px-5 py-4 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Staff</th>
               <th className="px-5 py-4 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Date & Time</th>
               <th className="px-5 py-4 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Status</th>
               <th className="px-5 py-4 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest text-right">Amount</th>
@@ -76,6 +77,22 @@ export default function BookingsListView({ bookings, totalCount }) {
                   </td>
                   <td className="px-5 py-4">
                     <p className="text-sm font-semibold text-[#dce3f0] max-w-[180px] truncate">{services}</p>
+                  </td>
+                  <td className="px-5 py-4">
+                    {booking.staff?.name ? (
+                      <div className="inline-flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-[#2e353f] flex items-center justify-center font-bold text-[11px] text-[#4b8eff]">
+                          {booking.staff.name.charAt(0).toUpperCase()}
+                        </div>
+                        <p className="text-sm font-semibold text-[#dce3f0]">{booking.staff.name}</p>
+                      </div>
+                    ) : booking.staff_id == null && booking.status === "Queued" ? (
+                      <span className="px-2 py-1 rounded-lg bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/20 font-black text-[10px] uppercase tracking-wider">
+                        Waiting
+                      </span>
+                    ) : (
+                      <span className="text-[#8b90a0] text-sm font-semibold">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-4">
                     <p className="text-sm font-semibold text-[#dce3f0]">{booking.show_date || booking.date || "—"}</p>
@@ -163,6 +180,23 @@ export default function BookingsListView({ bookings, totalCount }) {
                     {booking.show_date || booking.date || "—"}{booking.start_time ? ` · ${booking.start_time}` : ""}
                   </p>
                 </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-[#8b90a0] uppercase tracking-widest font-bold">Staff</p>
+                  <p className="text-xs font-semibold text-[#dce3f0] mt-0.5">
+                    {booking.staff?.name ? (
+                      <span className="inline-flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[12px] align-middle">person</span>
+                        {booking.staff.name}
+                      </span>
+                    ) : booking.staff_id == null && booking.status === "Queued" ? (
+                      <span className="text-[#f59e0b] font-black uppercase tracking-wider text-[10px]">Waiting</span>
+                    ) : (
+                      <span className="text-[#8b90a0]">—</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end pt-2 border-t border-[#414755]/20">
                 <p className="text-base font-black text-white">AED {booking.charges || "0"}</p>
               </div>
             </div>

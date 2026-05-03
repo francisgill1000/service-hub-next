@@ -38,6 +38,8 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
   const chipClass = STATUS_CHIP[booking.status] ?? STATUS_CHIP.Booked;
   const dotClass  = STATUS_DOT[booking.status]  ?? STATUS_DOT.Booked;
   const isBooked  = booking.status === "Booked";
+  const isQueued  = booking.status === "Queued";
+  const canAssign = isBooked || isQueued;
 
   const changeStatus = async (status) => {
     setError(null);
@@ -135,9 +137,11 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
             </div>
           )}
 
-          {isBooked && staffList.length > 0 && (
+          {canAssign && staffList.length > 0 && (
             <div className="bg-[#151c25] rounded-xl p-3 border border-[#414755]/20">
-              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest mb-2">Reassign staff</p>
+              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest mb-2">
+                {isQueued ? "Manually assign staff" : "Reassign staff"}
+              </p>
               <div className="flex gap-2">
                 <select
                   value={reassignTo}
@@ -156,7 +160,7 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
                   disabled={!reassignTo || reassigning}
                   className="h-9 px-4 rounded-lg bg-[#4b8eff] hover:bg-[#4b8eff]/90 disabled:opacity-50 text-[11px] font-black text-white"
                 >
-                  {reassigning ? "Saving…" : "Reassign"}
+                  {reassigning ? "Saving…" : (isQueued ? "Assign" : "Reassign")}
                 </button>
               </div>
             </div>

@@ -188,7 +188,17 @@ export default function ShopDashboard() {
                            const time = b.start_time ? formatTime(b.start_time) + (b.end_time ? ` - ${formatTime(b.end_time)}` : '') : (b.show_date || 'TBD');
                            return (
                               <div key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)}>
-                                 <BookingCard name={customerName} service={servicesText} time={time} day={day} month={month} isPrimary={false} isScheduled={false} />
+                                 <BookingCard
+                                    name={customerName}
+                                    service={servicesText}
+                                    time={time}
+                                    day={day}
+                                    month={month}
+                                    isPrimary={false}
+                                    isScheduled={false}
+                                    staffName={b.staff?.name}
+                                    isQueued={String(b.status).toLowerCase() === 'queued'}
+                                 />
                               </div>
                            );
                         })
@@ -307,6 +317,7 @@ export default function ShopDashboard() {
                                        <tr className="bg-[#2e353f]/30 border-b border-[#414755]/20">
                                           <th className="px-5 py-3 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Customer</th>
                                           <th className="px-5 py-3 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Service</th>
+                                          <th className="px-5 py-3 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Staff</th>
                                           <th className="px-5 py-3 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Date & Time</th>
                                           <th className="px-5 py-3 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest text-right">Amount</th>
                                        </tr>
@@ -327,6 +338,22 @@ export default function ShopDashboard() {
                                                    </div>
                                                 </td>
                                                 <td className="px-5 py-3.5"><p className="text-sm font-semibold text-[#c1c6d7] max-w-[150px] truncate">{services}</p></td>
+                                                <td className="px-5 py-3.5">
+                                                   {b.staff?.name ? (
+                                                      <div className="inline-flex items-center gap-2">
+                                                         <div className="w-7 h-7 rounded-full bg-[#2e353f] flex items-center justify-center font-bold text-[11px] text-[#4b8eff]">
+                                                            {b.staff.name.charAt(0).toUpperCase()}
+                                                         </div>
+                                                         <p className="text-sm font-semibold text-[#dce3f0]">{b.staff.name}</p>
+                                                      </div>
+                                                   ) : String(b.status).toLowerCase() === 'queued' ? (
+                                                      <span className="px-2 py-1 rounded-lg bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/20 font-black text-[10px] uppercase tracking-wider">
+                                                         Waiting
+                                                      </span>
+                                                   ) : (
+                                                      <span className="text-[#8b90a0] text-sm font-semibold">—</span>
+                                                   )}
+                                                </td>
                                                 <td className="px-5 py-3.5">
                                                    <p className="text-sm font-semibold text-[#dce3f0]">{month} {day}</p>
                                                    <p className="text-[11px] text-[#8b90a0] font-medium mt-0.5">{time}</p>
@@ -467,7 +494,7 @@ function StatCard({ label, value, trend, Icon }) {
    );
 }
 
-function BookingCard({ name, service, time, day, month, isPrimary, isScheduled }) {
+function BookingCard({ name, service, time, day, month, isPrimary, isScheduled, staffName, isQueued }) {
    return (
       <div className={`group flex items-center gap-4 rounded-xl p-4 bg-white dark:bg-[#1c2331] border border-slate-100 dark:border-slate-800 transition-all active:scale-[0.98] ${isScheduled ? 'opacity-80' : ''}`}>
          <div className={`flex flex-col items-center justify-center min-w-[50px] h-[50px] rounded-lg ${isPrimary ? 'bg-blue-600/10 text-blue-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
@@ -482,9 +509,21 @@ function BookingCard({ name, service, time, day, month, isPrimary, isScheduled }
                </span>
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-xs font-medium truncate mt-0.5">{service}</p>
-            <div className="flex items-center gap-1 mt-2 text-slate-400">
-               <Clock size={12} />
-               <span className="text-[11px] font-medium">{time}</span>
+            <div className="flex items-center gap-3 mt-2 text-slate-400 flex-wrap">
+               <span className="inline-flex items-center gap-1">
+                  <Clock size={12} />
+                  <span className="text-[11px] font-medium">{time}</span>
+               </span>
+               {staffName ? (
+                  <span className="inline-flex items-center gap-1 text-blue-500">
+                     <span className="material-symbols-outlined text-[12px]">person</span>
+                     <span className="text-[11px] font-bold truncate max-w-[80px]">{staffName}</span>
+                  </span>
+               ) : isQueued ? (
+                  <span className="px-1.5 py-0.5 rounded bg-[#f59e0b]/20 text-[#f59e0b] font-black text-[9px] uppercase tracking-wider">
+                     Waiting
+                  </span>
+               ) : null}
             </div>
          </div>
          <ChevronRight className="text-slate-400" size={18} />

@@ -12,11 +12,12 @@ import { useShop } from '../../context/ShopContext';
 
 const STATUS_COLORS = {
   booked: Colors.primary,
+  queued: Colors.orange,
   completed: Colors.green,
   cancelled: Colors.slateGray,
 };
 
-const STATUS_FILTERS = ['All', 'Booked', 'Completed', 'Cancelled'];
+const STATUS_FILTERS = ['All', 'Queued', 'Booked', 'Completed', 'Cancelled'];
 
 export default function ShopBookingsScreen() {
   const navigation = useNavigation();
@@ -75,6 +76,18 @@ export default function ShopBookingsScreen() {
             </View>
           </View>
           <Text style={styles.servicesText} numberOfLines={1}>{services}</Text>
+          {item.staff?.name ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+              <MaterialIcons name="person" size={11} color={Colors.lightBlue} />
+              <Text style={{ color: Colors.lightBlue, fontSize: 11, fontWeight: '600' }}>{item.staff.name}</Text>
+            </View>
+          ) : item.staff_id == null && status.toLowerCase() === 'queued' ? (
+            <View style={{ flexDirection: 'row', marginTop: 2 }}>
+              <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, backgroundColor: `${Colors.orange}33` }}>
+                <Text style={{ color: Colors.orange, fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 }}>Waiting — no staff</Text>
+              </View>
+            </View>
+          ) : null}
           <View style={styles.bottomRow}>
             {!!item.start_time && (
               <View style={styles.timeRow}>

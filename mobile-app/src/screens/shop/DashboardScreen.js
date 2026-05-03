@@ -68,7 +68,16 @@ export default function DashboardScreen() {
   useEffect(() => { if (shop?.id) fetchData(); }, [shop?.id]);
 
   const todayISO = new Date().toISOString().slice(0, 10);
-  const todayBookings = bookings.filter(b => b.date === todayISO);
+  const tomorrowISO = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
+  const dateOf = (b) => String(b?.date || b?.booking_date || '').slice(0, 10);
+  const todayBookings = bookings.filter(b => dateOf(b) === todayISO);
+  const tomorrowBookings = bookings
+    .filter(b => {
+      const s = String(b.status).toLowerCase();
+      return dateOf(b) === tomorrowISO && (s === 'booked' || s === 'queued');
+    })
+    .sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+  const tomorrowPending = tomorrowBookings.filter(b => !b.reminder_sent_at && b.customer_whatsapp).length;
   const completedCount = bookings.filter(b => String(b.status).toLowerCase() === 'completed').length;
 
   const upcomingBookings = bookings
@@ -127,6 +136,29 @@ export default function DashboardScreen() {
           <StatCard label="Completed" value={String(completedCount)} icon="task-alt" color={Colors.green} />
         </View>
 
+        {/* Tomorrow's Reminders card */}
+        <TouchableOpacity
+          style={[styles.qrCard, { backgroundColor: `${Colors.orange}11`, borderColor: `${Colors.orange}33` }]}
+          onPress={() => navigation.navigate('Reminders')}
+        >
+          <View style={[styles.qrIcon, { backgroundColor: `${Colors.orange}22` }]}>
+            <MaterialIcons name="notifications-active" size={22} color={Colors.orange} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.qrTitle}>
+              Tomorrow's Reminders · {tomorrowBookings.length}
+            </Text>
+            <Text style={styles.qrSubtitle}>
+              {tomorrowPending > 0
+                ? `${tomorrowPending} still need a reminder`
+                : tomorrowBookings.length > 0
+                  ? 'All reminded · tap to manage'
+                  : 'Nothing tomorrow — enjoy the day off'}
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={20} color={Colors.slateGray} />
+        </TouchableOpacity>
+
         {/* Scan QR Login shortcut */}
         <TouchableOpacity style={styles.qrCard} onPress={() => navigation.navigate('ScanLogin')}>
           <View style={styles.qrIcon}>
@@ -146,6 +178,8 @@ export default function DashboardScreen() {
         <View style={styles.quickActions}>
           {[
             { label: 'All Bookings', sub: 'View & manage', icon: 'event-note', nav: 'ShopBookings', color: Colors.lightBlue },
+            { label: 'Reminders', sub: "Tomorrow's WhatsApp nudges", icon: 'notifications-active', nav: 'Reminders', color: Colors.orange },
+            { label: 'Staff', sub: 'Add & toggle staff', icon: 'people', nav: 'Staff', color: Colors.lightBlue },
             { label: 'Services', sub: 'Add or edit', icon: 'category', nav: 'Services', color: Colors.green },
             { label: 'Working Hours', sub: 'Set open & close', icon: 'schedule', nav: 'Hours', color: Colors.orange },
             { label: 'Business Profile', sub: 'Edit info & images', icon: 'storefront', nav: 'Profile', color: Colors.slateGray },

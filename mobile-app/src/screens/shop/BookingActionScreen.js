@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert,
+  ActivityIndicator, Alert, Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/colors';
 import api from '../../utils/api';
 
-const STATUS_COLORS = { Booked: Colors.primary, Completed: Colors.green, Cancelled: Colors.slateGray };
+const STATUS_COLORS = { Booked: Colors.primary, Queued: Colors.orange, Completed: Colors.green, Cancelled: Colors.slateGray };
 const STATUS_OPTIONS = ['Booked', 'Completed', 'Cancelled'];
 
 export default function BookingActionScreen({ route, navigation }) {
@@ -16,24 +16,100 @@ export default function BookingActionScreen({ route, navigation }) {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [staffList, setStaffList] = useState([]);
+  const [assigning, setAssigning] = useState(false);
+  const [markingPaid, setMarkingPaid] = useState(false);
 
-  useEffect(() => {
+  const fetchBooking = () =>
     api.get(`/booking/${bookingId}`)
       .then(res => setBooking(res.data?.data || res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      .catch(console.error);
+
+  useEffect(() => {
+    fetchBooking().finally(() => setLoading(false));
   }, [bookingId]);
+
+  useEffect(() => {
+    const sId = booking?.shop_id || booking?.shop?.id;
+    if (!sId) return;
+    api.get(`/shops/${sId}/staff`)
+      .then(({ data }) => setStaffList((data?.data || []).filter(s => s.is_active)))
+      .catch(() => setStaffList([]));
+  }, [booking?.shop_id, booking?.shop?.id]);
 
   const updateStatus = async (status) => {
     setUpdating(true);
     try {
       await api.put(`/booking/${bookingId}`, { status });
-      setBooking(b => ({ ...b, status }));
+      // Re-fetch so we get the auto-created invoice on completion / staff_id null on cancel
+      await fetchBooking();
     } catch (err) {
       Alert.alert('Error', err.response?.data?.message || 'Failed to update status.');
     } finally {
       setUpdating(false);
     }
+  };
+
+  const assignStaff = (staff) => {
+    Alert.alert(
+      booking?.staff_id ? 'Reassign?' : 'Assign?',
+      `${booking?.staff_id ? 'Move' : 'Assign'} this booking to ${staff.name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Confirm',
+          onPress: async () => {
+            setAssigning(true);
+            try {
+              await api.post(`/booking/${bookingId}/reassign`, { staff_id: staff.id });
+              await fetchBooking();
+            } catch (err) {
+              if (err.response?.status === 409) {
+                Alert.alert('Conflict', 'That staff is already booked at this slot.');
+              } else {
+                Alert.alert('Error', err.response?.data?.message || 'Could not assign.');
+              }
+            } finally {
+              setAssigning(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const markInvoicePaid = async () => {
+    if (!booking?.invoice?.id) return;
+    setMarkingPaid(true);
+    try {
+      const { data } = await api.post(`/invoice/${booking.invoice.id}/mark-paid`);
+      setBooking(b => ({ ...b, invoice: { ...b.invoice, ...data.data } }));
+    } catch (err) {
+      Alert.alert('Error', err.response?.data?.message || 'Could not mark paid.');
+    } finally {
+      setMarkingPaid(false);
+    }
+  };
+
+  const downloadInvoice = async () => {
+    const apiBase = api.defaults?.baseURL || '';
+    const url = `${apiBase}/booking/${bookingId}/invoice/pdf`;
+    try { await Linking.openURL(url); } catch { Alert.alert('Error', 'Could not open invoice.'); }
+  };
+
+  const sendInvoiceWhatsApp = async () => {
+    if (!booking?.customer_whatsapp || !booking?.invoice) return;
+    const apiBase = api.defaults?.baseURL || '';
+    const pdfUrl = `${apiBase}/booking/${bookingId}/invoice/pdf`;
+    const num = String(booking.customer_whatsapp).replace(/\D/g, '');
+    const msg = encodeURIComponent(
+      `Your invoice ${booking.invoice.invoice_number} from ${booking.shop?.name || 'us'}: ${pdfUrl}`
+    );
+    const wa = `whatsapp://send?phone=${num}&text=${msg}`;
+    try {
+      const can = await Linking.canOpenURL(wa).catch(() => false);
+      await Linking.openURL(can ? wa : `sms:${num}?body=${msg}`);
+    } catch { Alert.alert('Error', 'Could not open messaging app.'); }
   };
 
   const confirmStatusChange = (status) => {
@@ -134,6 +210,130 @@ export default function BookingActionScreen({ route, navigation }) {
           </View>
         )}
 
+        {/* Staff Section */}
+        {(status === 'Booked' || status === 'Queued') && (
+          <View style={styles.detailCard}>
+            <Text style={styles.cardSectionLabel}>Staff</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Currently assigned</Text>
+              {booking.staff?.name ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={[styles.smallAvatar, { backgroundColor: `${Colors.primary}22` }]}>
+                    <Text style={[styles.smallAvatarText, { color: Colors.primary }]}>
+                      {booking.staff.name.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                  <Text style={styles.detailValue}>{booking.staff.name}</Text>
+                </View>
+              ) : (
+                <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: `${Colors.orange}22` }}>
+                  <Text style={{ color: Colors.orange, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 }}>Waiting</Text>
+                </View>
+              )}
+            </View>
+
+            {staffList.length > 0 && (
+              <View style={{ marginTop: 12 }}>
+                <Text style={[styles.cardSectionLabel, { marginBottom: 8, marginTop: 4 }]}>
+                  {booking.staff_id ? 'Reassign to' : 'Manually assign'}
+                </Text>
+                <View style={styles.staffPickerRow}>
+                  {staffList.map(s => {
+                    const current = s.id === booking.staff_id;
+                    return (
+                      <TouchableOpacity
+                        key={s.id}
+                        style={[styles.staffChip, current && { opacity: 0.4 }]}
+                        onPress={() => !current && assignStaff(s)}
+                        disabled={current || assigning}
+                      >
+                        <Text style={styles.staffChipText}>
+                          {s.name}{current ? ' (current)' : ''}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+                {assigning && <ActivityIndicator size="small" color={Colors.primary} style={{ marginTop: 8 }} />}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Invoice Section */}
+        {booking.invoice && (
+          <View style={styles.detailCard}>
+            <Text style={styles.cardSectionLabel}>Invoice</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Invoice no.</Text>
+              <Text style={styles.detailValue}>{booking.invoice.invoice_number}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Status</Text>
+              <View style={{
+                paddingHorizontal: 10, paddingVertical: 3, borderRadius: 6,
+                backgroundColor: booking.invoice.status === 'paid'
+                  ? `${Colors.green}22`
+                  : booking.invoice.status === 'cancelled'
+                    ? `${Colors.red}22`
+                    : `${Colors.primary}22`,
+              }}>
+                <Text style={{
+                  fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6,
+                  color: booking.invoice.status === 'paid'
+                    ? Colors.green
+                    : booking.invoice.status === 'cancelled'
+                      ? Colors.red
+                      : Colors.primary,
+                }}>
+                  {booking.invoice.status}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Total</Text>
+              <Text style={[styles.detailValue, { fontSize: 15, fontWeight: '800' }]}>
+                AED {Number(booking.invoice.total || 0).toFixed(2)}
+              </Text>
+            </View>
+
+            <View style={styles.invoiceBtnRow}>
+              <TouchableOpacity
+                style={[styles.invoiceBtn, { backgroundColor: `${Colors.primary}15`, borderColor: `${Colors.primary}30` }]}
+                onPress={downloadInvoice}
+              >
+                <MaterialIcons name="picture-as-pdf" size={16} color={Colors.primary} />
+                <Text style={[styles.invoiceBtnText, { color: Colors.primary }]}>PDF</Text>
+              </TouchableOpacity>
+              {booking.invoice.status === 'issued' && (
+                <TouchableOpacity
+                  style={[styles.invoiceBtn, { backgroundColor: `${Colors.green}15`, borderColor: `${Colors.green}30` }]}
+                  onPress={markInvoicePaid}
+                  disabled={markingPaid}
+                >
+                  {markingPaid ? (
+                    <ActivityIndicator size="small" color={Colors.green} />
+                  ) : (
+                    <>
+                      <MaterialIcons name="paid" size={16} color={Colors.green} />
+                      <Text style={[styles.invoiceBtnText, { color: Colors.green }]}>Paid</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              )}
+              {booking.customer_whatsapp && (
+                <TouchableOpacity
+                  style={[styles.invoiceBtn, { backgroundColor: '#25D36622', borderColor: '#25D36655' }]}
+                  onPress={sendInvoiceWhatsApp}
+                >
+                  <MaterialIcons name="share" size={16} color="#25D366" />
+                  <Text style={[styles.invoiceBtnText, { color: '#25D366' }]}>Send</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
+
         {/* Status Actions */}
         <View style={styles.actionsCard}>
           <Text style={styles.cardSectionLabel}>Update Status</Text>
@@ -211,4 +411,19 @@ const styles = StyleSheet.create({
   actionButtons: { gap: 10 },
   actionBtn: { height: 48, borderWidth: 1, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   actionBtnText: { fontSize: 14, fontWeight: '700' },
+  smallAvatar: { width: 26, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  smallAvatarText: { fontSize: 11, fontWeight: '800' },
+  staffPickerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  staffChip: {
+    paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10,
+    backgroundColor: Colors.navyAccent, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+  },
+  staffChipText: { color: Colors.white, fontSize: 12, fontWeight: '600' },
+  invoiceBtnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+  invoiceBtn: {
+    flex: 1, minWidth: 80, height: 40, borderRadius: 10,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    borderWidth: 1,
+  },
+  invoiceBtnText: { fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
 });

@@ -4,12 +4,14 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-function fmt(d) {
+function toISO(d) {
+  if (!d) return "";
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
+const fromISO = (s) => (s ? new Date(`${s}T00:00:00`) : null);
 
 function presetRange(key) {
   const today = new Date();
@@ -17,25 +19,25 @@ function presetRange(key) {
     case "7d": {
       const from = new Date();
       from.setDate(today.getDate() - 6);
-      return { from: fmt(from), to: fmt(today) };
+      return { from: toISO(from), to: toISO(today) };
     }
     case "30d": {
       const from = new Date();
       from.setDate(today.getDate() - 29);
-      return { from: fmt(from), to: fmt(today) };
+      return { from: toISO(from), to: toISO(today) };
     }
     case "thisMonth": {
       const from = new Date(today.getFullYear(), today.getMonth(), 1);
-      return { from: fmt(from), to: fmt(today) };
+      return { from: toISO(from), to: toISO(today) };
     }
     case "lastMonth": {
       const from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
       const to = new Date(today.getFullYear(), today.getMonth(), 0);
-      return { from: fmt(from), to: fmt(to) };
+      return { from: toISO(from), to: toISO(to) };
     }
     case "thisYear": {
       const from = new Date(today.getFullYear(), 0, 1);
-      return { from: fmt(from), to: fmt(today) };
+      return { from: toISO(from), to: toISO(today) };
     }
     default:
       return null;
@@ -48,8 +50,17 @@ const PRESETS = [
   { key: "lastMonth", label: "Last month" },
   { key: "30d", label: "Last 30 days" },
   { key: "thisYear", label: "This year" },
-  { key: "custom", label: "Custom" },
 ];
+
+// Detect if a {from, to} matches a preset (so the active chip stays in sync)
+function detectPreset(value) {
+  if (!value || !value.from || !value.to) return null;
+  for (const p of PRESETS) {
+    const r = presetRange(p.key);
+    if (r && r.from === value.from && r.to === value.to) return p.key;
+  }
+  return null;
+}
 
 export default function DateRangePicker({ value, onChange }) {
   const [activePreset, setActivePreset] = useState("thisMonth");
@@ -61,17 +72,14 @@ export default function DateRangePicker({ value, onChange }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Keep the chip in sync if value changes from outside or via the picker
+  useEffect(() => {
+    setActivePreset(detectPreset(value));
+  }, [value]);
+
   const choosePreset = (key) => {
     setActivePreset(key);
-    if (key !== "custom") {
-      onChange(presetRange(key));
-    }
-  };
-
-  const updateCustom = (which, date) => {
-    const next = { ...value };
-    next[which] = fmt(date);
-    onChange(next);
+    onChange(presetRange(key));
   };
 
   return (
@@ -90,32 +98,25 @@ export default function DateRangePicker({ value, onChange }) {
             {p.label}
           </button>
         ))}
-      </div>
 
-      {activePreset === "custom" && value && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">From</span>
+        <div className="relative booking-range-picker w-full md:w-72 mt-2 md:mt-0 md:ml-auto">
+          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none z-10">date_range</span>
           <DatePicker
-            selected={value.from ? new Date(value.from + "T00:00:00") : null}
-            onChange={(d) => d && updateCustom("from", d)}
+            selectsRange
+            startDate={fromISO(value?.from)}
+            endDate={fromISO(value?.to)}
+            onChange={([start, end]) => {
+              onChange({ from: toISO(start), to: toISO(end) });
+            }}
+            isClearable
+            placeholderText="Custom range"
             dateFormat="yyyy-MM-dd"
-            className="h-9 px-3 bg-[#080f17] border border-[#414755]/40 rounded-lg text-sm font-semibold text-white outline-none [color-scheme:dark]"
-          />
-          <span className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">To</span>
-          <DatePicker
-            selected={value.to ? new Date(value.to + "T00:00:00") : null}
-            onChange={(d) => d && updateCustom("to", d)}
-            dateFormat="yyyy-MM-dd"
-            className="h-9 px-3 bg-[#080f17] border border-[#414755]/40 rounded-lg text-sm font-semibold text-white outline-none [color-scheme:dark]"
+            calendarClassName="booking-range-cal"
+            popperPlacement="bottom-end"
+            monthsShown={2}
           />
         </div>
-      )}
-
-      {value && (
-        <p className="text-[10px] text-[#8b90a0] font-semibold">
-          Showing: <span className="text-white">{value.from}</span> → <span className="text-white">{value.to}</span>
-        </p>
-      )}
+      </div>
     </div>
   );
 }

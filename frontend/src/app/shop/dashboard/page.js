@@ -112,9 +112,13 @@ export default function ShopDashboard() {
    const todayISO  = new Date().toISOString().slice(0, 10);
    const tomorrowISO = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
    const isCancelled    = (b) => String(b?.status).toLowerCase() === 'cancelled';
-   const todayBookings  = bookings.filter(b => b.date === todayISO);
+   const dateOf = (b) => String(b?.date || b?.booking_date || '').slice(0, 10);
+   const todayBookings  = bookings.filter(b => dateOf(b) === todayISO);
    const tomorrowBookings = bookings
-      .filter(b => b.date === tomorrowISO && String(b.status).toLowerCase() === 'booked')
+      .filter(b => {
+         const s = String(b.status).toLowerCase();
+         return dateOf(b) === tomorrowISO && (s === 'booked' || s === 'queued');
+      })
       .sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
    const tomorrowPending = tomorrowBookings.filter(b => !b.reminder_sent_at && b.customer_whatsapp).length;
    const todayRevenue   = todayBookings.reduce((s, b) => s + (isCancelled(b) ? 0 : Number(b.charges || 0)), 0);

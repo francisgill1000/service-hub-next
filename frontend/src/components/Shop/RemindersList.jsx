@@ -53,12 +53,18 @@ export default function RemindersList() {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get("/shop/all-bookings", {
-        params: { shop_id: shop.id, status: "booked" },
+      // Use /shop/bookings — returns a 17-day window (no pagination), already eager-loads staff
+      const { data } = await api.get("/shop/bookings", {
+        params: { shop_id: shop.id },
       });
-      const all = data.data || data || [];
+      const all = data.data || [];
       setBookings(
-        all.filter((b) => (b.date || b.booking_date) === tomorrow)
+        all.filter((b) => {
+          const date = String(b.date || b.booking_date || "").slice(0, 10);
+          const status = String(b.status || "").toLowerCase();
+          // Include both booked AND queued — queued bookings still need a reminder
+          return date === tomorrow && (status === "booked" || status === "queued");
+        })
       );
     } catch (e) {
       console.error("Error fetching bookings:", e);

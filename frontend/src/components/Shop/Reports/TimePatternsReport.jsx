@@ -5,10 +5,21 @@ import api from "@/utils/api";
 
 const aed = (n) => `AED ${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
-function shade(v, max) {
-  if (max === 0 || v === 0) return "transparent";
-  const alpha = Math.max(0.1, Math.min(0.9, v / max));
-  return `rgba(75, 142, 255, ${alpha})`;
+// 5-step intensity scale (matches the legend below)
+function intensityClass(v, max) {
+  if (max === 0 || v === 0) return "bg-[#080f17] border border-[#414755]/20";
+  const ratio = v / max;
+  if (ratio <= 0.2) return "bg-[#4b8eff]/15 border border-[#4b8eff]/25";
+  if (ratio <= 0.4) return "bg-[#4b8eff]/30 border border-[#4b8eff]/40";
+  if (ratio <= 0.6) return "bg-[#4b8eff]/50 border border-[#4b8eff]/60";
+  if (ratio <= 0.8) return "bg-[#4b8eff]/75 border border-[#4b8eff]/80";
+  return "bg-[#4b8eff] border border-[#4b8eff]";
+}
+
+function textColor(v, max) {
+  if (max === 0 || v === 0) return "text-transparent";
+  const ratio = v / max;
+  return ratio > 0.5 ? "text-white" : "text-[#dce3f0]";
 }
 
 export default function TimePatternsReport({ shopId, from, to }) {
@@ -62,42 +73,63 @@ export default function TimePatternsReport({ shopId, from, to }) {
       </div>
 
       {/* Heatmap */}
-      <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-5 overflow-x-auto">
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0] mb-4">Heatmap (day × hour)</p>
-        <table className="border-collapse text-[10px]" style={{ minWidth: "560px" }}>
-          <thead>
-            <tr>
-              <th className="text-left pr-2 text-[#8b90a0] font-bold">Day</th>
-              {Array.from({ length: 24 }, (_, h) => (
-                <th key={h} className="px-1 py-1 text-center text-[#8b90a0] font-bold" style={{ width: "22px" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.day_labels.map((label, dow) => (
-              <tr key={label}>
-                <td className="pr-2 py-1 font-bold text-[#dce3f0]">{label}</td>
-                {Array.from({ length: 24 }, (_, h) => {
-                  const v = data.grid[dow][h] || 0;
-                  return (
-                    <td
-                      key={h}
-                      title={`${label} ${h}:00 — ${v} booking${v !== 1 ? "s" : ""}`}
-                      className="text-center text-[10px] font-black text-white"
-                      style={{
-                        background: shade(v, maxCell),
-                        height: "26px",
-                        border: "1px solid rgba(65,71,85,0.15)",
-                      }}
-                    >
-                      {v > 0 ? v : ""}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">Heatmap (day × hour)</p>
+          <div className="flex items-center gap-2 text-[9px] font-bold text-[#8b90a0] uppercase tracking-widest">
+            <span>Less</span>
+            <div className="flex items-center gap-1">
+              <div className="w-4 h-4 rounded-md bg-[#080f17] border border-[#414755]/20" />
+              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/15 border border-[#4b8eff]/25" />
+              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/30 border border-[#4b8eff]/40" />
+              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/50 border border-[#4b8eff]/60" />
+              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/75 border border-[#4b8eff]/80" />
+              <div className="w-4 h-4 rounded-md bg-[#4b8eff] border border-[#4b8eff]" />
+            </div>
+            <span>More</span>
+          </div>
+        </div>
+
+        {/* Hour header row */}
+        <div
+          className="grid items-center gap-[3px] mb-1.5"
+          style={{ gridTemplateColumns: "48px repeat(24, minmax(0, 1fr))" }}
+        >
+          <div></div>
+          {Array.from({ length: 24 }, (_, h) => (
+            <div
+              key={h}
+              className={`text-[9px] font-bold text-[#8b90a0] text-center ${h % 3 === 0 ? "" : "opacity-40"}`}
+            >
+              {String(h).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
+
+        {/* Day rows */}
+        {data.day_labels.map((label, dow) => (
+          <div
+            key={label}
+            className="grid items-center gap-[3px] mb-[3px]"
+            style={{ gridTemplateColumns: "48px repeat(24, minmax(0, 1fr))" }}
+          >
+            <div className="pr-2 text-[10px] font-black text-[#dce3f0] text-right uppercase tracking-wider">
+              {label}
+            </div>
+            {Array.from({ length: 24 }, (_, h) => {
+              const v = data.grid[dow][h] || 0;
+              return (
+                <div
+                  key={h}
+                  title={`${label} ${String(h).padStart(2, "0")}:00 — ${v} booking${v !== 1 ? "s" : ""}`}
+                  className={`rounded-md flex items-center justify-center text-[10px] font-black h-8 ${intensityClass(v, maxCell)} ${textColor(v, maxCell)} transition-transform hover:scale-110 cursor-default`}
+                >
+                  {v > 0 ? v : ""}
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {/* By day + by hour */}

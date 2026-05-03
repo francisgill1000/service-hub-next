@@ -110,8 +110,13 @@ export default function ShopDashboard() {
 
    const todayStr  = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
    const todayISO  = new Date().toISOString().slice(0, 10);
+   const tomorrowISO = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
    const isCancelled    = (b) => String(b?.status).toLowerCase() === 'cancelled';
    const todayBookings  = bookings.filter(b => b.date === todayISO);
+   const tomorrowBookings = bookings
+      .filter(b => b.date === tomorrowISO && String(b.status).toLowerCase() === 'booked')
+      .sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+   const tomorrowPending = tomorrowBookings.filter(b => !b.reminder_sent_at && b.customer_whatsapp).length;
    const todayRevenue   = todayBookings.reduce((s, b) => s + (isCancelled(b) ? 0 : Number(b.charges || 0)), 0);
    const completedCount = bookings.filter(b => String(b.status).toLowerCase() === 'completed').length;
    const revenueBookings = (totalBookings ?? 0) - (cancelledCount ?? 0);
@@ -172,6 +177,29 @@ export default function ShopDashboard() {
                         <ChevronRight size={18} className="text-slate-400" />
                      </div>
                   </button>
+               </div>
+
+               {/* Tomorrow's Reminders card (mobile) */}
+               <div
+                  onClick={() => router.push('/shop/reminders')}
+                  className="mt-4 p-4 rounded-xl bg-gradient-to-br from-[#f59e0b]/15 to-[#f59e0b]/5 border border-[#f59e0b]/30 cursor-pointer active:scale-[0.98] transition-all"
+               >
+                  <div className="flex items-start justify-between">
+                     <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-[#f59e0b]">Tomorrow's reminders</p>
+                        <p className="text-xl font-black text-white mt-1">
+                           {tomorrowBookings.length} {tomorrowBookings.length === 1 ? 'booking' : 'bookings'}
+                        </p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                           {tomorrowPending > 0
+                              ? `${tomorrowPending} still need a reminder`
+                              : tomorrowBookings.length > 0
+                                 ? 'All reminded · tap to manage'
+                                 : 'Nothing tomorrow — enjoy the day off'}
+                        </p>
+                     </div>
+                     <span className="material-symbols-outlined text-[#f59e0b]">notifications_active</span>
+                  </div>
                </div>
 
                <div className="pt-6">
@@ -300,6 +328,60 @@ export default function ShopDashboard() {
                                  </div>
                               );
                            })}
+                        </div>
+                     </div>
+
+                     {/* Tomorrow's Reminders card (desktop) */}
+                     <div
+                        onClick={() => router.push('/shop/reminders')}
+                        className="cursor-pointer rounded-xl bg-gradient-to-br from-[#f59e0b]/10 to-[#f59e0b]/5 border border-[#f59e0b]/30 p-5 hover:border-[#f59e0b]/50 transition-all"
+                     >
+                        <div className="flex items-start justify-between gap-4">
+                           <div className="flex-1 min-w-0">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-[#f59e0b]">Tomorrow's Reminders</p>
+                              <div className="flex items-baseline gap-3 mt-2 flex-wrap">
+                                 <span className="text-2xl font-black text-white">{tomorrowBookings.length}</span>
+                                 <span className="text-[11px] font-semibold text-[#8b90a0]">
+                                    {tomorrowBookings.length === 1 ? 'booking' : 'bookings'}
+                                 </span>
+                                 {tomorrowPending > 0 && (
+                                    <span className="px-2 py-0.5 rounded-md bg-[#f59e0b]/20 text-[#f59e0b] text-[10px] font-black uppercase tracking-wider">
+                                       {tomorrowPending} to send
+                                    </span>
+                                 )}
+                                 {tomorrowBookings.length > 0 && tomorrowPending === 0 && (
+                                    <span className="px-2 py-0.5 rounded-md bg-[#4edea3]/20 text-[#4edea3] text-[10px] font-black uppercase tracking-wider">
+                                       all reminded
+                                    </span>
+                                 )}
+                              </div>
+
+                              {tomorrowBookings.length > 0 && (
+                                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                                    {tomorrowBookings.slice(0, 3).map((b) => {
+                                       const time = b.start_time ? String(b.start_time).slice(0, 5) : '—';
+                                       const name = b.customer_name || b.customer?.name || 'Guest';
+                                       return (
+                                          <span key={b.id} className="text-[11px] text-[#c1c6d7] font-semibold">
+                                             {time} · <span className="text-[#8b90a0]">{name}</span>
+                                          </span>
+                                       );
+                                    })}
+                                    {tomorrowBookings.length > 3 && (
+                                       <span className="text-[11px] text-[#8b90a0] font-semibold">+{tomorrowBookings.length - 3} more</span>
+                                    )}
+                                 </div>
+                              )}
+
+                              {tomorrowBookings.length === 0 && (
+                                 <p className="text-[11px] text-[#8b90a0] font-semibold mt-2">Nothing scheduled — enjoy the day off.</p>
+                              )}
+                           </div>
+                           <div className="shrink-0">
+                              <div className="w-12 h-12 rounded-xl bg-[#f59e0b]/15 flex items-center justify-center">
+                                 <span className="material-symbols-outlined text-[24px] text-[#f59e0b]">notifications_active</span>
+                              </div>
+                           </div>
                         </div>
                      </div>
 

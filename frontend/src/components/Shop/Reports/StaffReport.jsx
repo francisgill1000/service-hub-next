@@ -77,10 +77,10 @@ export default function StaffReport({ shopId, from, to }) {
       </div>
 
       {/* Per-staff table */}
-      <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden overflow-x-auto">
+      <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden overflow-x-auto shadow-md">
         <table className="w-full">
           <thead>
-            <tr className="bg-brand-hover/30 border-b border-brand-border/20">
+            <tr className="bg-brand-elevated border-b border-brand-border">
               <Th k="staff_name" label="Staff" />
               <Th k="total_bookings" label="Bookings" right />
               <Th k="completed" label="Done" right />
@@ -90,7 +90,7 @@ export default function StaffReport({ shopId, from, to }) {
               <Th k="completion_rate" label="Done %" right />
             </tr>
           </thead>
-          <tbody className="divide-y divide-brand-border/10">
+          <tbody className="divide-y divide-brand-border/40">
             {rows.map((r) => (
               <tr key={r.staff_id ?? r.staff_name}>
                 <td className="px-4 py-3 text-sm font-bold text-brand-text">{r.staff_name}</td>

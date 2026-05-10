@@ -134,8 +134,8 @@ export default function TimePatternsReport({ shopId, from, to }) {
 
       {/* By day + by hour */}
       <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-brand-border/20">
+        <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden shadow-md">
+          <div className="px-5 py-3 border-b border-brand-border">
             <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">By day of week</p>
           </div>
           <div className="p-4 space-y-2">
@@ -155,8 +155,8 @@ export default function TimePatternsReport({ shopId, from, to }) {
           </div>
         </div>
 
-        <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-brand-border/20">
+        <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden shadow-md">
+          <div className="px-5 py-3 border-b border-brand-border">
             <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">By hour of day</p>
           </div>
           <div className="p-4 space-y-1.5 max-h-80 overflow-y-auto">

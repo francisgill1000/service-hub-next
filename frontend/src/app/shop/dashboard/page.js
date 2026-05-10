@@ -427,12 +427,12 @@ export default function ShopDashboard() {
                            <h3 className="text-sm font-black text-brand-text">Upcoming Bookings</h3>
                            <button onClick={() => router.push('/shop/bookings')} className="text-brand-primary text-[10px] font-black uppercase tracking-widest hover:underline">View All</button>
                         </div>
-                        <div className="bg-brand-elevated rounded-xl overflow-x-auto border border-brand-border/20 shadow-xl shadow-black/20">
+                        <div className="bg-brand-surface rounded-xl overflow-x-auto border border-brand-border shadow-md">
                            {upcomingBookings.length > 0 ? (
                               <>
                                  <table className="w-full text-left border-collapse min-w-[640px]">
                                     <thead>
-                                       <tr className="bg-brand-hover/30 border-b border-brand-border/20">
+                                       <tr className="bg-brand-elevated border-b border-brand-border">
                                           <th className="px-5 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Customer</th>
                                           <th className="px-5 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Service</th>
                                           <th className="px-5 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Staff</th>
@@ -440,7 +440,7 @@ export default function ShopDashboard() {
                                           <th className="px-5 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest text-right">Amount</th>
                                        </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-brand-border/10">
+                                    <tbody className="divide-y divide-brand-border/40">
                                        {upcomingBookings.map((b) => {
                                           const customerName = b.customer?.name || b.customer_name || 'Guest';
                                           const initials = customerName.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -448,10 +448,10 @@ export default function ShopDashboard() {
                                           const { day, month } = formatDayMonth(b.date);
                                           const time = b.start_time ? formatTime(b.start_time) : '—';
                                           return (
-                                             <tr key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)} className="hover:bg-brand-hover/20 transition-colors cursor-pointer group">
+                                             <tr key={b.id} onClick={() => router.push(`/shop/bookings/action?id=${b.id}`)} className="hover:bg-brand-elevated transition-colors cursor-pointer group">
                                                 <td className="px-5 py-3.5">
                                                    <div className="flex items-center gap-3">
-                                                      <div className="w-8 h-8 rounded-xl bg-brand-hover flex items-center justify-center font-black text-xs text-brand-primary shrink-0">{initials}</div>
+                                                      <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center font-black text-xs text-brand-primary shrink-0">{initials}</div>
                                                       <p className="text-sm font-bold text-brand-text group-hover:text-brand-primary transition-colors">{customerName}</p>
                                                    </div>
                                                 </td>
@@ -459,7 +459,7 @@ export default function ShopDashboard() {
                                                 <td className="px-5 py-3.5">
                                                    {b.staff?.name ? (
                                                       <div className="inline-flex items-center gap-2">
-                                                         <div className="w-7 h-7 rounded-full bg-brand-hover flex items-center justify-center font-bold text-[11px] text-brand-primary">
+                                                         <div className="w-7 h-7 rounded-full bg-brand-primary/10 flex items-center justify-center font-bold text-[11px] text-brand-primary">
                                                             {b.staff.name.charAt(0).toUpperCase()}
                                                          </div>
                                                          <p className="text-sm font-semibold text-brand-text">{b.staff.name}</p>
@@ -482,7 +482,7 @@ export default function ShopDashboard() {
                                        })}
                                     </tbody>
                                  </table>
-                                 <div className="px-5 py-2.5 border-t border-brand-border/20 bg-brand-surface">
+                                 <div className="px-5 py-2.5 border-t border-brand-border bg-brand-elevated">
                                     <p className="text-[11px] font-semibold text-brand-muted">{upcomingBookings.length} upcoming appointment{upcomingBookings.length !== 1 ? 's' : ''}</p>
                                  </div>
                               </>

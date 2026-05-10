@@ -140,10 +140,10 @@ export default function ShopCustomersPage() {
                 {/* Desktop table */}
                 {!loading && !error && customers.length > 0 && (
                     <>
-                        <div className="hidden md:block bg-brand-elevated rounded-xl overflow-hidden border border-brand-border/20 shadow-xl shadow-black/20">
+                        <div className="hidden md:block bg-brand-surface rounded-xl overflow-hidden border border-brand-border shadow-md">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-brand-hover/30 border-b border-brand-border/20">
+                                    <tr className="bg-brand-elevated border-b border-brand-border">
                                         <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Customer</th>
                                         <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Bookings</th>
                                         <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Last visit</th>
@@ -152,16 +152,16 @@ export default function ShopCustomersPage() {
                                         <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest text-right">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-brand-border/10">
+                                <tbody className="divide-y divide-brand-border/40">
                                     {customers.map((c) => (
                                         <tr
                                             key={c.id}
-                                            className="hover:bg-brand-hover/20 transition-colors cursor-pointer group"
+                                            className="hover:bg-brand-elevated transition-colors cursor-pointer group"
                                             onClick={() => goToBookings(c)}
                                         >
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-xl bg-brand-hover flex items-center justify-center font-bold text-xs text-brand-primary shrink-0">
+                                                    <div className="w-9 h-9 rounded-xl bg-brand-primary/10 flex items-center justify-center font-bold text-xs text-brand-primary shrink-0">
                                                         {initialsOf(c.name)}
                                                     </div>
                                                     <div className="min-w-0">
@@ -203,7 +203,7 @@ export default function ShopCustomersPage() {
                                 </tbody>
                             </table>
 
-                            <div className="px-5 py-3 border-t border-brand-border/20 bg-brand-surface flex items-center justify-between gap-3">
+                            <div className="px-5 py-3 border-t border-brand-border bg-brand-elevated flex items-center justify-between gap-3">
                                 <p className="text-[11px] font-semibold text-brand-muted">
                                     Showing {showingFrom}–{showingTo} of {meta.total} customer{meta.total === 1 ? "" : "s"}
                                 </p>
@@ -221,7 +221,7 @@ export default function ShopCustomersPage() {
                                     className="w-full text-left bg-brand-surface rounded-xl p-4 border border-brand-border/20 hover:border-brand-border/50 transition-all active:scale-[0.98] space-y-3"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="size-11 rounded-xl bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
+                                        <div className="size-11 rounded-xl bg-brand-primary/10 flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
                                             {initialsOf(c.name)}
                                         </div>
                                         <div className="flex-1 min-w-0">

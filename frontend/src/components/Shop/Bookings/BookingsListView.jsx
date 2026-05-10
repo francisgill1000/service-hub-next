@@ -20,10 +20,10 @@ export default function BookingsListView({ bookings, totalCount }) {
   return (
     <>
       {/* Desktop — table */}
-      <div className="hidden md:block bg-brand-elevated rounded-xl overflow-hidden border border-brand-border/20 shadow-xl shadow-black/20">
+      <div className="hidden md:block bg-brand-surface rounded-xl overflow-hidden border border-brand-border shadow-md">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-brand-hover/30 border-b border-brand-border/20">
+            <tr className="bg-brand-elevated border-b border-brand-border">
               <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Customer</th>
               <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Service</th>
               <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">Staff</th>
@@ -33,7 +33,7 @@ export default function BookingsListView({ bookings, totalCount }) {
               <th className="px-5 py-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-brand-border/10">
+          <tbody className="divide-y divide-brand-border/40">
             {bookings.map((booking) => {
               const customerName = booking.customer?.name || booking.customer_name || "Guest";
               const initials = customerName.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
@@ -44,12 +44,12 @@ export default function BookingsListView({ bookings, totalCount }) {
               return (
                 <tr
                   key={booking.id}
-                  className="hover:bg-brand-hover/20 transition-colors cursor-pointer group"
+                  className="hover:bg-brand-elevated transition-colors cursor-pointer group"
                   onClick={() => router.push(`/shop/bookings/action?id=${booking.id}`)}
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-brand-hover flex items-center justify-center font-bold text-xs text-brand-primary shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center font-bold text-xs text-brand-primary shrink-0">
                         {initials}
                       </div>
                       <div>
@@ -81,7 +81,7 @@ export default function BookingsListView({ bookings, totalCount }) {
                   <td className="px-5 py-4">
                     {booking.staff?.name ? (
                       <div className="inline-flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-brand-hover flex items-center justify-center font-bold text-[11px] text-brand-primary">
+                        <div className="w-7 h-7 rounded-full bg-brand-primary/10 flex items-center justify-center font-bold text-[11px] text-brand-primary">
                           {booking.staff.name.charAt(0).toUpperCase()}
                         </div>
                         <p className="text-sm font-semibold text-brand-text">{booking.staff.name}</p>
@@ -124,7 +124,7 @@ export default function BookingsListView({ bookings, totalCount }) {
           </tbody>
         </table>
 
-        <div className="px-5 py-3 border-t border-brand-border/20 bg-brand-surface">
+        <div className="px-5 py-3 border-t border-brand-border bg-brand-elevated">
           <p className="text-[11px] font-semibold text-brand-muted">
             Showing {bookings.length} of {totalCount} bookings
           </p>

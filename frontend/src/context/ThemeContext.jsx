@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 export const PALETTES = [
   { id: "charcoal", label: "Charcoal", swatch: ["#1F2937", "#EFE9DD", "#FFFFFF"], description: "Clean & neutral" },
   { id: "cream",    label: "Cream",    swatch: ["#B8915E", "#FFFFFF", "#FBF7F0"], description: "Warm & minimal" },
-  { id: "blue",     label: "Blue",     swatch: ["#2563EB", "#1E40AF", "#FFFFFF"], description: "Cool clinical" },
+  { id: "blue",     label: "Sky Blue", swatch: ["#0EA5E9", "#0284C7", "#F0F9FF"], description: "Cool clinical" },
   { id: "sage",     label: "Sage",     swatch: ["#4D7C5A", "#2D4A3A", "#FFFFFF"], description: "Organic spa" },
   { id: "rose",     label: "Rose",     swatch: ["#B47B8A", "#5A2A35", "#FFFFFF"], description: "Warm salon" },
   { id: "slate",    label: "Slate",    swatch: ["#475569", "#FFFFFF", "#F8FAFC"], description: "Minimal pro" },

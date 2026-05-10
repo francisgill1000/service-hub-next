@@ -98,8 +98,8 @@ export default function RevenueReport({ shopId, from, to }) {
       </div>
 
       {/* Top services */}
-      <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
-        <div className="px-5 py-3 border-b border-brand-border/20">
+      <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden shadow-md">
+        <div className="px-5 py-3 border-b border-brand-border">
           <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Top services by revenue</p>
         </div>
         {data.top_services.length === 0 ? (
@@ -107,14 +107,14 @@ export default function RevenueReport({ shopId, from, to }) {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="bg-brand-hover/30">
+              <tr className="bg-brand-elevated border-b border-brand-border">
                 <th className="px-5 py-3 text-left text-[10px] font-bold text-brand-muted uppercase tracking-widest">Service</th>
                 <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Count</th>
                 <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Revenue</th>
                 <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Avg price</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-brand-border/10">
+            <tbody className="divide-y divide-brand-border/40">
               {data.top_services.map((s) => (
                 <tr key={s.title}>
                   <td className="px-5 py-3 text-sm font-bold text-brand-text">{s.title}</td>

@@ -78,17 +78,17 @@ export default function ServicesReport({ shopId, from, to }) {
       </div>
 
       {/* Full table */}
-      <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden overflow-x-auto">
+      <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden overflow-x-auto shadow-md">
         <table className="w-full">
           <thead>
-            <tr className="bg-brand-hover/30 border-b border-brand-border/20">
+            <tr className="bg-brand-elevated border-b border-brand-border">
               <Th k="title" label="Service" />
               <Th k="count" label="Count" right />
               <Th k="revenue" label="Revenue" right />
               <Th k="avg_price" label="Avg price" right />
             </tr>
           </thead>
-          <tbody className="divide-y divide-brand-border/10">
+          <tbody className="divide-y divide-brand-border/40">
             {rows.map((r) => (
               <tr key={r.title}>
                 <td className="px-4 py-3 text-sm font-bold text-brand-text">{r.title}</td>

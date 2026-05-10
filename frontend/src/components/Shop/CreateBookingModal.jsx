@@ -31,6 +31,9 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
     const [slots, setSlots] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [promoInput, setPromoInput] = useState("");
+    const [promoStatus, setPromoStatus] = useState({ state: "idle", message: "" });
+    const [appliedPromo, setAppliedPromo] = useState(null); // { code, label, discount_type, discount_value }
 
     const autoTotal = useMemo(
         () =>
@@ -40,7 +43,18 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
         [catalogs, selectedServices]
     );
 
-    const charges = chargesOverride ?? autoTotal;
+    // Promo math: only meaningful when there's no manual override.
+    const discount = useMemo(() => {
+        if (!appliedPromo || chargesOverride !== null) return 0;
+        const v = Number(appliedPromo.discount_value || 0);
+        const raw = appliedPromo.discount_type === "percent"
+            ? (autoTotal * v) / 100
+            : v;
+        return Math.min(autoTotal, Math.round(raw * 100) / 100);
+    }, [appliedPromo, chargesOverride, autoTotal]);
+
+    // What we display in the footer / summary.
+    const charges = chargesOverride ?? Math.max(0, autoTotal - discount);
 
     const dateOptions = useMemo(() => {
         const arr = [];
@@ -100,8 +114,46 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
             setCustomerName("");
             setCustomerWhatsapp("");
             setCustomerLookup({ status: "idle", match: null });
+            setPromoInput("");
+            setPromoStatus({ state: "idle", message: "" });
+            setAppliedPromo(null);
         }
     }, [open, initialDate]);
+
+    const applyPromo = async () => {
+        const code = (promoInput || "").trim().toUpperCase();
+        if (!code || !shopId) return;
+        setPromoStatus({ state: "checking", message: "" });
+        try {
+            const { data } = await api.get(`/shops/${shopId}/promo-codes/lookup`, { params: { code } });
+            if (!data?.found) {
+                setAppliedPromo(null);
+                setPromoStatus({ state: "invalid", message: "Code not found." });
+                return;
+            }
+            if (!data.redeemable) {
+                setAppliedPromo(null);
+                setPromoStatus({ state: "invalid", message: "Code is expired, used up, or inactive." });
+                return;
+            }
+            setAppliedPromo({
+                code: data.code,
+                label: data.label,
+                discount_type: data.discount_type,
+                discount_value: data.discount_value,
+            });
+            setPromoStatus({ state: "applied", message: "" });
+        } catch (e) {
+            setAppliedPromo(null);
+            setPromoStatus({ state: "invalid", message: "Could not check this code." });
+        }
+    };
+
+    const clearPromo = () => {
+        setAppliedPromo(null);
+        setPromoInput("");
+        setPromoStatus({ state: "idle", message: "" });
+    };
 
     // Debounced lookup of existing walk-in customers by WhatsApp number.
     // Auto-fills the name when a returning customer is matched.
@@ -168,15 +220,20 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
             if (!date) return Swal.fire({ icon: "warning", title: "Pick a date" });
         }
 
+        // Backend treats `charges` as the subtotal and re-applies the promo
+        // server-side. So when no manual override, send the pre-discount autoTotal
+        // and let the backend compute the final + discount_amount itself.
+        const sendPromo = appliedPromo && chargesOverride === null;
         const payload = {
             date,
             start_time: slot,
-            charges: Number(charges) || 0,
+            charges: chargesOverride !== null ? Number(chargesOverride) : Number(autoTotal) || 0,
             services: catalogs
                 .filter((c) => selectedServices.includes(c.id))
                 .map((c) => ({ id: c.id, title: c.title, price: Number(c.price || 0) })),
             customer_name: customerName.trim(),
             customer_whatsapp: customerWhatsapp.trim(),
+            ...(sendPromo ? { promo_code: appliedPromo.code } : {}),
         };
 
         try {
@@ -269,6 +326,13 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                             setChargesOverride={setChargesOverride}
                             autoTotal={autoTotal}
                             selectedCatalogs={selectedCatalogs}
+                            promoInput={promoInput}
+                            setPromoInput={setPromoInput}
+                            promoStatus={promoStatus}
+                            appliedPromo={appliedPromo}
+                            applyPromo={applyPromo}
+                            clearPromo={clearPromo}
+                            discount={discount}
                         />
                     )}
                 </div>
@@ -544,6 +608,13 @@ function ScheduleStep({
     setChargesOverride,
     autoTotal,
     selectedCatalogs,
+    promoInput,
+    setPromoInput,
+    promoStatus,
+    appliedPromo,
+    applyPromo,
+    clearPromo,
+    discount,
 }) {
     return (
         <div className="space-y-5">
@@ -637,6 +708,91 @@ function ScheduleStep({
                         <span className="text-sm font-black text-brand-text">
                             AED {Number(autoTotal || 0).toFixed(2)}
                         </span>
+                    </div>
+
+                    {/* Promo code */}
+                    <div className="mt-3 pt-3 border-t border-brand-border/30">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
+                            Promo code
+                        </label>
+                        {appliedPromo ? (
+                            <div className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-brand-success/10 border border-brand-success/30 px-3 py-2">
+                                <div className="min-w-0">
+                                    <p className="text-[12px] font-black text-brand-success tracking-widest">
+                                        {appliedPromo.code}
+                                    </p>
+                                    <p className="text-[10px] font-semibold text-brand-success truncate">
+                                        {appliedPromo.discount_type === "percent"
+                                            ? `${Number(appliedPromo.discount_value)}% off`
+                                            : `AED ${Number(appliedPromo.discount_value)} off`}
+                                        {chargesOverride !== null && " · ignored due to custom charges"}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={clearPromo}
+                                    aria-label="Remove promo code"
+                                    className="size-8 rounded-lg bg-brand-surface hover:bg-brand-hover text-brand-muted hover:text-brand-text flex items-center justify-center shrink-0"
+                                >
+                                    <span className="material-symbols-outlined text-[16px]">close</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <div className="relative flex-1">
+                                        <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-[18px] pointer-events-none">
+                                            local_offer
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={promoInput}
+                                            onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
+                                            placeholder="Enter code"
+                                            className="w-full h-11 bg-brand-surface border border-brand-border/40 rounded-xl pl-11 pr-4 text-sm font-black tracking-widest text-brand-primary placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none transition-all uppercase"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={applyPromo}
+                                        disabled={promoStatus.state === "checking" || !promoInput.trim()}
+                                        className="h-11 px-4 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-sm font-black text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        {promoStatus.state === "checking" ? "…" : "Apply"}
+                                    </button>
+                                </div>
+                                {promoStatus.state === "invalid" && (
+                                    <p className="text-[10px] font-semibold text-brand-danger mt-1.5">
+                                        {promoStatus.message}
+                                    </p>
+                                )}
+                            </>
+                        )}
+
+                        {/* Discount line */}
+                        {appliedPromo && chargesOverride === null && discount > 0 && (
+                            <div className="mt-3 pt-3 border-t border-brand-border/30 flex items-center justify-between">
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-brand-success">
+                                    Discount
+                                </span>
+                                <span className="text-sm font-black text-brand-success">
+                                    − AED {Number(discount).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Total after discount (when promo active and no override) */}
+                        {appliedPromo && chargesOverride === null && (
+                            <div className="mt-2 flex items-center justify-between">
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text">
+                                    Total
+                                </span>
+                                <span className="text-base font-black text-brand-primary">
+                                    AED {Number(charges).toFixed(2)}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Custom override */}

@@ -20,6 +20,7 @@ import {
 import api from '@/utils/api';
 import { useShop } from '@/context/ShopContext';
 import CreateBookingModal from '@/components/Shop/CreateBookingModal';
+import FindBookingModal from '@/components/Shop/FindBookingModal';
 
 export default function ShopDashboard() {
    const router = useRouter();
@@ -29,6 +30,7 @@ export default function ShopDashboard() {
    const [cancelledCount, setCancelledCount] = useState(null);
    const [bookings, setBookings] = useState([]);
    const [createOpen, setCreateOpen] = useState(false);
+   const [findOpen, setFindOpen] = useState(false);
 
    useEffect(() => {
       if (!loading && !shop) {
@@ -154,15 +156,25 @@ export default function ShopDashboard() {
                   <StatCard label="Cancelled" value={cancelledCount !== null ? String(cancelledCount) : '—'} trend="" Icon={Calendar} />
                </div>
 
-               {/* New booking CTA — mobile */}
-               <button
-                  type="button"
-                  onClick={() => setCreateOpen(true)}
-                  className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-brand-primary hover:bg-brand-primary/90 active:scale-[0.98] text-white text-[12px] font-black uppercase tracking-widest transition-all shadow-lg shadow-brand-primary/20"
-               >
-                  <span className="material-symbols-outlined text-[20px]">add_circle</span>
-                  Create Booking
-               </button>
+               {/* Booking CTAs — mobile */}
+               <div className="grid grid-cols-2 gap-2">
+                  <button
+                     type="button"
+                     onClick={() => setCreateOpen(true)}
+                     className="inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-brand-primary hover:bg-brand-primary/90 active:scale-[0.98] text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-brand-primary/20"
+                  >
+                     <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                     Create
+                  </button>
+                  <button
+                     type="button"
+                     onClick={() => setFindOpen(true)}
+                     className="inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-brand-elevated hover:bg-brand-hover active:scale-[0.98] border border-brand-border/40 text-brand-text text-[11px] font-black uppercase tracking-widest transition-all"
+                  >
+                     <span className="material-symbols-outlined text-[18px]">search</span>
+                     Find Booking
+                  </button>
+               </div>
 
                <div className="pt-2">
                   <button
@@ -256,6 +268,14 @@ export default function ShopDashboard() {
                      <p className="text-brand-muted font-semibold mt-2 text-sm">Real-time overview of your service operations.</p>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap justify-end">
+                     <button
+                        type="button"
+                        onClick={() => setFindOpen(true)}
+                        className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-brand-elevated hover:bg-brand-hover border border-brand-border/40 text-brand-text text-[11px] font-black uppercase tracking-widest transition-all"
+                     >
+                        <span className="material-symbols-outlined text-[18px]">search</span>
+                        Find Booking
+                     </button>
                      <button
                         type="button"
                         onClick={() => setCreateOpen(true)}
@@ -579,6 +599,14 @@ export default function ShopDashboard() {
                setCreateOpen(false);
                fetchTotals();
             }}
+         />
+
+         {/* Find-booking modal — counter check-in lookup */}
+         <FindBookingModal
+            open={findOpen}
+            onClose={() => setFindOpen(false)}
+            bookings={bookings}
+            onUpdated={fetchTotals}
          />
       </div>
    );

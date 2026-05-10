@@ -1,8 +1,10 @@
+
+require('dotenv').config();
+
 const sendWhatsAppMessage = async () => {
   const url = 'https://graph.facebook.com/v25.0/1013905338482929/messages';
   
   // Replace this with the token from image_d5d21d.jpg
-  const accessToken = 'EAAPzxLWBXaUBRddHXIxoHrTNYUaBSFtiS9QTZA4bqlpe5PAjGGMJtJuOv1Yeix8njWXkkbwUdMZBGvNiASsRD9vgYfjQ6fLgNEaYvAqqhiWlapivRIhNd2vFj4V0G2iLvl9HERgHYvp1lVX4KwJ2fxMVc8KV1TuGHwBXwD9cgITwnCk429eV7OR7MStJA7ZBFbJ5losqCS1QTpNCP11d1L2ZAIcNFC30tdlRBKTp4QueHRw1WCZBW8SgiIBZAsucnDQGsH4JrtmS8O1UHQoNIZCJrAW'; 
 
   const payload = {
     messaging_product: "whatsapp",
@@ -20,7 +22,7 @@ const sendWhatsAppMessage = async () => {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${process.env.WHATSAPP_API_TOKEN}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),

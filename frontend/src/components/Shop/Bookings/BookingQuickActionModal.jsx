@@ -6,14 +6,14 @@ import api from "@/utils/api";
 import { notify } from "@/utils/alerts";
 
 const STATUS_CHIP = {
-  Booked:    "bg-[#4b8eff]/15 text-[#4b8eff] border border-[#4b8eff]/20",
-  Completed: "bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/20",
-  Cancelled: "bg-[#414755]/40 text-[#8b90a0] border border-[#414755]/30",
+  Booked:    "bg-brand-primary/15 text-brand-primary border border-brand-primary/20",
+  Completed: "bg-brand-success/15 text-brand-success border border-brand-success/20",
+  Cancelled: "bg-brand-border/40 text-brand-muted border border-brand-border/30",
 };
 const STATUS_DOT = {
-  Booked:    "bg-[#4b8eff]",
-  Completed: "bg-[#4edea3]",
-  Cancelled: "bg-[#8b90a0]",
+  Booked:    "bg-brand-primary",
+  Completed: "bg-brand-success",
+  Cancelled: "bg-brand-muted",
 };
 
 export default function BookingQuickActionModal({ booking, open, onClose, onUpdated }) {
@@ -90,15 +90,15 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
 
   return (
     <div className="fixed inset-0 z-[90] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4">
-      <div className="w-full md:w-[460px] bg-[#151c25] md:rounded-2xl rounded-t-2xl border border-[#414755]/30 shadow-2xl">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#414755]/30">
+      <div className="w-full md:w-[460px] bg-brand-surface md:rounded-2xl rounded-t-2xl border border-brand-border/30 shadow-2xl">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-brand-border/30">
           <div>
-            <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">{booking.booking_reference}</p>
-            <h3 className="text-lg font-black text-white tracking-tight mt-0.5">{customerName}</h3>
+            <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">{booking.booking_reference}</p>
+            <h3 className="text-lg font-black text-brand-text tracking-tight mt-0.5">{customerName}</h3>
           </div>
           <button
             onClick={onClose}
-            className="size-9 rounded-xl bg-[#19202a] hover:bg-[#242a34] text-[#8b90a0] hover:text-white flex items-center justify-center transition-all"
+            className="size-9 rounded-xl bg-brand-elevated hover:bg-brand-hover text-brand-muted hover:text-brand-primary flex items-center justify-center transition-all"
             aria-label="Close"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
@@ -111,42 +111,42 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
               <span className={`w-1.5 h-1.5 rounded-full ${dotClass}`} />
               {booking.status}
             </span>
-            <p className="text-base font-black text-white">AED {booking.charges || "0"}</p>
+            <p className="text-base font-black text-brand-text">AED {booking.charges || "0"}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Date</p>
-              <p className="font-semibold text-[#dce3f0] mt-0.5">{booking.show_date || booking.date || "—"}</p>
+              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Date</p>
+              <p className="font-semibold text-brand-text mt-0.5">{booking.show_date || booking.date || "—"}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Time</p>
-              <p className="font-semibold text-[#dce3f0] mt-0.5">{booking.start_time || "—"}</p>
+              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Time</p>
+              <p className="font-semibold text-brand-text mt-0.5">{booking.start_time || "—"}</p>
             </div>
           </div>
 
           <div>
-            <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Services</p>
-            <p className="text-sm font-semibold text-[#dce3f0] mt-1">{services}</p>
+            <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Services</p>
+            <p className="text-sm font-semibold text-brand-text mt-1">{services}</p>
           </div>
 
           {booking.customer_whatsapp && (
             <div>
-              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">WhatsApp</p>
-              <p className="text-sm font-semibold text-[#4edea3] mt-1">{booking.customer_whatsapp}</p>
+              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">WhatsApp</p>
+              <p className="text-sm font-semibold text-brand-success mt-1">{booking.customer_whatsapp}</p>
             </div>
           )}
 
           {canAssign && staffList.length > 0 && (
-            <div className="bg-[#151c25] rounded-xl p-3 border border-[#414755]/20">
-              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest mb-2">
+            <div className="bg-brand-surface rounded-xl p-3 border border-brand-border/20">
+              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest mb-2">
                 {isQueued ? "Manually assign staff" : "Reassign staff"}
               </p>
               <div className="flex gap-2">
                 <select
                   value={reassignTo}
                   onChange={(e) => setReassignTo(e.target.value)}
-                  className="flex-1 h-9 bg-[#080f17] border border-[#414755]/40 rounded-lg px-3 text-sm font-semibold text-white outline-none [color-scheme:dark]"
+                  className="flex-1 h-9 bg-brand-bg border border-brand-border/40 rounded-lg px-3 text-sm font-semibold text-brand-text outline-none [color-scheme:dark]"
                 >
                   <option value="">Pick a staff…</option>
                   {staffList.map((s) => (
@@ -158,7 +158,7 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
                 <button
                   onClick={reassign}
                   disabled={!reassignTo || reassigning}
-                  className="h-9 px-4 rounded-lg bg-[#4b8eff] hover:bg-[#4b8eff]/90 disabled:opacity-50 text-[11px] font-black text-white"
+                  className="h-9 px-4 rounded-lg bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-[11px] font-black text-white"
                 >
                   {reassigning ? "Saving…" : (isQueued ? "Assign" : "Reassign")}
                 </button>
@@ -173,20 +173,20 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
           )}
         </div>
 
-        <div className="px-5 py-4 border-t border-[#414755]/30 flex flex-col sm:flex-row gap-2">
+        <div className="px-5 py-4 border-t border-brand-border/30 flex flex-col sm:flex-row gap-2">
           {isBooked && (
             <>
               <button
                 onClick={() => changeStatus("Completed")}
                 disabled={busy !== null}
-                className="flex-1 h-11 rounded-xl bg-[#4edea3] hover:bg-[#4edea3]/90 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center"
+                className="flex-1 h-11 rounded-xl bg-brand-success hover:bg-brand-success/90 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center"
               >
                 {busy === "Completed" ? "Saving…" : "Mark Completed"}
               </button>
               <button
                 onClick={() => changeStatus("Cancelled")}
                 disabled={busy !== null}
-                className="flex-1 h-11 rounded-xl bg-[#414755]/40 hover:bg-[#414755]/60 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center"
+                className="flex-1 h-11 rounded-xl bg-brand-border/40 hover:bg-brand-border/60 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center"
               >
                 {busy === "Cancelled" ? "Saving…" : "Mark Cancelled"}
               </button>
@@ -194,7 +194,7 @@ export default function BookingQuickActionModal({ booking, open, onClose, onUpda
           )}
           <button
             onClick={() => { onClose?.(); router.push(`/shop/bookings/action?id=${booking.id}`); }}
-            className="flex-1 h-11 rounded-xl bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white text-xs font-black uppercase tracking-widest transition-all inline-flex items-center justify-center"
+            className="flex-1 h-11 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-black uppercase tracking-widest transition-all inline-flex items-center justify-center"
           >
             View full details
           </button>

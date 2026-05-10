@@ -106,10 +106,10 @@ const AddToCatalog = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col max-w-md md:max-w-3xl mx-auto bg-[#0B121B] text-white font-sans">
+    <div className="relative flex min-h-screen w-full flex-col max-w-md md:max-w-3xl mx-auto bg-brand-bg text-brand-text font-sans">
 
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-[#0B121B] px-5 py-4 border-b border-white/10 flex items-center gap-3">
+      <div className="sticky top-0 z-40 bg-brand-bg px-5 py-4 border-b border-brand-border flex items-center gap-3">
         <button
           onClick={() => router.back()}
           className="material-symbols-outlined text-2xl hover:text-primary transition-colors"

@@ -5,8 +5,8 @@ import { buildMonthMatrix, groupBookingsByDate, toISO, isSameDay, isSameMonth, f
 
 const STATUS_DOT = {
   Booked:    "bg-blue-500",
-  Completed: "bg-[#4edea3]",
-  Cancelled: "bg-[#8b90a0]",
+  Completed: "bg-brand-success",
+  Cancelled: "bg-brand-muted",
 };
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -17,10 +17,10 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
   const today = new Date();
 
   return (
-    <div className="bg-[#19202a] border border-[#414755]/20 rounded-xl overflow-hidden">
-      <div className="grid grid-cols-7 bg-[#2e353f]/30 border-b border-[#414755]/20">
+    <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-7 bg-brand-hover/30 border-b border-brand-border/20">
         {WEEKDAY_LABELS.map((d) => (
-          <div key={d} className="px-2 py-3 text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest text-center">
+          <div key={d} className="px-2 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest text-center">
             {d}
           </div>
         ))}
@@ -45,29 +45,29 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
             <div
               key={iso + idx}
               onClick={handleCellClick}
-              className={`hidden md:flex flex-col min-h-[112px] border-b border-r border-[#414755]/10 p-2 cursor-pointer hover:bg-[#4b8eff]/5 transition-colors group/cell ${
-                inMonth ? "bg-[#19202a]" : "bg-[#151c25]/50"
+              className={`hidden md:flex flex-col min-h-[112px] border-b border-r border-brand-border/10 p-2 cursor-pointer hover:bg-brand-primary/5 transition-colors group/cell ${
+                inMonth ? "bg-brand-elevated" : "bg-brand-surface/50"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span
                   className={`inline-flex items-center justify-center w-6 h-6 rounded-lg text-[11px] font-black ${
                     isToday
-                      ? "bg-[#4b8eff] text-white"
+                      ? "bg-brand-primary text-white"
                       : inMonth
-                        ? "text-white"
-                        : "text-[#8b90a0]"
+                        ? "text-brand-text"
+                        : "text-brand-muted"
                   }`}
                 >
                   {format(day, "d")}
                 </span>
                 <div className="flex items-center gap-1">
                   {dayBookings.length > 0 && (
-                    <span className="text-[9px] font-bold text-[#8b90a0]">
+                    <span className="text-[9px] font-bold text-brand-muted">
                       {dayBookings.length}
                     </span>
                   )}
-                  <span className="material-symbols-outlined text-[14px] text-[#4b8eff] opacity-0 group-hover/cell:opacity-100 transition-opacity">add_circle</span>
+                  <span className="material-symbols-outlined text-[14px] text-brand-primary opacity-0 group-hover/cell:opacity-100 transition-opacity">add_circle</span>
                 </div>
               </div>
 
@@ -79,10 +79,10 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                     <button
                       key={b.id}
                       onClick={(e) => { e.stopPropagation(); onBookingClick(b); }}
-                      className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg ${dotClass} hover:bg-[#2e353f]/40 text-left transition-colors`}
+                      className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg ${dotClass} hover:bg-brand-hover/40 text-left transition-colors`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}`} />
-                      <span className="text-[10px] font-semibold text-[#dce3f0] truncate">
+                      <span className="text-[10px] font-semibold text-brand-text truncate">
                         {b.start_time ? `${b.start_time} ` : ""}{customerName}
                       </span>
                       {b.staff?.name && (
@@ -91,7 +91,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                         </span>
                       )}
                       {b.staff_id == null && (
-                        <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#f59e0b] inline-block" title="Queued" />
+                        <span className="ml-1 w-1.5 h-1.5 rounded-full bg-brand-warning inline-block" title="Queued" />
                       )}
                     </button>
                   );
@@ -99,7 +99,7 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
                 {overflow > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onMoreClick(day); }}
-                    className="text-[10px] font-bold text-[#4b8eff] text-left px-1.5"
+                    className="text-[10px] font-bold text-brand-primary text-left px-1.5"
                   >
                     +{overflow} more
                   </button>
@@ -125,18 +125,18 @@ export default function MonthGrid({ cursorDate, bookings, onBookingClick, onMore
             <button
               key={"m" + iso + idx}
               onClick={handleMobileTap}
-              className={`md:hidden flex flex-col items-stretch min-h-[80px] border-b border-r border-[#414755]/10 p-1.5 text-left cursor-pointer ${
-                inMonth ? "bg-[#19202a]" : "bg-[#151c25]/50"
+              className={`md:hidden flex flex-col items-stretch min-h-[80px] border-b border-r border-brand-border/10 p-1.5 text-left cursor-pointer ${
+                inMonth ? "bg-brand-elevated" : "bg-brand-surface/50"
               }`}
               aria-label={dayBookings.length > 0 ? `View ${dayBookings.length} bookings on ${iso}` : `Create booking on ${iso}`}
             >
               <span
                 className={`inline-flex items-center justify-center w-6 h-6 rounded-lg text-[11px] font-black mb-1 ${
                   isToday
-                    ? "bg-[#4b8eff] text-white"
+                    ? "bg-brand-primary text-white"
                     : inMonth
-                      ? "text-white"
-                      : "text-[#8b90a0]"
+                      ? "text-brand-text"
+                      : "text-brand-muted"
                 }`}
               >
                 {format(day, "d")}

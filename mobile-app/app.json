@@ -59,7 +59,8 @@
         {
           "microphonePermission": "Rezzy uses the microphone for voice search to find services and shops."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {

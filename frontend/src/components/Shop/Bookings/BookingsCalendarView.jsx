@@ -51,40 +51,40 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#151c25] rounded-xl p-3 md:p-4 border border-[#414755]/20 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="bg-brand-surface rounded-xl p-3 md:p-4 border border-brand-border/20 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={goPrev}
-            className="size-9 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#4b8eff]/40 text-[#dce3f0] hover:text-[#4b8eff] flex items-center justify-center transition-all"
+            className="size-9 rounded-xl bg-brand-bg border border-brand-border/40 hover:border-brand-primary/40 text-brand-text hover:text-brand-primary flex items-center justify-center transition-all"
             aria-label="Previous"
           >
             <span className="material-symbols-outlined text-[20px]">chevron_left</span>
           </button>
           <button
             onClick={goToday}
-            className="h-9 px-3 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#4b8eff]/40 text-[11px] font-black text-[#dce3f0] hover:text-[#4b8eff] uppercase tracking-widest transition-all"
+            className="h-9 px-3 rounded-xl bg-brand-bg border border-brand-border/40 hover:border-brand-primary/40 text-[11px] font-black text-brand-text hover:text-brand-primary uppercase tracking-widest transition-all"
           >
             Today
           </button>
           <button
             onClick={goNext}
-            className="size-9 rounded-xl bg-[#080f17] border border-[#414755]/40 hover:border-[#4b8eff]/40 text-[#dce3f0] hover:text-[#4b8eff] flex items-center justify-center transition-all"
+            className="size-9 rounded-xl bg-brand-bg border border-brand-border/40 hover:border-brand-primary/40 text-brand-text hover:text-brand-primary flex items-center justify-center transition-all"
             aria-label="Next"
           >
             <span className="material-symbols-outlined text-[20px]">chevron_right</span>
           </button>
-          <p className="ml-2 text-sm md:text-base font-black text-white">{cursorLabel(cursorDate, subView)}</p>
+          <p className="ml-2 text-sm md:text-base font-black text-brand-text">{cursorLabel(cursorDate, subView)}</p>
         </div>
 
-        <div className="inline-flex bg-[#080f17] border border-[#414755]/40 rounded-xl p-1 self-start md:self-auto">
+        <div className="inline-flex bg-brand-bg border border-brand-border/40 rounded-xl p-1 self-start md:self-auto">
           {SUB_VIEWS.map((v) => (
             <button
               key={v.value}
               onClick={() => setSubView(v.value)}
               className={`h-8 px-3 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
                 subView === v.value
-                  ? "bg-[#4b8eff] text-white"
-                  : "text-[#8b90a0] hover:text-white"
+                  ? "bg-brand-primary text-white"
+                  : "text-brand-muted hover:text-brand-primary"
               }`}
             >
               {v.label}
@@ -142,16 +142,16 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
         <div className="fixed inset-0 z-[80] flex items-end bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setDaySheet(null)}>
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-h-[70vh] flex flex-col bg-[#151c25] rounded-t-2xl border-t border-[#414755]/30"
+            className="w-full max-h-[70vh] flex flex-col bg-brand-surface rounded-t-2xl border-t border-brand-border/30"
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#414755]/30">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-brand-border/30">
               <div>
-                <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Bookings</p>
-                <h3 className="text-base font-black text-white tracking-tight">{format(daySheet, "EEEE, MMM d")}</h3>
+                <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Bookings</p>
+                <h3 className="text-base font-black text-brand-text tracking-tight">{format(daySheet, "EEEE, MMM d")}</h3>
               </div>
               <button
                 onClick={() => setDaySheet(null)}
-                className="size-9 rounded-xl bg-[#19202a] hover:bg-[#242a34] text-[#8b90a0] hover:text-white flex items-center justify-center transition-all"
+                className="size-9 rounded-xl bg-brand-elevated hover:bg-brand-hover text-brand-muted hover:text-brand-primary flex items-center justify-center transition-all"
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
@@ -164,13 +164,13 @@ export default function BookingsCalendarView({ bookings, shopId, onCreated, onUp
                   <button
                     key={b.id}
                     onClick={() => { setDaySheet(null); setQuickBooking(b); }}
-                    className="w-full flex items-center justify-between gap-3 px-3 py-3 rounded-xl bg-[#080f17] border border-[#414755]/30 hover:border-[#4b8eff]/40 transition-all text-left"
+                    className="w-full flex items-center justify-between gap-3 px-3 py-3 rounded-xl bg-brand-bg border border-brand-border/30 hover:border-brand-primary/40 transition-all text-left"
                   >
                     <div>
-                      <p className="text-xs font-bold text-white">{b.start_time || "—"} · {customerName}</p>
-                      <p className="text-[10px] text-[#8b90a0] mt-0.5 font-semibold">{b.booking_reference} · {b.status}</p>
+                      <p className="text-xs font-bold text-brand-text">{b.start_time || "—"} · {customerName}</p>
+                      <p className="text-[10px] text-brand-muted mt-0.5 font-semibold">{b.booking_reference} · {b.status}</p>
                     </div>
-                    <span className="material-symbols-outlined text-[18px] text-[#8b90a0]">chevron_right</span>
+                    <span className="material-symbols-outlined text-[18px] text-brand-muted">chevron_right</span>
                   </button>
                 );
               })}

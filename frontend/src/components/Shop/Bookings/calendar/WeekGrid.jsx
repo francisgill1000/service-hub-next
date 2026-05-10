@@ -15,9 +15,9 @@ const ROW_HEIGHT = 56;
 const TIME_COL_W = 60;
 
 const STATUS_BG = {
-  Booked:    "bg-[#4b8eff]/20 border-[#4b8eff]/40 text-[#4b8eff]",
-  Completed: "bg-[#4edea3]/20 border-[#4edea3]/40 text-[#4edea3]",
-  Cancelled: "bg-[#414755]/40 border-[#414755]/40 text-[#8b90a0]",
+  Booked:    "bg-brand-primary/20 border-brand-primary/40 text-brand-primary",
+  Completed: "bg-brand-success/20 border-brand-success/40 text-brand-success",
+  Cancelled: "bg-brand-border/40 border-brand-border/40 text-brand-muted",
 };
 
 export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotClick }) {
@@ -27,15 +27,15 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
   const today = new Date();
 
   return (
-    <div className="bg-[#19202a] border border-[#414755]/20 rounded-xl overflow-hidden">
-      <div className="grid border-b border-[#414755]/20 bg-[#2e353f]/30" style={{ gridTemplateColumns: `${TIME_COL_W}px repeat(7, minmax(80px, 1fr))` }}>
+    <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
+      <div className="grid border-b border-brand-border/20 bg-brand-hover/30" style={{ gridTemplateColumns: `${TIME_COL_W}px repeat(7, minmax(80px, 1fr))` }}>
         <div />
         {days.map((d) => {
           const isToday = isSameDay(d, today);
           return (
-            <div key={toISO(d)} className="px-2 py-3 text-center border-l border-[#414755]/10">
-              <p className="text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">{format(d, "EEE")}</p>
-              <p className={`text-sm font-black mt-0.5 ${isToday ? "text-[#4b8eff]" : "text-white"}`}>
+            <div key={toISO(d)} className="px-2 py-3 text-center border-l border-brand-border/10">
+              <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">{format(d, "EEE")}</p>
+              <p className={`text-sm font-black mt-0.5 ${isToday ? "text-brand-primary" : "text-brand-text"}`}>
                 {format(d, "d")}
               </p>
             </div>
@@ -55,14 +55,14 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
         >
           {hours.map((h) => (
             <React.Fragment key={h}>
-              <div className="border-r border-b border-[#414755]/10 px-2 pt-1 text-right text-[10px] font-bold text-[#8b90a0]">
+              <div className="border-r border-b border-brand-border/10 px-2 pt-1 text-right text-[10px] font-bold text-brand-muted">
                 {String(h).padStart(2, "0")}:00
               </div>
               {days.map((d) => (
                 <button
                   key={toISO(d) + h}
                   onClick={() => onSlotClick({ date: toISO(d), time: `${String(h).padStart(2, "0")}:00` })}
-                  className="border-l border-b border-[#414755]/10 hover:bg-[#4b8eff]/5 transition-colors"
+                  className="border-l border-b border-brand-border/10 hover:bg-brand-primary/5 transition-colors"
                   aria-label={`Create booking on ${toISO(d)} at ${h}:00`}
                 />
               ))}
@@ -89,7 +89,7 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
                   }}
                 >
                   <p className="text-[10px] font-bold truncate">{b.start_time}</p>
-                  <p className="text-[11px] font-semibold text-white truncate">{customerName}</p>
+                  <p className="text-[11px] font-semibold text-brand-text truncate">{customerName}</p>
                   {b.staff?.name && (
                     <span className="block text-[10px] font-bold opacity-80 truncate">
                       <span className="material-symbols-outlined text-[10px] align-middle">person</span>
@@ -97,7 +97,7 @@ export default function WeekGrid({ cursorDate, bookings, onBookingClick, onSlotC
                     </span>
                   )}
                   {b.staff_id == null && (
-                    <span className="inline-block mt-0.5 px-1 py-0.5 rounded bg-[#f59e0b]/30 text-[#f59e0b] font-black text-[8px] uppercase tracking-wider">
+                    <span className="inline-block mt-0.5 px-1 py-0.5 rounded bg-brand-warning/30 text-brand-warning font-black text-[8px] uppercase tracking-wider">
                       Queued
                     </span>
                   )}

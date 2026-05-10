@@ -7,19 +7,19 @@ const aed = (n) => `AED ${Number(n || 0).toLocaleString(undefined, { minimumFrac
 
 // 5-step intensity scale (matches the legend below)
 function intensityClass(v, max) {
-  if (max === 0 || v === 0) return "bg-[#080f17] border border-[#414755]/20";
+  if (max === 0 || v === 0) return "bg-brand-bg border border-brand-border/20";
   const ratio = v / max;
-  if (ratio <= 0.2) return "bg-[#4b8eff]/15 border border-[#4b8eff]/25";
-  if (ratio <= 0.4) return "bg-[#4b8eff]/30 border border-[#4b8eff]/40";
-  if (ratio <= 0.6) return "bg-[#4b8eff]/50 border border-[#4b8eff]/60";
-  if (ratio <= 0.8) return "bg-[#4b8eff]/75 border border-[#4b8eff]/80";
-  return "bg-[#4b8eff] border border-[#4b8eff]";
+  if (ratio <= 0.2) return "bg-brand-primary/15 border border-brand-primary/25";
+  if (ratio <= 0.4) return "bg-brand-primary/30 border border-brand-primary/40";
+  if (ratio <= 0.6) return "bg-brand-primary/50 border border-brand-primary/60";
+  if (ratio <= 0.8) return "bg-brand-primary/75 border border-brand-primary/80";
+  return "bg-brand-primary border border-brand-primary";
 }
 
 function textColor(v, max) {
   if (max === 0 || v === 0) return "text-transparent";
   const ratio = v / max;
-  return ratio > 0.5 ? "text-white" : "text-[#dce3f0]";
+  return ratio > 0.5 ? "text-white" : "text-brand-text";
 }
 
 export default function TimePatternsReport({ shopId, from, to }) {
@@ -36,12 +36,12 @@ export default function TimePatternsReport({ shopId, from, to }) {
       .finally(() => setLoading(false));
   }, [shopId, from, to]);
 
-  if (loading) return <div className="text-center text-[#8b90a0] text-sm py-12">Loading…</div>;
-  if (!data) return <div className="text-center text-[#8b90a0] text-sm py-12">Failed to load.</div>;
+  if (loading) return <div className="text-center text-brand-muted text-sm py-12">Loading…</div>;
+  if (!data) return <div className="text-center text-brand-muted text-sm py-12">Failed to load.</div>;
 
   const totalBookings = data.by_day.reduce((s, d) => s + d.count, 0);
   if (totalBookings === 0) {
-    return <div className="text-center text-[#8b90a0] text-sm py-12">No bookings in this period.</div>;
+    return <div className="text-center text-brand-muted text-sm py-12">No bookings in this period.</div>;
   }
 
   const maxCell = Math.max(...data.grid.flat());
@@ -56,35 +56,35 @@ export default function TimePatternsReport({ shopId, from, to }) {
     <div className="space-y-6">
       {/* Insight cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">Busiest day</p>
-          <p className="text-xl font-black text-white mt-1.5">{data.day_labels[busiestDayIdx]}</p>
-          <p className="text-[11px] text-[#8b90a0] font-semibold mt-1">{data.by_day[busiestDayIdx].count} bookings</p>
+        <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Busiest day</p>
+          <p className="text-xl font-black text-brand-text mt-1.5">{data.day_labels[busiestDayIdx]}</p>
+          <p className="text-[11px] text-brand-muted font-semibold mt-1">{data.by_day[busiestDayIdx].count} bookings</p>
         </div>
-        <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">Busiest hour</p>
-          <p className="text-xl font-black text-white mt-1.5">{String(busiestHour).padStart(2, "0")}:00</p>
-          <p className="text-[11px] text-[#8b90a0] font-semibold mt-1">{data.by_hour[busiestHour].count} bookings</p>
+        <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Busiest hour</p>
+          <p className="text-xl font-black text-brand-text mt-1.5">{String(busiestHour).padStart(2, "0")}:00</p>
+          <p className="text-[11px] text-brand-muted font-semibold mt-1">{data.by_hour[busiestHour].count} bookings</p>
         </div>
-        <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">Total bookings</p>
-          <p className="text-xl font-black text-white mt-1.5">{totalBookings}</p>
+        <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Total bookings</p>
+          <p className="text-xl font-black text-brand-text mt-1.5">{totalBookings}</p>
         </div>
       </div>
 
       {/* Heatmap */}
-      <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-5">
+      <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">Heatmap (day × hour)</p>
-          <div className="flex items-center gap-2 text-[9px] font-bold text-[#8b90a0] uppercase tracking-widest">
+          <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Heatmap (day × hour)</p>
+          <div className="flex items-center gap-2 text-[9px] font-bold text-brand-muted uppercase tracking-widest">
             <span>Less</span>
             <div className="flex items-center gap-1">
-              <div className="w-4 h-4 rounded-md bg-[#080f17] border border-[#414755]/20" />
-              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/15 border border-[#4b8eff]/25" />
-              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/30 border border-[#4b8eff]/40" />
-              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/50 border border-[#4b8eff]/60" />
-              <div className="w-4 h-4 rounded-md bg-[#4b8eff]/75 border border-[#4b8eff]/80" />
-              <div className="w-4 h-4 rounded-md bg-[#4b8eff] border border-[#4b8eff]" />
+              <div className="w-4 h-4 rounded-md bg-brand-bg border border-brand-border/20" />
+              <div className="w-4 h-4 rounded-md bg-brand-primary/15 border border-brand-primary/25" />
+              <div className="w-4 h-4 rounded-md bg-brand-primary/30 border border-brand-primary/40" />
+              <div className="w-4 h-4 rounded-md bg-brand-primary/50 border border-brand-primary/60" />
+              <div className="w-4 h-4 rounded-md bg-brand-primary/75 border border-brand-primary/80" />
+              <div className="w-4 h-4 rounded-md bg-brand-primary border border-brand-primary" />
             </div>
             <span>More</span>
           </div>
@@ -99,7 +99,7 @@ export default function TimePatternsReport({ shopId, from, to }) {
           {Array.from({ length: 24 }, (_, h) => (
             <div
               key={h}
-              className={`text-[9px] font-bold text-[#8b90a0] text-center ${h % 3 === 0 ? "" : "opacity-40"}`}
+              className={`text-[9px] font-bold text-brand-muted text-center ${h % 3 === 0 ? "" : "opacity-40"}`}
             >
               {String(h).padStart(2, "0")}
             </div>
@@ -113,7 +113,7 @@ export default function TimePatternsReport({ shopId, from, to }) {
             className="grid items-center gap-[3px] mb-[3px]"
             style={{ gridTemplateColumns: "48px repeat(24, minmax(0, 1fr))" }}
           >
-            <div className="pr-2 text-[10px] font-black text-[#dce3f0] text-right uppercase tracking-wider">
+            <div className="pr-2 text-[10px] font-black text-brand-text text-right uppercase tracking-wider">
               {label}
             </div>
             {Array.from({ length: 24 }, (_, h) => {
@@ -134,43 +134,43 @@ export default function TimePatternsReport({ shopId, from, to }) {
 
       {/* By day + by hour */}
       <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-[#19202a] border border-[#414755]/20 rounded-xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-[#414755]/20">
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">By day of week</p>
+        <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-brand-border/20">
+            <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">By day of week</p>
           </div>
           <div className="p-4 space-y-2">
             {data.day_labels.map((label, i) => (
               <div key={label} className="flex items-center gap-3">
-                <span className="text-xs font-bold text-[#dce3f0] w-12">{label}</span>
-                <div className="flex-1 h-5 bg-[#080f17] rounded-md overflow-hidden">
+                <span className="text-xs font-bold text-brand-text w-12">{label}</span>
+                <div className="flex-1 h-5 bg-brand-bg rounded-md overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#4b8eff] to-[#4b8eff]/60"
+                    className="h-full bg-gradient-to-r from-brand-primary to-brand-primary/60"
                     style={{ width: `${Math.max((data.by_day[i].count / maxByDay) * 100, data.by_day[i].count > 0 ? 4 : 0)}%` }}
                   />
                 </div>
-                <span className="text-[11px] font-bold text-[#dce3f0] w-12 text-right">{data.by_day[i].count}</span>
-                <span className="text-[10px] text-[#8b90a0] font-semibold w-16 text-right">{aed(data.by_day[i].revenue)}</span>
+                <span className="text-[11px] font-bold text-brand-text w-12 text-right">{data.by_day[i].count}</span>
+                <span className="text-[10px] text-brand-muted font-semibold w-16 text-right">{aed(data.by_day[i].revenue)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-[#19202a] border border-[#414755]/20 rounded-xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-[#414755]/20">
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">By hour of day</p>
+        <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-brand-border/20">
+            <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">By hour of day</p>
           </div>
           <div className="p-4 space-y-1.5 max-h-80 overflow-y-auto">
             {data.by_hour.map((h, i) =>
               h.count > 0 ? (
                 <div key={i} className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-[#dce3f0] w-12">{String(i).padStart(2, "0")}:00</span>
-                  <div className="flex-1 h-5 bg-[#080f17] rounded-md overflow-hidden">
+                  <span className="text-xs font-bold text-brand-text w-12">{String(i).padStart(2, "0")}:00</span>
+                  <div className="flex-1 h-5 bg-brand-bg rounded-md overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#4edea3] to-[#4edea3]/60"
+                      className="h-full bg-gradient-to-r from-brand-success to-brand-success/60"
                       style={{ width: `${Math.max((h.count / maxByHour) * 100, 4)}%` }}
                     />
                   </div>
-                  <span className="text-[11px] font-bold text-[#dce3f0] w-10 text-right">{h.count}</span>
+                  <span className="text-[11px] font-bold text-brand-text w-10 text-right">{h.count}</span>
                 </div>
               ) : null
             )}

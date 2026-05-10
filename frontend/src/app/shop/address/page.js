@@ -58,7 +58,7 @@ const App = () => {
 
 
     return (
-        <div className="min-h-screen  text-white font-sans flex justify-center items-start p-4 md:p-8">
+        <div className="min-h-screen text-brand-text font-sans flex justify-center items-start p-4 md:p-8">
             <div className="w-full max-w-md md:max-w-2xl space-y-8 pb-12">
 
                 {/* Header */}
@@ -88,7 +88,7 @@ const App = () => {
                                 value={form.name}
                                 onChange={(e) =>
                                     setForm(prev => ({ ...prev, name: e.target.value }))
-                                } className="w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm placeholder:text-white/20"
+                                } className="w-full bg-brand-bg border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm placeholder:text-white/20"
                             />
                         </div>
 

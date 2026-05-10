@@ -26,6 +26,7 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
     const [chargesOverride, setChargesOverride] = useState(null);
     const [customerName, setCustomerName] = useState("");
     const [customerWhatsapp, setCustomerWhatsapp] = useState("");
+    const [customerLookup, setCustomerLookup] = useState({ status: "idle", match: null });
     const [catalogs, setCatalogs] = useState([]);
     const [slots, setSlots] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -98,8 +99,46 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
             setChargesOverride(null);
             setCustomerName("");
             setCustomerWhatsapp("");
+            setCustomerLookup({ status: "idle", match: null });
         }
     }, [open, initialDate]);
+
+    // Debounced lookup of existing walk-in customers by WhatsApp number.
+    // Auto-fills the name when a returning customer is matched.
+    useEffect(() => {
+        if (!open || !shopId) return;
+
+        const digits = customerWhatsapp.replace(/\D+/g, "");
+        if (digits.length < 7) {
+            setCustomerLookup({ status: "idle", match: null });
+            return;
+        }
+
+        let cancelled = false;
+        setCustomerLookup((s) => ({ status: "searching", match: s.match }));
+
+        const t = setTimeout(async () => {
+            try {
+                const { data } = await api.get(`/shops/${shopId}/customers/lookup`, {
+                    params: { whatsapp: customerWhatsapp },
+                });
+                if (cancelled) return;
+                if (data?.found) {
+                    setCustomerLookup({ status: "found", match: data });
+                    setCustomerName((prev) => (prev.trim() === "" ? data.name || "" : prev));
+                } else {
+                    setCustomerLookup({ status: "none", match: null });
+                }
+            } catch {
+                if (!cancelled) setCustomerLookup({ status: "none", match: null });
+            }
+        }, 400);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(t);
+        };
+    }, [customerWhatsapp, open, shopId]);
 
     const toggleService = (id) => {
         setSelectedServices((prev) =>
@@ -172,19 +211,19 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
 
     return (
         <div className="fixed inset-0 z-[90] flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm p-0 md:p-4">
-            <div className="w-full md:w-[640px] max-h-[95vh] md:max-h-[90vh] flex flex-col bg-[#151c25] md:rounded-2xl rounded-t-2xl border border-[#414755]/30 shadow-2xl overflow-hidden">
+            <div className="w-full md:w-[640px] max-h-[95vh] md:max-h-[90vh] flex flex-col bg-brand-surface md:rounded-2xl rounded-t-2xl border border-brand-border/30 shadow-2xl overflow-hidden">
                 {/* Header */}
-                <div className="px-6 pt-5 pb-4 border-b border-[#414755]/30 bg-gradient-to-b from-[#19202a] to-[#151c25]">
+                <div className="px-6 pt-5 pb-4 border-b border-brand-border/30 bg-gradient-to-b from-brand-elevated to-brand-surface">
                     <div className="flex items-start justify-between mb-4">
                         <div>
-                            <h3 className="text-lg font-black text-white tracking-tight">New booking</h3>
-                            <p className="text-[11px] text-[#8b90a0] font-semibold mt-0.5">
+                            <h3 className="text-lg font-black text-brand-text tracking-tight">New booking</h3>
+                            <p className="text-[11px] text-brand-muted font-semibold mt-0.5">
                                 {currentStep.subtitle}
                             </p>
                         </div>
                         <button
                             onClick={onClose}
-                            className="size-9 rounded-xl bg-[#19202a] hover:bg-[#242a34] text-[#8b90a0] hover:text-white flex items-center justify-center transition-all shrink-0"
+                            className="size-9 rounded-xl bg-brand-elevated hover:bg-brand-hover text-brand-muted hover:text-brand-primary flex items-center justify-center transition-all shrink-0"
                             aria-label="Close"
                         >
                             <span className="material-symbols-outlined text-[20px]">close</span>
@@ -203,6 +242,7 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                             setCustomerName={setCustomerName}
                             customerWhatsapp={customerWhatsapp}
                             setCustomerWhatsapp={setCustomerWhatsapp}
+                            customerLookup={customerLookup}
                         />
                     )}
 
@@ -234,12 +274,12 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-[#414755]/30 flex items-center justify-between gap-3 bg-[#0f151e] md:rounded-b-2xl">
+                <div className="px-6 py-4 border-t border-brand-border/30 flex items-center justify-between gap-3 bg-brand-elevated md:rounded-b-2xl">
                     <div className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0]">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                             {step === 3 ? "Total" : `${selectedServices.length} service${selectedServices.length === 1 ? "" : "s"}`}
                         </p>
-                        <p className="text-lg font-black text-white truncate">
+                        <p className="text-lg font-black text-brand-text truncate">
                             AED {Number(charges || 0).toFixed(2)}
                         </p>
                     </div>
@@ -248,7 +288,7 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                             <button
                                 type="button"
                                 onClick={handleBack}
-                                className="h-11 px-4 rounded-xl bg-[#19202a] hover:bg-[#242a34] text-sm font-bold text-white transition-all"
+                                className="h-11 px-4 rounded-xl bg-brand-elevated hover:bg-brand-hover text-sm font-bold text-brand-text transition-all"
                             >
                                 Back
                             </button>
@@ -256,7 +296,7 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="h-11 px-4 rounded-xl bg-[#19202a] hover:bg-[#242a34] text-sm font-bold text-white transition-all"
+                                className="h-11 px-4 rounded-xl bg-brand-elevated hover:bg-brand-hover text-sm font-bold text-brand-text transition-all"
                             >
                                 Cancel
                             </button>
@@ -267,7 +307,7 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                                 type="button"
                                 onClick={handleNext}
                                 disabled={(step === 1 && !canAdvanceFrom1) || (step === 2 && !canAdvanceFrom2)}
-                                className="h-11 px-5 rounded-xl bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-sm font-black text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="h-11 px-5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-sm font-black text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 Continue
                             </button>
@@ -276,7 +316,7 @@ export default function CreateBookingModal({ open, onClose, shopId, onCreated, i
                                 type="button"
                                 onClick={submit}
                                 disabled={submitting || !canSubmit}
-                                className="h-11 px-5 rounded-xl bg-[#4edea3] hover:bg-[#4edea3]/90 text-sm font-black text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="h-11 px-5 rounded-xl bg-brand-success hover:bg-brand-success/90 text-sm font-black text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 {submitting ? "Creating…" : "Create booking"}
                             </button>
@@ -302,10 +342,10 @@ function Stepper({ step }) {
                             <div
                                 className={`size-8 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                                     active
-                                        ? "bg-[#4b8eff] text-white"
+                                        ? "bg-brand-primary text-white"
                                         : done
-                                        ? "bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/40"
-                                        : "bg-[#19202a] text-[#8b90a0] border border-[#414755]/40"
+                                        ? "bg-brand-primary/20 text-brand-primary border border-brand-primary/40"
+                                        : "bg-brand-elevated text-brand-muted border border-brand-border/40"
                                 }`}
                             >
                                 {done ? (
@@ -316,14 +356,14 @@ function Stepper({ step }) {
                             </div>
                             <span
                                 className={`text-[11px] font-black uppercase tracking-widest hidden sm:inline truncate ${
-                                    active ? "text-white" : done ? "text-[#4edea3]" : "text-[#8b90a0]"
+                                    active ? "text-white" : done ? "text-brand-primary" : "text-brand-muted"
                                 }`}
                             >
                                 {s.label}
                             </span>
                         </div>
                         {i < STEPS.length - 1 && (
-                            <div className={`flex-1 h-px ${done ? "bg-[#4edea3]/40" : "bg-[#414755]/40"}`} />
+                            <div className={`flex-1 h-px ${done ? "bg-brand-primary/40" : "bg-brand-border/40"}`} />
                         )}
                     </React.Fragment>
                 );
@@ -332,44 +372,28 @@ function Stepper({ step }) {
     );
 }
 
-function CustomerStep({ customerName, setCustomerName, customerWhatsapp, setCustomerWhatsapp }) {
+function CustomerStep({ customerName, setCustomerName, customerWhatsapp, setCustomerWhatsapp, customerLookup }) {
+    const lookupStatus = customerLookup?.status || "idle";
+    const match = customerLookup?.match;
+
     return (
         <div className="space-y-5">
             <div className="text-center pb-2">
-                <div className="size-14 mx-auto rounded-2xl bg-[#4b8eff]/10 border border-[#4b8eff]/20 flex items-center justify-center mb-3">
-                    <span className="material-symbols-outlined text-[28px] text-[#4b8eff]">person_add</span>
+                <div className="size-14 mx-auto rounded-2xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center mb-3">
+                    <span className="material-symbols-outlined text-[28px] text-brand-primary">person_add</span>
                 </div>
-                <h4 className="text-base font-black text-white">Who's booking?</h4>
-                <p className="text-[11px] text-[#8b90a0] font-semibold mt-1">
+                <h4 className="text-base font-black text-brand-text">Who's booking?</h4>
+                <p className="text-[11px] text-brand-muted font-semibold mt-1">
                     Enter the walk-in customer's contact details.
                 </p>
             </div>
 
             <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0]">
-                    Customer name
-                </label>
-                <div className="mt-2 relative">
-                    <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none">
-                        person
-                    </span>
-                    <input
-                        type="text"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="Full name"
-                        autoFocus
-                        className="w-full h-12 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
-                    />
-                </div>
-            </div>
-
-            <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0]">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                     WhatsApp number
                 </label>
                 <div className="mt-2 relative">
-                    <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4edea3] text-[18px] pointer-events-none">
+                    <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-success text-[18px] pointer-events-none">
                         chat
                     </span>
                     <input
@@ -378,12 +402,52 @@ function CustomerStep({ customerName, setCustomerName, customerWhatsapp, setCust
                         value={customerWhatsapp}
                         onChange={(e) => setCustomerWhatsapp(e.target.value)}
                         placeholder="+971 5X XXX XXXX"
-                        className="w-full h-12 bg-[#080f17] border border-[#414755]/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4edea3]/20 focus:border-[#4edea3]/40 outline-none transition-all"
+                        autoFocus
+                        className="w-full h-12 bg-brand-bg border border-brand-border/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-success/20 focus:border-brand-success/40 outline-none transition-all"
                     />
                 </div>
-                <p className="text-[10px] font-semibold text-[#8b90a0] mt-1.5">
-                    We'll use this to confirm the booking.
-                </p>
+
+                {lookupStatus === "searching" && (
+                    <p className="text-[10px] font-semibold text-brand-muted mt-1.5">
+                        Checking past bookings…
+                    </p>
+                )}
+                {lookupStatus === "found" && match && (
+                    <div className="mt-2 flex items-center gap-2 rounded-xl bg-brand-success/10 border border-brand-success/30 px-3 py-2">
+                        <span className="material-symbols-outlined text-[16px] text-brand-success">how_to_reg</span>
+                        <p className="text-[11px] font-bold text-brand-success truncate">
+                            Returning customer: {match.name || "Unnamed"} · {match.bookings_count} past booking{match.bookings_count === 1 ? "" : "s"}
+                        </p>
+                    </div>
+                )}
+                {lookupStatus === "none" && (
+                    <p className="text-[10px] font-semibold text-brand-muted mt-1.5">
+                        New customer — we'll save their name with this booking.
+                    </p>
+                )}
+                {lookupStatus === "idle" && (
+                    <p className="text-[10px] font-semibold text-brand-muted mt-1.5">
+                        We'll use this to confirm the booking.
+                    </p>
+                )}
+            </div>
+
+            <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
+                    Customer name
+                </label>
+                <div className="mt-2 relative">
+                    <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-[18px] pointer-events-none">
+                        person
+                    </span>
+                    <input
+                        type="text"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        placeholder="Full name"
+                        className="w-full h-12 bg-brand-bg border border-brand-border/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none transition-all"
+                    />
+                </div>
             </div>
         </div>
     );
@@ -392,7 +456,7 @@ function CustomerStep({ customerName, setCustomerName, customerWhatsapp, setCust
 function ServicesStep({ loading, catalogs, selectedServices, toggleService }) {
     if (loading) {
         return (
-            <div className="text-[#8b90a0] text-sm font-semibold py-12 text-center">
+            <div className="text-brand-muted text-sm font-semibold py-12 text-center">
                 Loading services…
             </div>
         );
@@ -401,12 +465,12 @@ function ServicesStep({ loading, catalogs, selectedServices, toggleService }) {
     if (catalogs.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-[#19202a] border border-[#414755]/30 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[24px] text-[#8b90a0]">
+                <div className="w-14 h-14 rounded-2xl bg-brand-elevated border border-brand-border/30 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[24px] text-brand-muted">
                         inventory_2
                     </span>
                 </div>
-                <p className="text-sm font-bold text-[#8b90a0]">No services in your catalog yet.</p>
+                <p className="text-sm font-bold text-brand-muted">No services in your catalog yet.</p>
             </div>
         );
     }
@@ -428,32 +492,32 @@ function ServicesStep({ loading, catalogs, selectedServices, toggleService }) {
                         onClick={() => toggleService(c.id)}
                         className={`w-full flex items-center gap-3 p-2.5 rounded-2xl border text-left transition-all ${
                             active
-                                ? "bg-[#4b8eff]/10 border-[#4b8eff]/50 shadow-[inset_0_0_0_1px_rgba(75,142,255,0.18)]"
-                                : "bg-[#080f17] border-[#414755]/30 hover:border-[#414755]/60"
+                                ? "bg-brand-primary/10 border-brand-primary/50 shadow-[inset_0_0_0_1px_rgba(75,142,255,0.18)]"
+                                : "bg-brand-bg border-brand-border/30 hover:border-brand-border/60"
                         }`}
                     >
-                        <div className="w-14 h-14 rounded-xl bg-[#19202a] border border-[#414755]/30 overflow-hidden flex items-center justify-center shrink-0">
+                        <div className="w-14 h-14 rounded-xl bg-brand-elevated border border-brand-border/30 overflow-hidden flex items-center justify-center shrink-0">
                             {c.image ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={c.image} alt={c.title} className="w-full h-full object-cover" />
                             ) : (
-                                <span className="text-sm font-black text-[#4b8eff]">{initials}</span>
+                                <span className="text-sm font-black text-brand-text">{initials}</span>
                             )}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-black text-white truncate">{c.title}</p>
-                            <p className="text-[11px] text-[#8b90a0] font-semibold truncate mt-0.5">
+                            <p className="text-sm font-black text-brand-text truncate">{c.title}</p>
+                            <p className="text-[11px] text-brand-muted font-semibold truncate mt-0.5">
                                 {c.description || "No description"}
                             </p>
-                            <p className="text-sm font-black text-[#4edea3] mt-1">
+                            <p className="text-sm font-black text-brand-success mt-1">
                                 AED {Number(c.price || 0).toFixed(0)}
                             </p>
                         </div>
                         <div
                             className={`size-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                                 active
-                                    ? "bg-[#4b8eff] text-white"
-                                    : "bg-[#19202a] text-[#8b90a0] border border-[#414755]/30"
+                                    ? "bg-brand-primary text-white"
+                                    : "bg-brand-elevated text-brand-muted border border-brand-border/30"
                             }`}
                         >
                             <span className="material-symbols-outlined text-[18px]">
@@ -485,7 +549,7 @@ function ScheduleStep({
         <div className="space-y-5">
             {/* Date chips */}
             <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0]">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                     Appointment date
                 </label>
                 <div className="mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
@@ -498,8 +562,8 @@ function ScheduleStep({
                                 onClick={() => setDate(d.iso)}
                                 className={`shrink-0 w-[72px] py-3 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
                                     active
-                                        ? "bg-[#4b8eff] border-[#4b8eff] text-white"
-                                        : "bg-[#080f17] border-[#414755]/30 text-[#dce3f0] hover:border-[#4b8eff]/40"
+                                        ? "bg-brand-primary border-brand-primary text-white"
+                                        : "bg-brand-bg border-brand-border/30 text-brand-text hover:border-brand-primary/40"
                                 }`}
                             >
                                 <span className="text-[10px] font-black uppercase tracking-widest">
@@ -514,17 +578,17 @@ function ScheduleStep({
 
             {/* Time slots */}
             <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0]">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                     Time slot
                 </label>
                 <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {loading && (
-                        <div className="col-span-full text-[#8b90a0] text-xs font-semibold py-4 text-center">
+                        <div className="col-span-full text-brand-muted text-xs font-semibold py-4 text-center">
                             Loading slots…
                         </div>
                     )}
                     {!loading && slots.length === 0 && (
-                        <div className="col-span-full text-[#8b90a0] text-xs font-semibold py-4 text-center">
+                        <div className="col-span-full text-brand-muted text-xs font-semibold py-4 text-center">
                             No slots available on this date.
                         </div>
                     )}
@@ -537,8 +601,8 @@ function ScheduleStep({
                                 onClick={() => setSlot(s)}
                                 className={`h-11 rounded-xl border text-xs font-black transition-all ${
                                     active
-                                        ? "bg-[#4b8eff] border-[#4b8eff] text-white"
-                                        : "bg-[#080f17] border-[#414755]/30 text-[#dce3f0] hover:border-[#4b8eff]/40 hover:text-[#4b8eff]"
+                                        ? "bg-brand-primary border-brand-primary text-white"
+                                        : "bg-brand-bg border-brand-border/30 text-brand-text hover:border-brand-primary/40 hover:text-brand-primary"
                                 }`}
                             >
                                 {s}
@@ -550,49 +614,49 @@ function ScheduleStep({
 
             {/* Summary */}
             {selectedCatalogs.length > 0 && (
-                <div className="bg-[#080f17] border border-[#414755]/30 rounded-2xl p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">
+                <div className="bg-brand-bg border border-brand-border/30 rounded-2xl p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">
                         Order summary
                     </p>
                     <div className="space-y-2">
                         {selectedCatalogs.map((c) => (
                             <div key={c.id} className="flex items-center justify-between text-xs">
-                                <span className="text-[#dce3f0] font-semibold truncate pr-2">
+                                <span className="text-brand-text font-semibold truncate pr-2">
                                     {c.title}
                                 </span>
-                                <span className="text-white font-black shrink-0">
+                                <span className="text-brand-text font-black shrink-0">
                                     AED {Number(c.price || 0).toFixed(0)}
                                 </span>
                             </div>
                         ))}
                     </div>
-                    <div className="mt-3 pt-3 border-t border-[#414755]/30 flex items-center justify-between">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#8b90a0]">
+                    <div className="mt-3 pt-3 border-t border-brand-border/30 flex items-center justify-between">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-brand-muted">
                             Subtotal
                         </span>
-                        <span className="text-sm font-black text-white">
+                        <span className="text-sm font-black text-brand-text">
                             AED {Number(autoTotal || 0).toFixed(2)}
                         </span>
                     </div>
 
                     {/* Custom override */}
-                    <div className="mt-3 pt-3 border-t border-[#414755]/30">
+                    <div className="mt-3 pt-3 border-t border-brand-border/30">
                         <div className="flex items-center justify-between mb-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0]">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                                 Custom charges
                             </label>
                             {chargesOverride !== null && chargesOverride !== autoTotal && (
                                 <button
                                     type="button"
                                     onClick={() => setChargesOverride(null)}
-                                    className="text-[10px] font-black text-[#4b8eff] hover:underline"
+                                    className="text-[10px] font-black text-brand-text hover:underline"
                                 >
                                     Reset to subtotal
                                 </button>
                             )}
                         </div>
                         <div className="relative">
-                            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none">
+                            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-[18px] pointer-events-none">
                                 payments
                             </span>
                             <input
@@ -605,7 +669,7 @@ function ScheduleStep({
                                         e.target.value === "" ? null : Number(e.target.value)
                                     )
                                 }
-                                className="w-full h-11 bg-[#151c25] border border-[#414755]/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-white focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
+                                className="w-full h-11 bg-brand-surface border border-brand-border/40 rounded-xl pl-11 pr-4 text-sm font-semibold text-brand-text focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none transition-all"
                             />
                         </div>
                     </div>

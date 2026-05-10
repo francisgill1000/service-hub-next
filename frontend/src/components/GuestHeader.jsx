@@ -23,14 +23,14 @@ export default function GuestHeader() {
   if (isAuthRoute || isShopRoute) return null;
 
   const getHeaderTitle = () => {
-    if (pathname === "/") return "ServiceHub";
+    if (pathname === "/") return "Rezzy";
     if (pathname?.startsWith("/detail")) return "Shop Details";
     if (pathname?.startsWith("/booking")) return "Booking";
     if (pathname === "/explore") return "Explore";
     if (pathname === "/near-me") return "Near Me";
     if (pathname === "/favourites") return "Favorites";
     if (pathname === "/account") return "Account";
-    return "ServiceHub";
+    return "Rezzy";
   };
 
   const isActive = (path) => (path === "/" ? pathname === "/" : pathname?.startsWith(path));
@@ -50,7 +50,7 @@ export default function GuestHeader() {
       <header className={`${isLandingRoute ? "hidden" : "hidden md:block"} sticky top-0 z-50 bg-[#0B121B]/95 backdrop-blur-xl border-b border-white/10`}>
         <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between gap-6">
           <Link href="/" className="text-xl font-black text-white tracking-tight shrink-0">
-            ServiceHub
+            Rezzy
           </Link>
 
           <nav className="flex items-center gap-1">

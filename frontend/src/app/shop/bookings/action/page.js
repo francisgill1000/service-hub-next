@@ -5,7 +5,7 @@ import api from '@/utils/api';
 import { notify } from '@/utils/alerts';
 
 const BookingLoader = () => (
-    <div className="bg-[#0B121E] text-white font-sans min-h-screen flex items-center justify-center">
+    <div className="bg-brand-bg text-brand-text font-sans min-h-screen flex items-center justify-center">
         <div className="text-center">
             <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
             <p className="text-gray-400 text-sm">Loading booking details...</p>
@@ -150,19 +150,19 @@ const ConfirmationPageContent = () => {
     };
 
     return (
-        <div className="bg-[#0B121E] text-white font-sans min-h-screen flex flex-col selection:bg-[#137fec]/30 overflow-x-hidden">
+        <div className="bg-brand-bg text-brand-text font-sans min-h-screen flex flex-col selection:bg-brand-primary/30 overflow-x-hidden">
             {/* Main Content Scrollable Area */}
             <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-lg mx-auto w-full">
                 <section className="flex flex-col items-center mb-10">
                     <div className={`relative my-10 flex items-center justify-center transition-all duration-700 transform ${isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}>
-                        <div className="absolute w-32 h-32 bg-[#137fec]/30 rounded-full blur-2xl animate-pulse"></div>
-                        <div className="absolute w-24 h-24 bg-[#137fec]/20 rounded-full blur-xl"></div>
-                        <div className="relative w-24 h-24 bg-[#137fec]/10 border-2 border-[#137fec]/50 rounded-full flex items-center justify-center shadow-2xl shadow-[#137fec]/20">
+                        <div className="absolute w-32 h-32 bg-brand-primary/30 rounded-full blur-2xl animate-pulse"></div>
+                        <div className="absolute w-24 h-24 bg-brand-primary/20 rounded-full blur-xl"></div>
+                        <div className="relative w-24 h-24 bg-brand-primary/10 border-2 border-brand-primary/50 rounded-full flex items-center justify-center shadow-2xl shadow-[#137fec]/20">
                             {/* Custom SVG for Filled Check Circle - Matching the Material Symbol design exactly */}
                             <svg
                                 viewBox="0 0 24 24"
                                 fill="currentColor"
-                                className="text-[#137fec] w-16 h-16 drop-shadow-[0_0_15px_rgba(19,127,236,0.5)]"
+                                className="text-brand-primary w-16 h-16 drop-shadow-[0_0_15px_rgba(19,127,236,0.5)]"
                             >
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                             </svg>
@@ -173,15 +173,15 @@ const ConfirmationPageContent = () => {
 
                     <div className={`inline-flex items-center px-5 py-1.5 rounded-full border mb-10 transition-all ${bookingDetails?.status === "Completed"
                         ? "bg-green-500/10 border-green-500/30"
-                        : "bg-[#137fec]/10 border-[#137fec]/30"
+                        : "bg-brand-primary/10 border-brand-primary/30"
                         } cursor-default`}>
                         <div className={`w-2 h-2 rounded-full mr-2 shadow-lg animate-pulse ${bookingDetails?.status === "Completed"
                             ? "bg-green-500 shadow-green-500"
-                            : "bg-[#137fec] shadow-[#137fec]"
+                            : "bg-brand-primary shadow-[#137fec]"
                             }`}></div>
                         <span className={`text-xs font-bold tracking-widest uppercase ${bookingDetails?.status === "Completed"
                             ? "text-green-500"
-                            : "text-[#137fec]"
+                            : "text-brand-primary"
                             }`}>{bookingDetails?.status || "Booked"}</span>
                     </div>
                     {/* <div className="flex gap-4 w-full">
@@ -196,7 +196,7 @@ const ConfirmationPageContent = () => {
                     </div> */}
                 </section>
                 {/* Booking Details Card */}
-                <div className="w-full rounded-2xl p-6 shadow-xl border border-[#1E293B]">
+                <div className="w-full rounded-2xl p-6 shadow-xl border border-brand-border">
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-x-6">
                             <p className="text-gray-400 text-sm font-medium">Booking Reference</p>
@@ -229,30 +229,30 @@ const ConfirmationPageContent = () => {
                 {/* Staff Section */}
                 {(bookingDetails?.status === "Booked" || bookingDetails?.status === "Queued") && (
                     <div className="w-full mt-8">
-                        <h3 className="text-white text-lg font-bold mb-4 flex items-center">
-                            <span className="w-1 h-5 bg-[#137fec] rounded-full mr-3"></span>
+                        <h3 className="text-brand-primary text-lg font-bold mb-4 flex items-center">
+                            <span className="w-1 h-5 bg-brand-primary rounded-full mr-3"></span>
                             Staff
                         </h3>
-                        <div className="w-full rounded-2xl p-5 shadow-xl border border-[#1E293B] space-y-4">
+                        <div className="w-full rounded-2xl p-5 shadow-xl border border-brand-border space-y-4">
                             <div className="flex items-center justify-between">
                                 <p className="text-gray-400 text-sm font-medium">Currently assigned</p>
                                 <p className="text-sm font-bold text-right">
                                     {bookingDetails?.staff?.name ? (
-                                        <span className="inline-flex items-center gap-2 text-white">
-                                            <span className="w-7 h-7 rounded-full bg-[#137fec]/20 flex items-center justify-center font-bold text-xs text-[#137fec]">
+                                        <span className="inline-flex items-center gap-2 text-brand-text">
+                                            <span className="w-7 h-7 rounded-full bg-brand-primary/20 flex items-center justify-center font-bold text-xs text-brand-primary">
                                                 {bookingDetails.staff.name.charAt(0).toUpperCase()}
                                             </span>
                                             {bookingDetails.staff.name}
                                         </span>
                                     ) : (
-                                        <span className="px-2 py-1 rounded-lg bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30 font-black text-[10px] uppercase tracking-widest">
+                                        <span className="px-2 py-1 rounded-lg bg-brand-warning/15 text-brand-warning border border-brand-warning/30 font-black text-[10px] uppercase tracking-widest">
                                             Waiting — no staff
                                         </span>
                                     )}
                                 </p>
                             </div>
 
-                            <div className="border-t border-[#1E293B] pt-4">
+                            <div className="border-t border-brand-border pt-4">
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                                     {bookingDetails?.staff_id ? "Reassign to a different staff" : "Manually assign a staff"}
                                 </p>
@@ -263,7 +263,7 @@ const ConfirmationPageContent = () => {
                                         <select
                                             value={selectedStaff}
                                             onChange={(e) => setSelectedStaff(e.target.value)}
-                                            className="flex-1 h-11 bg-[#0B121E] border border-[#1E293B] rounded-xl px-3 text-sm font-semibold text-white outline-none [color-scheme:dark]"
+                                            className="flex-1 h-11 bg-brand-bg border border-brand-border rounded-xl px-3 text-sm font-semibold text-brand-text outline-none"
                                         >
                                             <option value="">Pick a staff…</option>
                                             {staffList.map((s) => (
@@ -279,7 +279,7 @@ const ConfirmationPageContent = () => {
                                         <button
                                             onClick={assignStaff}
                                             disabled={!selectedStaff || assigning}
-                                            className="h-11 px-5 rounded-xl bg-[#137fec] hover:bg-[#137fec]/90 disabled:opacity-50 text-sm font-black text-white"
+                                            className="h-11 px-5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-sm font-black text-white"
                                         >
                                             {assigning ? "Saving…" : (bookingDetails?.staff_id ? "Reassign" : "Assign")}
                                         </button>
@@ -295,20 +295,20 @@ const ConfirmationPageContent = () => {
 
                 {/* Services Section */}
                 <div className="w-full mt-8">
-                    <h3 className="text-white text-lg font-bold mb-4 flex items-center">
-                        <span className="w-1 h-5 bg-[#137fec] rounded-full mr-3"></span>
+                    <h3 className="text-brand-primary text-lg font-bold mb-4 flex items-center">
+                        <span className="w-1 h-5 bg-brand-primary rounded-full mr-3"></span>
                         Services Booked
                     </h3>
 
-                    <div className="w-full mb-3 rounded-2xl shadow-xl border border-[#1E293B] divide-y divide-[#1E293B]">
+                    <div className="w-full mb-3 rounded-2xl shadow-xl border border-brand-border divide-y divide-[#1E293B]">
                         {bookingDetails?.services.map((item) => (
-                            <div key={item.id} className="p-5 flex justify-between items-center group hover:bg-[#1E293B]/30 transition-colors first:rounded-t-2xl last:rounded-b-2xl">
+                            <div key={item.id} className="p-5 flex justify-between items-center group hover:bg-brand-hover/60 transition-colors first:rounded-t-2xl last:rounded-b-2xl">
                                 <div className="flex flex-col">
                                     <span className="text-gray-200 font-semibold">{item.title}</span>
                                     <span className="text-gray-500 text-xs uppercase tracking-wider">{item.description}</span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-[#137fec] font-bold">AED {item.price}</span>
+                                    <span className="text-brand-primary font-bold">AED {item.price}</span>
                                 </div>
                             </div>
                         ))}
@@ -318,29 +318,29 @@ const ConfirmationPageContent = () => {
                 {/* Invoice Section */}
                 {bookingDetails?.invoice && (
                     <div className="w-full mt-8">
-                        <h3 className="text-white text-lg font-bold mb-4 flex items-center">
-                            <span className="w-1 h-5 bg-[#137fec] rounded-full mr-3"></span>
+                        <h3 className="text-brand-primary text-lg font-bold mb-4 flex items-center">
+                            <span className="w-1 h-5 bg-brand-primary rounded-full mr-3"></span>
                             Invoice
                         </h3>
-                        <div className="w-full rounded-2xl p-5 shadow-xl border border-[#1E293B] space-y-4">
+                        <div className="w-full rounded-2xl p-5 shadow-xl border border-brand-border space-y-4">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Invoice</p>
-                                    <p className="text-base font-black text-white">{bookingDetails.invoice.invoice_number}</p>
+                                    <p className="text-base font-black text-brand-text">{bookingDetails.invoice.invoice_number}</p>
                                 </div>
                                 <span className={`px-3 py-1 rounded-lg font-black text-[10px] uppercase tracking-widest ${
                                     bookingDetails.invoice.status === 'paid'
                                         ? 'bg-green-500/15 text-green-500 border border-green-500/30'
                                         : bookingDetails.invoice.status === 'cancelled'
                                             ? 'bg-red-500/15 text-red-500 border border-red-500/30'
-                                            : 'bg-[#137fec]/15 text-[#137fec] border border-[#137fec]/30'
+                                            : 'bg-brand-primary/15 text-brand-primary border border-brand-primary/30'
                                 }`}>
                                     {bookingDetails.invoice.status}
                                 </span>
                             </div>
-                            <div className="border-t border-[#1E293B] pt-3 flex justify-between text-sm">
+                            <div className="border-t border-brand-border pt-3 flex justify-between text-sm">
                                 <span className="text-gray-400">Total</span>
-                                <span className="font-black text-white">AED {Number(bookingDetails.invoice.total).toFixed(2)}</span>
+                                <span className="font-black text-brand-text">AED {Number(bookingDetails.invoice.total).toFixed(2)}</span>
                             </div>
 
                             <div className="flex flex-wrap gap-2 pt-2">
@@ -348,7 +348,7 @@ const ConfirmationPageContent = () => {
                                     href={invoicePdfUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 min-w-[120px] h-11 px-4 rounded-xl bg-[#137fec]/10 hover:bg-[#137fec]/20 border border-[#137fec]/30 text-[#137fec] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
+                                    className="flex-1 min-w-[120px] h-11 px-4 rounded-xl bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/30 text-brand-primary font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
                                 >
                                     <span className="material-symbols-outlined text-[16px]">download</span>
                                     Download PDF
@@ -381,11 +381,11 @@ const ConfirmationPageContent = () => {
             </main>
 
             {/* Persistent Footer Actions */}
-            <footer className="px-6 pt-6 pb-12 bg-[#0B121E]/95 backdrop-blur-xl border-t border-[#1E293B]/50 space-y-4 max-w-lg mx-auto w-full">
+            <footer className="px-6 pt-6 pb-12 bg-brand-bg/95 backdrop-blur-xl border-t border-brand-border/50 space-y-4 max-w-lg mx-auto w-full">
                 <button
                     onClick={() => handleBookingUpdate("Completed")}
                     disabled={isCompleting}
-                    className="w-full bg-[#4b8eff] hover:bg-[#4b8eff]/90 active:scale-[0.98] text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center"
+                    className="w-full bg-brand-primary hover:bg-brand-primary/90 active:scale-[0.98] text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center"
                 >
                     {isCompleting ? "Marking Complete..." : "Mark as Complete"}
                 </button>
@@ -393,13 +393,13 @@ const ConfirmationPageContent = () => {
                 <button
                     onClick={() => handleBookingUpdate("Cancelled")}
                     disabled={isCancelling}
-                    className="w-full bg-[#EF4444] hover:bg-red-700 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center"
+                    className="w-full bg-brand-danger hover:bg-red-700 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold h-[60px] rounded-2xl transition-all flex items-center justify-center"
                 >
                     {isCancelling ? "Marking Cancelled..." : "Mark as Cancelled"}
                 </button>
             </footer>
 
-            <div className="h-4 bg-[#0B121E]"></div>
+            <div className="h-4 bg-brand-bg"></div>
         </div>
     );
 };

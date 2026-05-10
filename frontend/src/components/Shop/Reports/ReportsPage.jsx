@@ -40,13 +40,13 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+    <div className="min-h-screen bg-brand-bg text-brand-text pb-28 md:pb-10">
       <div className="w-full px-4 md:px-6 pt-6 md:pt-8 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Reports</h2>
-            <p className="text-[#8b90a0] font-semibold mt-1 text-sm">
+            <h2 className="text-2xl font-black text-brand-text tracking-tight">Reports</h2>
+            <p className="text-brand-muted font-semibold mt-1 text-sm">
               Insights to plan, price, and grow.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default function ReportsPage() {
               href={exportUrl("pdf")}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-9 px-3 rounded-xl bg-[#137fec]/15 hover:bg-[#137fec]/25 border border-[#137fec]/30 text-[#137fec] font-black text-[10px] uppercase tracking-widest inline-flex items-center gap-1.5"
+              className="h-9 px-3 rounded-xl bg-brand-primary/15 hover:bg-brand-primary/25 border border-brand-primary/30 text-brand-primary font-black text-[10px] uppercase tracking-widest inline-flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-[14px]">picture_as_pdf</span>
               PDF
@@ -64,7 +64,7 @@ export default function ReportsPage() {
               href={exportUrl("csv")}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-9 px-3 rounded-xl bg-[#4edea3]/15 hover:bg-[#4edea3]/25 border border-[#4edea3]/30 text-[#4edea3] font-black text-[10px] uppercase tracking-widest inline-flex items-center gap-1.5"
+              className="h-9 px-3 rounded-xl bg-brand-success/15 hover:bg-brand-success/25 border border-brand-success/30 text-brand-success font-black text-[10px] uppercase tracking-widest inline-flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-[14px]">table_view</span>
               CSV
@@ -76,15 +76,15 @@ export default function ReportsPage() {
         <DateRangePicker value={range} onChange={setRange} />
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-[#080f17] border border-[#414755]/30 rounded-xl p-1 overflow-x-auto">
+        <div className="flex items-center gap-1 bg-brand-bg border border-brand-border/30 rounded-xl p-1 overflow-x-auto">
           {TABS.map((t) => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
               className={`h-9 px-4 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === t.key
-                  ? "bg-[#4b8eff] text-white"
-                  : "text-[#8b90a0] hover:text-white"
+                  ? "bg-brand-primary text-white"
+                  : "text-brand-muted hover:text-brand-primary"
               }`}
             >
               <span className="material-symbols-outlined text-[14px]">{t.icon}</span>

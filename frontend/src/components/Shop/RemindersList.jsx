@@ -143,24 +143,24 @@ export default function RemindersList() {
   const sentCount = bookings.filter((b) => b.reminder_sent_at).length;
 
   return (
-    <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+    <div className="min-h-screen bg-brand-bg text-brand-text pb-28 md:pb-10">
       <div className="w-full px-4 md:px-6 pt-6 md:pt-8 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Reminders</h2>
-            <p className="text-[#8b90a0] font-semibold mt-1 text-sm">
+            <h2 className="text-2xl font-black text-brand-text tracking-tight">Reminders</h2>
+            <p className="text-brand-muted font-semibold mt-1 text-sm">
               Tomorrow · {label}
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-3 py-1.5 bg-[#151c25] border border-[#414755]/30 rounded-xl text-[11px] font-bold text-[#c1c6d7]">
+            <span className="px-3 py-1.5 bg-brand-surface border border-brand-border/30 rounded-xl text-[11px] font-bold text-brand-text">
               {bookings.length} bookings
             </span>
-            <span className="px-3 py-1.5 bg-[#f59e0b]/10 border border-[#f59e0b]/20 rounded-xl text-[11px] font-bold text-[#f59e0b]">
+            <span className="px-3 py-1.5 bg-brand-warning/10 border border-brand-warning/20 rounded-xl text-[11px] font-bold text-brand-warning">
               {pendingCount} to send
             </span>
-            <span className="px-3 py-1.5 bg-[#4edea3]/10 border border-[#4edea3]/20 rounded-xl text-[11px] font-bold text-[#4edea3]">
+            <span className="px-3 py-1.5 bg-brand-success/10 border border-brand-success/20 rounded-xl text-[11px] font-bold text-brand-success">
               {sentCount} reminded
             </span>
             <button
@@ -175,17 +175,17 @@ export default function RemindersList() {
         </div>
 
         {/* List */}
-        <div className="bg-[#19202a] rounded-xl border border-[#414755]/20 overflow-hidden">
+        <div className="bg-brand-elevated rounded-xl border border-brand-border/20 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-[#8b90a0] text-sm font-semibold">Loading…</div>
+            <div className="p-8 text-center text-brand-muted text-sm font-semibold">Loading…</div>
           ) : bookings.length === 0 ? (
             <div className="p-12 text-center">
-              <span className="material-symbols-outlined text-[40px] text-[#414755]">event_available</span>
-              <p className="mt-3 text-[#8b90a0] text-sm font-semibold">No bookings tomorrow.</p>
-              <p className="mt-1 text-[#414755] text-xs">Enjoy the day off.</p>
+              <span className="material-symbols-outlined text-[40px] text-brand-muted">event_available</span>
+              <p className="mt-3 text-brand-muted text-sm font-semibold">No bookings tomorrow.</p>
+              <p className="mt-1 text-brand-muted text-xs">Enjoy the day off.</p>
             </div>
           ) : (
-            <ul className="divide-y divide-[#414755]/10">
+            <ul className="divide-y divide-brand-border/10">
               {bookings
                 .sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""))
                 .map((b) => {
@@ -198,22 +198,22 @@ export default function RemindersList() {
                   const noPhone = !b.customer_whatsapp;
                   return (
                     <li key={b.id} className="px-5 py-4 flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-[#2e353f] flex items-center justify-center font-bold text-sm text-[#4b8eff] shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-bold text-white truncate">{customerName}</p>
-                          <span className="text-[10px] font-bold text-[#8b90a0]">{b.booking_reference}</span>
+                          <p className="text-sm font-bold text-brand-text truncate">{customerName}</p>
+                          <span className="text-[10px] font-bold text-brand-muted">{b.booking_reference}</span>
                         </div>
-                        <p className="text-[11px] text-[#8b90a0] font-medium mt-0.5 truncate">{services}</p>
-                        <div className="flex items-center gap-3 mt-1.5 text-[11px] text-[#8b90a0]">
+                        <p className="text-[11px] text-brand-muted font-medium mt-0.5 truncate">{services}</p>
+                        <div className="flex items-center gap-3 mt-1.5 text-[11px] text-brand-muted">
                           <span className="inline-flex items-center gap-1">
                             <span className="material-symbols-outlined text-[12px]">schedule</span>
                             {time}
                           </span>
                           {b.customer_whatsapp && (
-                            <span className="inline-flex items-center gap-1 text-[#4edea3]">
+                            <span className="inline-flex items-center gap-1 text-brand-success">
                               <span className="material-symbols-outlined text-[12px]">chat</span>
                               {b.customer_whatsapp}
                             </span>
@@ -222,7 +222,7 @@ export default function RemindersList() {
                       </div>
                       <div className="shrink-0">
                         {noPhone ? (
-                          <span className="px-3 py-1.5 rounded-lg bg-[#414755]/40 text-[#8b90a0] font-bold text-[10px] uppercase tracking-wider">
+                          <span className="px-3 py-1.5 rounded-lg bg-brand-border/40 text-brand-muted font-bold text-[10px] uppercase tracking-wider">
                             No WhatsApp
                           </span>
                         ) : reminded ? (
@@ -230,7 +230,7 @@ export default function RemindersList() {
                             onClick={() => sendReminder(b)}
                             disabled={busyId === b.id}
                             title="Send again"
-                            className="h-9 px-3 rounded-lg bg-[#4edea3]/15 hover:bg-[#4edea3]/25 border border-[#4edea3]/30 text-[#4edea3] font-black text-[10px] uppercase tracking-wider inline-flex items-center gap-1.5"
+                            className="h-9 px-3 rounded-lg bg-brand-success/15 hover:bg-brand-success/25 border border-brand-success/30 text-brand-success font-black text-[10px] uppercase tracking-wider inline-flex items-center gap-1.5"
                           >
                             <span className="material-symbols-outlined text-[14px]">check</span>
                             Reminded · Resend

@@ -95,12 +95,12 @@ export default function StaffList() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+    <div className="min-h-screen bg-brand-bg text-brand-text pb-28 md:pb-10">
       <div className="w-full px-4 md:px-6 pt-6 md:pt-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Staff</h2>
-            <p className="text-[#8b90a0] font-semibold mt-1 text-sm">
+            <h2 className="text-2xl font-black text-brand-text tracking-tight">Staff</h2>
+            <p className="text-brand-muted font-semibold mt-1 text-sm">
               {staff.length > 0
                 ? `${staff.length} member${staff.length !== 1 ? "s" : ""} on the team.`
                 : "Add the people who handle bookings."}
@@ -111,37 +111,37 @@ export default function StaffList() {
         {/* Add form */}
         <form
           onSubmit={addStaff}
-          className="bg-[#151c25] rounded-xl p-4 md:p-5 border border-[#414755]/20 flex gap-3"
+          className="bg-brand-surface rounded-xl p-4 md:p-5 border border-brand-border/20 flex gap-3"
         >
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="New staff name (e.g. Ali)"
-            className="flex-1 h-11 bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none"
+            className="flex-1 h-11 bg-brand-bg border border-brand-border/40 rounded-xl px-4 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
           />
           <button
             type="submit"
             disabled={adding || !newName.trim()}
-            className="h-11 px-4 rounded-xl bg-[#4b8eff] hover:bg-[#4b8eff]/90 disabled:opacity-50 text-sm font-black text-white"
+            className="h-11 px-4 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-sm font-black text-white"
           >
             {adding ? "Adding…" : "Add staff"}
           </button>
         </form>
 
         {/* List */}
-        <div className="bg-[#19202a] rounded-xl border border-[#414755]/20 overflow-hidden">
+        <div className="bg-brand-elevated rounded-xl border border-brand-border/20 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-[#8b90a0] text-sm font-semibold">Loading…</div>
+            <div className="p-8 text-center text-brand-muted text-sm font-semibold">Loading…</div>
           ) : staff.length === 0 ? (
-            <div className="p-8 text-center text-[#8b90a0] text-sm font-semibold">
+            <div className="p-8 text-center text-brand-muted text-sm font-semibold">
               No staff yet. Add one above.
             </div>
           ) : (
-            <ul className="divide-y divide-[#414755]/10">
+            <ul className="divide-y divide-brand-border/10">
               {staff.map((s) => (
                 <li key={s.id} className="px-5 py-4 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#2e353f] flex items-center justify-center font-bold text-sm text-[#4b8eff] shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
                     {s.name.charAt(0).toUpperCase()}
                   </div>
 
@@ -152,17 +152,17 @@ export default function StaffList() {
                       onChange={(e) => setEditingName(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && saveEdit(s.id)}
                       autoFocus
-                      className="flex-1 h-9 bg-[#080f17] border border-[#414755]/40 rounded-lg px-3 text-sm font-semibold text-white"
+                      className="flex-1 h-9 bg-brand-bg border border-brand-border/40 rounded-lg px-3 text-sm font-semibold text-white"
                     />
                   ) : (
-                    <p className="flex-1 text-sm font-bold text-white">{s.name}</p>
+                    <p className="flex-1 text-sm font-bold text-brand-text">{s.name}</p>
                   )}
 
                   <span
                     className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${
                       s.is_active
-                        ? "bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/20"
-                        : "bg-[#414755]/40 text-[#8b90a0] border border-[#414755]/30"
+                        ? "bg-brand-success/15 text-brand-success border border-brand-success/20"
+                        : "bg-brand-border/40 text-brand-muted border border-brand-border/30"
                     }`}
                   >
                     {s.is_active ? "Active" : "Inactive"}
@@ -173,13 +173,13 @@ export default function StaffList() {
                       <button
                         onClick={() => saveEdit(s.id)}
                         disabled={busyRow === s.id}
-                        className="h-8 px-3 rounded-lg bg-[#4b8eff] text-[11px] font-black text-white"
+                        className="h-8 px-3 rounded-lg bg-brand-primary text-[11px] font-black text-white"
                       >
                         Save
                       </button>
                       <button
                         onClick={() => setEditingId(null)}
-                        className="h-8 px-3 rounded-lg bg-[#2e353f] text-[11px] font-black text-[#dce3f0]"
+                        className="h-8 px-3 rounded-lg bg-brand-hover text-[11px] font-black text-brand-text"
                       >
                         Cancel
                       </button>
@@ -188,7 +188,7 @@ export default function StaffList() {
                     <>
                       <button
                         onClick={() => startEdit(s)}
-                        className="h-8 px-3 rounded-lg bg-[#2e353f] text-[11px] font-black text-[#dce3f0] hover:bg-[#414755]"
+                        className="h-8 px-3 rounded-lg bg-brand-hover text-[11px] font-black text-brand-text hover:bg-brand-border"
                       >
                         Edit
                       </button>
@@ -197,8 +197,8 @@ export default function StaffList() {
                         disabled={busyRow === s.id}
                         className={`h-8 px-3 rounded-lg text-[11px] font-black ${
                           s.is_active
-                            ? "bg-[#414755]/40 text-[#8b90a0] hover:bg-[#414755]"
-                            : "bg-[#4edea3]/20 text-[#4edea3] hover:bg-[#4edea3]/30"
+                            ? "bg-brand-border/40 text-brand-muted hover:bg-brand-border"
+                            : "bg-brand-success/20 text-brand-success hover:bg-brand-success/30"
                         }`}
                       >
                         {s.is_active ? "Deactivate" : "Activate"}

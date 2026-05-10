@@ -24,6 +24,29 @@
   --color-navy-card: #151F2D;
   --color-navy-border: #1E293B;
 
+  /* ─── Rezzy shop palette — light theme defaults ─── */
+  --color-brand-primary:  #1F2937;
+  --color-brand-accent:   #B8915E;
+  --color-brand-bg:       #F9FAFB;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #F3F4F6;
+  --color-brand-hover:    #E5E7EB;
+  --color-brand-border:   #E5E7EB;
+  --color-brand-text:     #111827;
+  --color-brand-muted:    #6B7280;
+  --color-brand-success:  #1D9E75;
+  --color-brand-warning:  #C97B3A;
+  --color-brand-danger:   #C0392B;
+  --color-brand-cta:      #25D366;
+
+  /* Sidebar — themed independently so light mode can be cream while dark stays navy */
+  --color-brand-sidebar:        #EFE9DD;  /* warm beige bg — strong enough to separate from white content */
+  --color-brand-sidebarfg:      #1F2937;  /* dark slate text */
+  --color-brand-sidebarmuted:   #6B7280;  /* muted slate text */
+  --color-brand-sidebaractive:  #1F2937;  /* dark active pill bg (white text on top) */
+  --color-brand-sidebarhover:   #E2D9C5;  /* deeper beige hover */
+  --color-brand-sidebarborder:  #D4C9B0;  /* visible warm beige border */
+
 
   /* Border Radius matched to your HTML config */
   --radius-default: 0.25rem;
@@ -31,6 +54,174 @@
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
   --radius-full: 9999px;
+}
+
+:root {
+  --rezzy-primary:    #1F2937;
+  --rezzy-sidebar:    #EFE9DD;
+  --rezzy-accent:     #B8915E;
+  --rezzy-bg:         #F9FAFB;
+  --rezzy-surface:    #FFFFFF;
+  --rezzy-elevated:   #F3F4F6;
+  --rezzy-hover:      #E5E7EB;
+  --rezzy-border:     #E5E7EB;
+  --rezzy-text:       #111827;
+  --rezzy-muted:      #6B7280;
+  --rezzy-success:    #1D9E75;
+  --rezzy-warning:    #C97B3A;
+  --rezzy-danger:     #C0392B;
+  --rezzy-cta:        #25D366;
+}
+
+/* ─── Light-mode preset palettes — applied via .theme-{name} on <html> ───
+       Dark mode (.dark) wins over any of these so the original dark theme
+       is never affected by the user's light-mode preset choice. ─── */
+
+/* Charcoal — clean & neutral (default). Same values as :root above, but
+   declared as a class so it can be re-selected later. */
+.theme-charcoal {
+  --color-brand-primary:  #1F2937;
+  --color-brand-bg:       #F9FAFB;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #F3F4F6;
+  --color-brand-hover:    #E5E7EB;
+  --color-brand-border:   #E5E7EB;
+  --color-brand-text:     #111827;
+  --color-brand-muted:    #6B7280;
+  --color-brand-sidebar:        #EFE9DD;
+  --color-brand-sidebarfg:      #1F2937;
+  --color-brand-sidebarmuted:   #6B7280;
+  --color-brand-sidebaractive:  #1F2937;
+  --color-brand-sidebarhover:   #E2D9C5;
+  --color-brand-sidebarborder:  #D4C9B0;
+}
+
+/* Cream — warm & minimal. White sidebar, gold accents. */
+.theme-cream {
+  --color-brand-primary:  #B8915E;
+  --color-brand-bg:       #FBF7F0;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #F5EFE2;
+  --color-brand-hover:    #EFE6D2;
+  --color-brand-border:   #E8DCC4;
+  --color-brand-text:     #3D2C22;
+  --color-brand-muted:    #8B7355;
+  --color-brand-sidebar:        #FFFFFF;
+  --color-brand-sidebarfg:      #3D2C22;
+  --color-brand-sidebarmuted:   #8B7355;
+  --color-brand-sidebaractive:  #B8915E;
+  --color-brand-sidebarhover:   #FBF7F0;
+  --color-brand-sidebarborder:  #E8DCC4;
+}
+
+/* Blue — cool clinical. Deep blue sidebar, blue accents. */
+.theme-blue {
+  --color-brand-primary:  #2563EB;
+  --color-brand-bg:       #F1F5F9;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #E2E8F0;
+  --color-brand-hover:    #CBD5E1;
+  --color-brand-border:   #CBD5E1;
+  --color-brand-text:     #0F172A;
+  --color-brand-muted:    #64748B;
+  --color-brand-sidebar:        #1E40AF;
+  --color-brand-sidebarfg:      #FFFFFF;
+  --color-brand-sidebarmuted:   rgba(255, 255, 255, 0.6);
+  --color-brand-sidebaractive:  rgba(255, 255, 255, 0.18);
+  --color-brand-sidebarhover:   rgba(255, 255, 255, 0.08);
+  --color-brand-sidebarborder:  rgba(255, 255, 255, 0.10);
+}
+
+/* Sage — organic spa. Forest sidebar, sage accents. */
+.theme-sage {
+  --color-brand-primary:  #4D7C5A;
+  --color-brand-bg:       #F4F6F2;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #EAEDE5;
+  --color-brand-hover:    #D9DFCC;
+  --color-brand-border:   #D9DFCC;
+  --color-brand-text:     #1F2E1F;
+  --color-brand-muted:    #6B7B6B;
+  --color-brand-sidebar:        #2D4A3A;
+  --color-brand-sidebarfg:      #FFFFFF;
+  --color-brand-sidebarmuted:   rgba(255, 255, 255, 0.6);
+  --color-brand-sidebaractive:  rgba(255, 255, 255, 0.18);
+  --color-brand-sidebarhover:   rgba(255, 255, 255, 0.08);
+  --color-brand-sidebarborder:  rgba(255, 255, 255, 0.10);
+}
+
+/* Rose — warm girly salon. Wine sidebar, dusty rose accents. */
+.theme-rose {
+  --color-brand-primary:  #B47B8A;
+  --color-brand-bg:       #FDF6F7;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #F8E8EB;
+  --color-brand-hover:    #F0D6DB;
+  --color-brand-border:   #F0D6DB;
+  --color-brand-text:     #3D1F26;
+  --color-brand-muted:    #9B6B73;
+  --color-brand-sidebar:        #5A2A35;
+  --color-brand-sidebarfg:      #FFFFFF;
+  --color-brand-sidebarmuted:   rgba(255, 255, 255, 0.6);
+  --color-brand-sidebaractive:  rgba(255, 255, 255, 0.18);
+  --color-brand-sidebarhover:   rgba(255, 255, 255, 0.08);
+  --color-brand-sidebarborder:  rgba(255, 255, 255, 0.10);
+}
+
+/* Slate — minimal pro. White sidebar, slate accents. */
+.theme-slate {
+  --color-brand-primary:  #475569;
+  --color-brand-bg:       #F8FAFC;
+  --color-brand-surface:  #FFFFFF;
+  --color-brand-elevated: #F1F5F9;
+  --color-brand-hover:    #E2E8F0;
+  --color-brand-border:   #E2E8F0;
+  --color-brand-text:     #0F172A;
+  --color-brand-muted:    #64748B;
+  --color-brand-sidebar:        #FFFFFF;
+  --color-brand-sidebarfg:      #0F172A;
+  --color-brand-sidebarmuted:   #64748B;
+  --color-brand-sidebaractive:  #475569;
+  --color-brand-sidebarhover:   #F1F5F9;
+  --color-brand-sidebarborder:  #E2E8F0;
+}
+
+/* ─── Dark mode overrides — restores the ORIGINAL dark theme so the toggle's
+       dark side matches what was shipped before the light migration.
+       This must come AFTER .theme-* so .dark wins regardless of preset. ─── */
+.dark {
+  --color-brand-primary:  #4b8eff;  /* original blue accent */
+  --color-brand-bg:       #0d141d;  /* original page bg */
+  --color-brand-surface:  #151c25;  /* original card bg */
+  --color-brand-elevated: #19202a;  /* original elevated surface */
+  --color-brand-hover:    #242a34;  /* original hover */
+  --color-brand-border:   #414755;  /* original border */
+  --color-brand-text:     #dce3f0;  /* original light body text */
+  --color-brand-muted:    #8b90a0;  /* original muted */
+  --color-brand-success:  #4edea3;  /* original success cyan-green */
+  --color-brand-warning:  #f59e0b;  /* original warning amber */
+  --color-brand-danger:   #f87171;  /* original danger coral */
+
+  /* Sidebar (dark mode = original navy) */
+  --color-brand-sidebar:        #101622;
+  --color-brand-sidebarfg:      #FFFFFF;
+  --color-brand-sidebarmuted:   rgba(255, 255, 255, 0.6);
+  --color-brand-sidebaractive:  rgba(255, 255, 255, 0.18);
+  --color-brand-sidebarhover:   rgba(255, 255, 255, 0.08);
+  --color-brand-sidebarborder:  rgba(255, 255, 255, 0.10);
+
+  --rezzy-primary:    #4b8eff;
+  --rezzy-sidebar:    #101622;
+  --rezzy-bg:         #0d141d;
+  --rezzy-surface:    #151c25;
+  --rezzy-elevated:   #19202a;
+  --rezzy-hover:      #242a34;
+  --rezzy-border:     #414755;
+  --rezzy-text:       #dce3f0;
+  --rezzy-muted:      #8b90a0;
+  --rezzy-success:    #4edea3;
+  --rezzy-warning:    #f59e0b;
+  --rezzy-danger:     #f87171;
 }
 
 
@@ -43,6 +234,25 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Thin, theme-aware scrollbar for the shop sidebar */
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--color-brand-sidebarborder);
+    border-radius: 3px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-brand-sidebarmuted);
+  }
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-brand-sidebarborder) transparent;
   }
 
   .glass-card {
@@ -140,10 +350,10 @@
 /* The input itself */
 .booking-range-picker .react-datepicker__input-container input {
   width: 100%;
-  background-color: #080f17;
-  border: 1px solid rgba(65, 71, 85, 0.4);
+  background-color: var(--rezzy-bg);
+  border: 1px solid var(--rezzy-border);
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--rezzy-text);
   height: 44px;
   padding-left: 44px;
   padding-right: 36px;
@@ -154,12 +364,12 @@
   box-shadow: none;
 }
 .booking-range-picker .react-datepicker__input-container input::placeholder {
-  color: #8b90a0;
+  color: var(--rezzy-muted);
   font-weight: 600;
 }
 .booking-range-picker .react-datepicker__input-container input:focus {
-  border-color: rgba(75, 142, 255, 0.4);
-  box-shadow: 0 0 0 3px rgba(75, 142, 255, 0.2);
+  border-color: rgba(31, 41, 55, 0.4);
+  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.2);
 }
 
 /* Clear (×) icon */
@@ -168,8 +378,8 @@
   padding: 0 8px;
 }
 .booking-range-picker .react-datepicker__close-icon::after {
-  background-color: rgba(139, 144, 160, 0.15);
-  color: #dce3f0;
+  background-color: var(--rezzy-hover);
+  color: var(--rezzy-text);
   font-size: 14px;
   height: 18px;
   width: 18px;
@@ -177,18 +387,18 @@
   padding: 0;
 }
 .booking-range-picker .react-datepicker__close-icon:hover::after {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background-color: rgba(192, 57, 43, 0.15);
+  color: var(--rezzy-danger);
 }
 
 /* ── Popup calendar ── */
 .booking-range-cal.react-datepicker {
-  background-color: #151c25;
-  border: 1px solid rgba(65, 71, 85, 0.4);
+  background-color: var(--rezzy-surface);
+  border: 1px solid var(--rezzy-border);
   border-radius: 14px;
-  color: #dce3f0;
+  color: var(--rezzy-text);
   font-family: inherit;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 20px 40px rgba(31, 41, 55, 0.12);
   overflow: hidden;
   padding: 4px;
 }
@@ -198,19 +408,19 @@
 
 /* Header */
 .booking-range-cal .react-datepicker__header {
-  background-color: #19202a;
-  border-bottom: 1px solid rgba(65, 71, 85, 0.3);
+  background-color: var(--rezzy-elevated);
+  border-bottom: 1px solid var(--rezzy-border);
   border-radius: 10px 10px 0 0;
   padding-top: 12px;
 }
 .booking-range-cal .react-datepicker__current-month {
-  color: #ffffff;
+  color: var(--rezzy-primary);
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.02em;
 }
 .booking-range-cal .react-datepicker__day-name {
-  color: #8b90a0;
+  color: var(--rezzy-muted);
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
@@ -224,18 +434,18 @@
   top: 12px;
 }
 .booking-range-cal .react-datepicker__navigation-icon::before {
-  border-color: #8b90a0;
+  border-color: var(--rezzy-muted);
   border-width: 2px 2px 0 0;
   height: 7px;
   width: 7px;
 }
 .booking-range-cal .react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
-  border-color: #4b8eff;
+  border-color: var(--rezzy-primary);
 }
 
 /* Day cells */
 .booking-range-cal .react-datepicker__day {
-  color: #dce3f0;
+  color: var(--rezzy-text);
   font-weight: 600;
   font-size: 13px;
   width: 2.2rem;
@@ -246,22 +456,22 @@
   transition: background-color 0.1s ease, color 0.1s ease;
 }
 .booking-range-cal .react-datepicker__day:hover {
-  background-color: #d4c5f9;
-  color: #0d141d;
+  background-color: var(--rezzy-hover);
+  color: var(--rezzy-primary);
   border-radius: 10px;
   font-weight: 700;
 }
 .booking-range-cal .react-datepicker__day--today {
-  border: 1px solid rgba(75, 142, 255, 0.4);
-  color: #4b8eff;
+  border: 1px solid rgba(31, 41, 55, 0.4);
+  color: var(--rezzy-primary);
   background-color: transparent;
 }
 
 /* Range mid-values */
 .booking-range-cal .react-datepicker__day--in-range,
 .booking-range-cal .react-datepicker__day--in-selecting-range {
-  background-color: rgba(75, 142, 255, 0.15);
-  color: #4b8eff;
+  background-color: rgba(31, 41, 55, 0.12);
+  color: var(--rezzy-primary);
   border-radius: 0;
 }
 
@@ -271,23 +481,23 @@
 .booking-range-cal .react-datepicker__day--selecting-range-start,
 .booking-range-cal .react-datepicker__day--selecting-range-end,
 .booking-range-cal .react-datepicker__day--selected {
-  background-color: #4b8eff !important;
-  color: #0d141d !important;
+  background-color: var(--rezzy-primary) !important;
+  color: #ffffff !important;
   border-radius: 10px !important;
   font-weight: 800;
 }
 .booking-range-cal .react-datepicker__day--range-start:hover,
 .booking-range-cal .react-datepicker__day--range-end:hover {
-  background-color: #4b8eff;
-  color: #0d141d;
+  background-color: var(--rezzy-primary);
+  color: #ffffff;
 }
 
 /* Outside-month / disabled */
 .booking-range-cal .react-datepicker__day--outside-month {
-  color: #414755;
+  color: var(--rezzy-border);
 }
 .booking-range-cal .react-datepicker__day--disabled {
-  color: #414755;
+  color: var(--rezzy-muted);
   opacity: 0.4;
 }
 
@@ -315,7 +525,7 @@
   flex: 0 0 auto;
 }
 .booking-range-cal .react-datepicker__month-container + .react-datepicker__month-container {
-  border-left: 1px solid rgba(65, 71, 85, 0.3);
+  border-left: 1px solid var(--rezzy-border);
   margin-left: 4px;
   padding-left: 8px;
 }
@@ -331,6 +541,11 @@
   margin-top: 6px;
 }
 
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
 
 @keyframes fade-in-up {
   from {

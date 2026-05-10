@@ -83,7 +83,7 @@ export default function DateRangePicker({ value, onChange }) {
   };
 
   return (
-    <div className="bg-[#151c25] rounded-xl p-4 border border-[#414755]/20 space-y-3">
+    <div className="bg-brand-surface rounded-xl p-4 border border-brand-border/20 space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
         {PRESETS.map((p) => (
           <button
@@ -91,8 +91,8 @@ export default function DateRangePicker({ value, onChange }) {
             onClick={() => choosePreset(p.key)}
             className={`h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
               activePreset === p.key
-                ? "bg-[#4b8eff] text-white"
-                : "bg-[#080f17] border border-[#414755]/40 text-[#8b90a0] hover:text-white"
+                ? "bg-brand-primary text-white"
+                : "bg-brand-bg border border-brand-border/40 text-brand-muted hover:text-brand-primary"
             }`}
           >
             {p.label}
@@ -100,7 +100,7 @@ export default function DateRangePicker({ value, onChange }) {
         ))}
 
         <div className="relative booking-range-picker w-full md:w-72 mt-2 md:mt-0 md:ml-auto">
-          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b90a0] text-[18px] pointer-events-none z-10">date_range</span>
+          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted text-[18px] pointer-events-none z-10">date_range</span>
           <DatePicker
             selectsRange
             startDate={fromISO(value?.from)}

@@ -12,9 +12,9 @@ const ROW_HEIGHT = 64;
 const TIME_COL_W = 60;
 
 const STATUS_BG = {
-  Booked:    "bg-[#4b8eff]/20 border-[#4b8eff]/40 text-[#4b8eff]",
-  Completed: "bg-[#4edea3]/20 border-[#4edea3]/40 text-[#4edea3]",
-  Cancelled: "bg-[#414755]/40 border-[#414755]/40 text-[#8b90a0]",
+  Booked:    "bg-brand-primary/20 border-brand-primary/40 text-brand-primary",
+  Completed: "bg-brand-success/20 border-brand-success/40 text-brand-success",
+  Cancelled: "bg-brand-border/40 border-brand-border/40 text-brand-muted",
 };
 
 export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotClick }) {
@@ -23,7 +23,7 @@ export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotCl
   const list = byDate.get(toISO(cursorDate)) || [];
 
   return (
-    <div className="bg-[#19202a] border border-[#414755]/20 rounded-xl overflow-hidden">
+    <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
       <div
         className="relative"
         style={{
@@ -34,12 +34,12 @@ export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotCl
       >
         {hours.map((h) => (
           <React.Fragment key={h}>
-            <div className="border-r border-b border-[#414755]/10 px-2 pt-1 text-right text-[10px] font-bold text-[#8b90a0]">
+            <div className="border-r border-b border-brand-border/10 px-2 pt-1 text-right text-[10px] font-bold text-brand-muted">
               {String(h).padStart(2, "0")}:00
             </div>
             <button
               onClick={() => onSlotClick({ date: toISO(cursorDate), time: `${String(h).padStart(2, "0")}:00` })}
-              className="border-l border-b border-[#414755]/10 hover:bg-[#4b8eff]/5 transition-colors"
+              className="border-l border-b border-brand-border/10 hover:bg-brand-primary/5 transition-colors"
               aria-label={`Create booking at ${h}:00`}
             />
           </React.Fragment>
@@ -64,8 +64,8 @@ export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotCl
               }}
             >
               <p className="text-[10px] font-bold">{b.start_time}{b.charges ? ` · AED ${b.charges}` : ""}</p>
-              <p className="text-sm font-bold text-white truncate">{customerName}</p>
-              {services && <p className="text-[10px] text-white/70 truncate">{services}</p>}
+              <p className="text-sm font-bold text-brand-text truncate">{customerName}</p>
+              {services && <p className="text-[10px] text-brand-muted truncate">{services}</p>}
               {b.staff?.name && (
                 <span className="block text-[10px] font-bold opacity-80 truncate">
                   <span className="material-symbols-outlined text-[10px] align-middle">person</span>
@@ -73,7 +73,7 @@ export default function DayGrid({ cursorDate, bookings, onBookingClick, onSlotCl
                 </span>
               )}
               {b.staff_id == null && (
-                <span className="inline-block mt-0.5 px-1 py-0.5 rounded bg-[#f59e0b]/30 text-[#f59e0b] font-black text-[8px] uppercase tracking-wider">
+                <span className="inline-block mt-0.5 px-1 py-0.5 rounded bg-brand-warning/30 text-brand-warning font-black text-[8px] uppercase tracking-wider">
                   Queued
                 </span>
               )}

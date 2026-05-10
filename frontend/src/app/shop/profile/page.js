@@ -283,18 +283,18 @@ export default function ShopProfile() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0d141d] text-[#dce3f0] pb-28 md:pb-10">
+        <div className="min-h-screen bg-brand-bg text-brand-text pb-28 md:pb-10">
             <div className="w-full px-4 md:px-6 pt-6 md:pt-8">
 
                 {/* Page heading */}
                 <div className="mb-6">
-                    <h2 className="text-2xl font-black text-white tracking-tight">Shop Profile</h2>
-                    <p className="text-[#8b90a0] font-semibold mt-1 text-sm">Manage your shop identity and public information.</p>
+                    <h2 className="text-2xl font-black text-brand-text tracking-tight">Shop Profile</h2>
+                    <p className="text-brand-muted font-semibold mt-1 text-sm">Manage your shop identity and public information.</p>
                 </div>
 
                 {/* Hero / Cover */}
                 <div className="relative rounded-xl overflow-visible mb-14">
-                    <label className="relative block cursor-pointer group h-48 w-full bg-[#151c25] rounded-xl overflow-hidden">
+                    <label className="relative block cursor-pointer group h-48 w-full bg-brand-surface rounded-xl overflow-hidden">
                         {form.hero_image ? (
                             <>
                                 <img src={form.hero_image} alt="cover preview" className="absolute inset-0 w-full h-full object-cover" />
@@ -303,13 +303,13 @@ export default function ShopProfile() {
                         ) : hero ? (
                             <img src={hero} alt="cover" className="absolute inset-0 w-full h-full object-cover" />
                         ) : (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#8b90a0]">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-brand-muted">
                                 <span className="material-symbols-outlined text-4xl">add_photo_alternate</span>
                                 <span className="text-xs font-semibold">Click to upload cover image</span>
                             </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                        <div className="absolute top-4 right-4 bg-[#4b8eff] hover:bg-[#4b8eff] p-2.5 rounded-xl shadow-lg transition-all">
+                        <div className="absolute top-4 right-4 bg-brand-primary hover:bg-brand-primary p-2.5 rounded-xl shadow-lg transition-all">
                             <Camera size={18} className="text-white" />
                         </div>
                         <input type="file" accept="image/*" className="hidden"
@@ -321,17 +321,17 @@ export default function ShopProfile() {
                     </label>
 
                     {/* Logo */}
-                    <label className="absolute -bottom-12 left-6 w-24 h-24 rounded-full bg-[#19202a] border-4 border-[#0d141d] z-30 shadow-2xl cursor-pointer block">
+                    <label className="absolute -bottom-12 left-6 w-24 h-24 rounded-full bg-brand-elevated border-4 border-brand-bg z-30 shadow-2xl cursor-pointer block">
                         {form.logo ? (
                             <img src={form.logo} alt="logo preview" className="absolute inset-0 w-full h-full object-cover rounded-full" />
                         ) : logo ? (
                             <img src={logo} alt={`${shop.name || 'shop'} logo`} className="absolute inset-0 w-full h-full object-cover rounded-full" />
                         ) : (
-                            <div className="absolute inset-0 rounded-full bg-[#4b8eff]/20 flex items-center justify-center">
-                                <span className="text-[10px] text-[#4b8eff] font-bold uppercase tracking-wider">Logo</span>
+                            <div className="absolute inset-0 rounded-full bg-brand-primary/20 flex items-center justify-center">
+                                <span className="text-[10px] text-brand-primary font-bold uppercase tracking-wider">Logo</span>
                             </div>
                         )}
-                        <div className="absolute bottom-1 right-1 z-40 bg-[#4b8eff] p-1.5 rounded-full shadow-lg border-2 border-[#0d141d]">
+                        <div className="absolute bottom-1 right-1 z-40 bg-brand-primary p-1.5 rounded-full shadow-lg border-2 border-brand-bg">
                             <Camera size={12} className="text-white" />
                         </div>
                         <input type="file" accept="image/*" className="hidden"
@@ -348,37 +348,37 @@ export default function ShopProfile() {
 
                     {/* Left: Form fields */}
                     <div className="lg:col-span-2 space-y-4">
-                        <div className="bg-[#151c25] rounded-xl p-6 space-y-4">
-                            <h3 className="text-sm font-bold text-white">Basic Information</h3>
+                        <div className="bg-brand-surface rounded-xl p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-brand-text">Basic Information</h3>
 
                             <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-2">Business Name</label>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">Business Name</label>
                                 <input
                                     value={form.name}
                                     onChange={(e) => handleChange('name', e.target.value)}
-                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
+                                    className="w-full bg-brand-bg border border-brand-border/40 rounded-xl px-4 py-3 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none transition-all"
                                     placeholder="Enter business name"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-2">Location</label>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">Location</label>
                                 <input
                                     value={form.location}
                                     onChange={(e) => handleChange('location', e.target.value || "")}
-                                    className="w-full bg-[#080f17] border border-[#414755]/40 rounded-xl px-4 py-3 text-sm font-semibold text-white placeholder:text-[#8b90a0] focus:ring-2 focus:ring-[#4b8eff]/20 focus:border-[#4b8eff]/40 outline-none transition-all"
+                                    className="w-full bg-brand-bg border border-brand-border/40 rounded-xl px-4 py-3 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none transition-all"
                                     placeholder="Business address or area"
                                 />
                                 <button
                                     type="button"
                                     onClick={handleUseCurrentLocation}
                                     disabled={isLocating}
-                                    className="mt-2 flex items-center justify-center w-full bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 py-2.5 px-4 rounded-xl text-sm font-semibold text-white disabled:opacity-50 transition-all"
+                                    className="mt-2 flex items-center justify-center w-full bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 py-2.5 px-4 rounded-xl text-sm font-semibold text-white disabled:opacity-50 transition-all"
                                 >
                                     {isLocating ? 'Fetching location...' : 'Use Current Location'}
                                 </button>
                                 {form.lat !== '' && form.lon !== '' && (
-                                    <p className="mt-2 text-[11px] text-[#8b90a0] font-medium">
+                                    <p className="mt-2 text-[11px] text-brand-muted font-medium">
                                         Lat: {form.lat}, Lon: {form.lon}
                                     </p>
                                 )}
@@ -386,7 +386,7 @@ export default function ShopProfile() {
                         </div>
 
                         {message && (
-                            <div className="text-sm text-[#dce3f0] bg-[#151c25] border border-[#414755]/30 rounded-xl px-4 py-3">
+                            <div className="text-sm text-brand-text bg-brand-surface border border-brand-border/30 rounded-xl px-4 py-3">
                                 {message}
                             </div>
                         )}
@@ -395,13 +395,13 @@ export default function ShopProfile() {
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving}
-                                className="flex-1 flex items-center justify-center bg-[#4b8eff] hover:bg-[#4b8eff]/90 text-white font-black py-3 rounded-xl disabled:opacity-60 transition-all text-sm uppercase tracking-widest"
+                                className="flex-1 flex items-center justify-center bg-brand-primary hover:bg-brand-primary/90 text-white font-black py-3 rounded-xl disabled:opacity-60 transition-all text-sm uppercase tracking-widest"
                             >
                                 {isSaving ? 'Saving...' : 'Save Changes'}
                             </button>
                             <button
                                 onClick={() => router.push('/shop/dashboard')}
-                                className="flex-1 flex items-center justify-center bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-white font-semibold py-3 rounded-xl transition-all text-sm"
+                                className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 text-white font-semibold py-3 rounded-xl transition-all text-sm"
                             >
                                 Back to Dashboard
                             </button>
@@ -411,43 +411,43 @@ export default function ShopProfile() {
                     {/* Right: Credentials + QR */}
                     <div className="space-y-4">
                         {/* Shop Code */}
-                        <div className="bg-[#151c25] rounded-xl p-5">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">Shop Code</p>
+                        <div className="bg-brand-surface rounded-xl p-5">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">Shop Code</p>
                             <div className="flex items-center justify-between">
-                                <span className="font-mono font-black text-2xl text-white tracking-widest">{shop.shop_code || '—'}</span>
-                                <div className="w-10 h-10 rounded-xl bg-[#4b8eff]/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[20px] text-[#4b8eff]">tag</span>
+                                <span className="font-mono font-black text-2xl text-brand-primary tracking-widest">{shop.shop_code || '—'}</span>
+                                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-brand-primary">tag</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* PIN */}
-                        <div className="bg-[#151c25] rounded-xl p-5">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-3">Access PIN</p>
+                        <div className="bg-brand-surface rounded-xl p-5">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">Access PIN</p>
                             <div className="flex items-center justify-between">
-                                <span className="font-mono font-black text-2xl text-white tracking-widest">{shop.pin || '—'}</span>
-                                <div className="w-10 h-10 rounded-xl bg-[#4b8eff]/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[20px] text-[#4b8eff]">pin</span>
+                                <span className="font-mono font-black text-2xl text-brand-primary tracking-widest">{shop.pin || '—'}</span>
+                                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-brand-primary">pin</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* QR Code */}
-                        <div className="bg-[#151c25] rounded-xl p-6 flex flex-col items-center text-center">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b90a0] mb-4">Shop QR Code</p>
+                        <div className="bg-brand-surface rounded-xl p-6 flex flex-col items-center text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-4">Shop QR Code</p>
                             <div className="p-3 bg-white rounded-xl shadow-lg shadow-black/30 mb-4">
                                 <img src={qrImageUrl} alt="shop-qr" className="w-40 h-40 object-contain" />
                             </div>
                             <div className="w-full flex gap-2">
                                 <button
                                     onClick={downloadQr}
-                                    className="flex-1 flex items-center justify-center bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
                                     Download
                                 </button>
                                 <button
                                     onClick={printQr}
-                                    className="flex-1 flex items-center justify-center bg-[#19202a] hover:bg-[#242a34] border border-[#414755]/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
                                     Print
                                 </button>

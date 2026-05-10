@@ -5,41 +5,53 @@ import api from "@/utils/api";
 
 const aed = (n) => `AED ${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-function Kpi({ label, value, sub, color = "#4b8eff" }) {
+function Kpi({ label, value, sub, color = "#1F2937" }) {
   return (
-    <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-4">
-      <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">{label}</p>
-      <p className="text-xl font-black text-white mt-1.5">{value}</p>
-      {sub && <p className="text-[11px] text-[#8b90a0] font-semibold mt-1">{sub}</p>}
+    <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-4">
+      <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">{label}</p>
+      <p className="text-xl font-black text-brand-text mt-1.5">{value}</p>
+      {sub && <p className="text-[11px] text-brand-muted font-semibold mt-1">{sub}</p>}
     </div>
   );
 }
 
 function DailyTrendChart({ data }) {
   if (!data || data.length === 0) {
-    return <div className="text-center text-[#8b90a0] text-sm py-8">No daily data.</div>;
+    return <div className="text-center text-brand-muted text-sm py-8">No daily data.</div>;
   }
   const max = Math.max(...data.map((d) => d.revenue), 1);
+  const fmtDay = (iso) => {
+    const d = new Date(`${iso}T00:00:00`);
+    return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  };
   return (
     <div>
-      <div className="flex items-end gap-1.5" style={{ height: "180px" }}>
+      <div className="flex items-end gap-2 px-1" style={{ height: "180px" }}>
         {data.map((d) => {
-          const h = Math.max((d.revenue / max) * 100, d.revenue > 0 ? 6 : 2);
+          // Cap at 85% so there's headroom for the value chip on hover
+          const h = Math.max((d.revenue / max) * 85, d.revenue > 0 ? 6 : 2);
           return (
-            <div key={d.date} className="flex-1 flex flex-col items-center gap-1 h-full justify-end group/bar min-w-[12px]">
-              <span className="text-[9px] font-black text-[#dce3f0] opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">
+            <div key={d.date} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group/bar min-w-[20px] max-w-[60px]">
+              <span className="text-[10px] font-black text-brand-text opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">
                 {aed(d.revenue)}
               </span>
-              <div className="w-full" style={{ height: `${h}%` }}>
-                <div className="w-full h-full rounded-t-md bg-gradient-to-t from-[#4b8eff]/40 to-[#4b8eff] hover:from-[#4b8eff]/60" />
-              </div>
+              <div
+                className="w-full rounded-t-md bg-brand-primary group-hover/bar:bg-brand-primary/80 transition-colors"
+                style={{ height: `${h}%` }}
+              />
             </div>
           );
         })}
       </div>
-      <div className="mt-2 flex justify-between text-[9px] text-[#8b90a0] font-bold">
-        <span>{data[0]?.date}</span>
-        <span>{data[data.length - 1]?.date}</span>
+      <div className="mt-2 flex gap-2 px-1">
+        {data.map((d) => (
+          <span
+            key={`l-${d.date}`}
+            className="flex-1 text-center text-[10px] text-brand-muted font-bold min-w-[20px] max-w-[60px] truncate"
+          >
+            {fmtDay(d.date)}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -59,8 +71,8 @@ export default function RevenueReport({ shopId, from, to }) {
       .finally(() => setLoading(false));
   }, [shopId, from, to]);
 
-  if (loading) return <div className="text-center text-[#8b90a0] text-sm py-12">Loading…</div>;
-  if (!data) return <div className="text-center text-[#8b90a0] text-sm py-12">Failed to load.</div>;
+  if (loading) return <div className="text-center text-brand-muted text-sm py-12">Loading…</div>;
+  if (!data) return <div className="text-center text-brand-muted text-sm py-12">Failed to load.</div>;
 
   const k = data.kpis;
   const inv = data.invoices;
@@ -80,35 +92,35 @@ export default function RevenueReport({ shopId, from, to }) {
       </div>
 
       {/* Daily trend chart */}
-      <div className="bg-[#151c25] border border-[#414755]/20 rounded-xl p-5">
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0] mb-4">Daily revenue trend</p>
+      <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-5">
+        <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted mb-4">Daily revenue trend</p>
         <DailyTrendChart data={data.daily_trend} />
       </div>
 
       {/* Top services */}
-      <div className="bg-[#19202a] border border-[#414755]/20 rounded-xl overflow-hidden">
-        <div className="px-5 py-3 border-b border-[#414755]/20">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8b90a0]">Top services by revenue</p>
+      <div className="bg-brand-elevated border border-brand-border/20 rounded-xl overflow-hidden">
+        <div className="px-5 py-3 border-b border-brand-border/20">
+          <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Top services by revenue</p>
         </div>
         {data.top_services.length === 0 ? (
-          <p className="text-center text-[#8b90a0] text-sm py-8">No services in range.</p>
+          <p className="text-center text-brand-muted text-sm py-8">No services in range.</p>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="bg-[#2e353f]/30">
-                <th className="px-5 py-3 text-left text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Service</th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Count</th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Revenue</th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold text-[#8b90a0] uppercase tracking-widest">Avg price</th>
+              <tr className="bg-brand-hover/30">
+                <th className="px-5 py-3 text-left text-[10px] font-bold text-brand-muted uppercase tracking-widest">Service</th>
+                <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Count</th>
+                <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Revenue</th>
+                <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Avg price</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#414755]/10">
+            <tbody className="divide-y divide-brand-border/10">
               {data.top_services.map((s) => (
                 <tr key={s.title}>
-                  <td className="px-5 py-3 text-sm font-bold text-white">{s.title}</td>
-                  <td className="px-5 py-3 text-right text-sm font-semibold text-[#dce3f0]">{s.count}</td>
-                  <td className="px-5 py-3 text-right text-sm font-black text-white">{aed(s.revenue)}</td>
-                  <td className="px-5 py-3 text-right text-sm font-semibold text-[#dce3f0]">{aed(s.avg_price)}</td>
+                  <td className="px-5 py-3 text-sm font-bold text-brand-text">{s.title}</td>
+                  <td className="px-5 py-3 text-right text-sm font-semibold text-brand-text">{s.count}</td>
+                  <td className="px-5 py-3 text-right text-sm font-black text-brand-text">{aed(s.revenue)}</td>
+                  <td className="px-5 py-3 text-right text-sm font-semibold text-brand-text">{aed(s.avg_price)}</td>
                 </tr>
               ))}
             </tbody>

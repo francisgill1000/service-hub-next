@@ -20,7 +20,9 @@ export default function Header() {
   const isShopRoute = pathname?.startsWith("/shop");
 
   if (!isClient) return null;
-  if (!isShopRoute) return null;
+  // Shop routes have their own mobile top bar inside ShopLayout (with hamburger
+  // for the side drawer). Don't render this older header for them anymore.
+  if (isShopRoute) return null;
 
   return (
     <header className="sticky top-0 z-40 bg-[#f5f6f8]/50 dark:bg-[#101622]/100 backdrop-blur-md md:hidden">

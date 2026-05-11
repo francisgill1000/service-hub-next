@@ -2,7 +2,7 @@
 
 import api from '@/utils/api';
 import QRCode from 'qrcode';
-import { ChevronLeft, KeyRound, QrCode, RefreshCw, Smartphone } from 'lucide-react';
+import { KeyRound, QrCode, RefreshCw, Smartphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -21,7 +21,6 @@ const Login = () => {
     const [showPin, setShowPin] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const [step, setStep] = useState('code');
 
     const [qrToken, setQrToken] = useState(null);
     const [qrImage, setQrImage] = useState(null);
@@ -46,7 +45,6 @@ const Login = () => {
             setShopCode(rememberedCode);
             setPin(rememberedPin);
             setRememberMe(true);
-            if (rememberedPin) setStep('pin');
             return;
         }
 
@@ -55,10 +53,7 @@ const Login = () => {
             try {
                 const obj = JSON.parse(prefill);
                 if (obj.shopCode) setShopCode(obj.shopCode);
-                if (obj.pin) {
-                    setPin(obj.pin);
-                    setStep('pin');
-                }
+                if (obj.pin) setPin(obj.pin);
             } catch (e) {
             }
 
@@ -78,21 +73,18 @@ const Login = () => {
         }
     };
 
-    const handleContinue = (e) => {
-        e.preventDefault();
-
-        if (!shopCode.trim()) {
-            setError('Please enter your business ID.');
-            return;
-        }
-
-        setError('');
-        setStep('pin');
-    };
-
     const handleLogin = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
+
+        if (!shopCode.trim()) {
+            setError('Please enter your Business ID.');
+            return;
+        }
+        if (!pin.trim()) {
+            setError('Please enter your PIN.');
+            return;
+        }
 
         setIsSubmitting(true);
         setError('');
@@ -211,19 +203,19 @@ const Login = () => {
     if (contextLoading) return null;
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col bg-brand-dark max-w-[480px] mx-auto overflow-x-hidden shadow-2xl px-8 pt-14 pb-10 font-display">
-            <div className="mb-8 grid grid-cols-2 bg-white/5 border border-white/10 rounded-2xl p-1">
+        <div className="relative flex min-h-screen w-full flex-col bg-brand-bg text-brand-text max-w-[480px] mx-auto overflow-x-hidden shadow-2xl px-8 pt-14 pb-10 font-display">
+            <div className="mb-8 grid grid-cols-2 bg-brand-elevated border border-brand-border rounded-2xl p-1">
                 <button
                     type="button"
                     onClick={() => setLoginMode('qr')}
-                    className={`h-11 rounded-xl text-sm font-bold transition ${loginMode === 'qr' ? 'bg-primary text-white' : 'text-muted-text'}`}
+                    className={`h-11 rounded-xl text-sm font-bold transition ${loginMode === 'qr' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-text'}`}
                 >
                     Scan QR
                 </button>
                 <button
                     type="button"
                     onClick={() => setLoginMode('manual')}
-                    className={`h-11 rounded-xl text-sm font-bold transition ${loginMode === 'manual' ? 'bg-primary text-white' : 'text-muted-text'}`}
+                    className={`h-11 rounded-xl text-sm font-bold transition ${loginMode === 'manual' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-text'}`}
                 >
                     ID & PIN
                 </button>
@@ -232,41 +224,41 @@ const Login = () => {
             {loginMode === 'qr' ? (
                 <div className="flex-1 flex flex-col">
                     <div className="text-center mb-7">
-                        <div className="size-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-5 border border-primary/20">
-                            <QrCode size={38} className="text-primary" />
+                        <div className="size-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-5 border border-brand-primary/20">
+                            <QrCode size={38} className="text-brand-primary" />
                         </div>
-                        <h1 className="text-3xl font-extrabold text-white mb-3">Login with QR</h1>
-                        <p className="text-muted-text text-sm px-4">Open Rezzy on your mobile, scan this code, then confirm login.</p>
+                        <h1 className="text-3xl font-extrabold text-brand-text mb-3">Login with QR</h1>
+                        <p className="text-brand-muted text-sm px-4">Open Rezzy on your mobile, scan this code, then confirm login.</p>
                     </div>
 
-                    <div className="bg-card-dark border border-white/10 rounded-3xl p-6 flex flex-col items-center">
+                    <div className="bg-brand-surface border border-brand-border rounded-3xl p-6 flex flex-col items-center">
                         <div className="w-[260px] h-[260px] rounded-2xl bg-white flex items-center justify-center overflow-hidden">
                             {qrImage ? (
                                 <img src={qrImage} alt="login-qr" className="w-full h-full object-contain" />
                             ) : (
-                                <div className="text-center text-slate-500 text-sm px-4">Preparing QR...</div>
+                                <div className="text-center text-brand-muted text-sm px-4">Preparing QR...</div>
                             )}
                         </div>
 
                         <div className="mt-5 text-center">
-                            <p className="text-sm text-white">{qrMessage}</p>
+                            <p className="text-sm text-brand-text">{qrMessage}</p>
                             {qrState === 'pending' && (
-                                <p className="text-xs text-muted-text mt-2">Expires in {qrSecondsLeft}s</p>
+                                <p className="text-xs text-brand-muted mt-2">Expires in {qrSecondsLeft}s</p>
                             )}
                         </div>
 
                         <button
                             type="button"
                             onClick={requestQrCode}
-                            className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary hover:text-white transition"
+                            className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-primary hover:opacity-80 transition"
                         >
                             <RefreshCw size={14} />
                             Refresh QR
                         </button>
                     </div>
 
-                    <div className="mt-6 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-muted-text">
-                        <div className="flex items-center gap-2 text-white mb-2">
+                    <div className="mt-6 bg-brand-elevated border border-brand-border rounded-2xl p-4 text-sm text-brand-muted">
+                        <div className="flex items-center gap-2 text-brand-text mb-2">
                             <Smartphone size={16} />
                             <span className="font-bold">How to scan</span>
                         </div>
@@ -278,153 +270,118 @@ const Login = () => {
             ) : (
                 <>
                     <div className="flex flex-col items-center mb-10">
-                        <div className="size-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-4 border border-primary/20">
-                            <KeyRound size={38} className="text-primary" />
+                        <div className="size-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center mb-4 border border-brand-primary/20">
+                            <KeyRound size={38} className="text-brand-primary" />
                         </div>
-                        <div className="text-[11px] uppercase tracking-[0.25em] text-muted-text font-bold">Rezzy</div>
-                        <div className="text-[9px] text-muted-text/60 tracking-wider mt-1">powered by Eloquent</div>
+                        <div className="text-[11px] uppercase tracking-[0.25em] text-brand-muted font-bold">Rezzy</div>
+                        <div className="text-[9px] text-brand-muted/60 tracking-wider mt-1">powered by Eloquent</div>
                     </div>
 
                     <div className="mb-8 text-center">
-                        <h1 className="text-3xl font-extrabold text-white mb-3">
-                            {step === 'code' ? 'Enter your Business ID' : 'Enter your PIN'}
+                        <h1 className="text-3xl font-extrabold text-brand-text mb-3">
+                            Sign in to your shop
                         </h1>
-                        <p className="text-muted-text text-sm leading-relaxed px-4">
-                            {step === 'code'
-                                ? 'Use your business code to continue.'
-                                : 'Verify your PIN to access your dashboard.'}
+                        <p className="text-brand-muted text-sm leading-relaxed px-4">
+                            Enter your Business ID and PIN to access your dashboard.
                         </p>
                     </div>
 
-                    {step === 'code' ? (
-                        <form onSubmit={handleContinue} className="space-y-6">
-                            {error && (
-                                <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs py-3 px-4 rounded-xl text-center">
-                                    {error}
-                                </div>
-                            )}
-
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest text-muted-text font-bold ml-1">
-                                    Business ID
-                                </label>
-                                <input
-                                    value={shopCode}
-                                    onChange={(e) => {
-                                        setShopCode(e.target.value);
-                                        setError('');
-                                    }}
-                                    className="w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                                    placeholder="Enter business code"
-                                    type="text"
-                                    required
-                                />
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        {error && (
+                            <div className="bg-brand-danger/10 border border-brand-danger/20 text-brand-danger text-xs py-3 px-4 rounded-xl text-center">
+                                {error}
                             </div>
+                        )}
 
-                            <button
-                                type="submit"
-                                className="w-full h-14 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                            >
-                                Continue
-                                <span className="material-symbols-outlined text-xl">arrow_forward</span>
-                            </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            {error && (
-                                <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs py-3 px-4 rounded-xl text-center">
-                                    {error}
-                                </div>
-                            )}
-
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setStep('code');
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase tracking-widest text-brand-muted font-bold ml-1">
+                                Business ID
+                            </label>
+                            <input
+                                value={shopCode}
+                                onChange={(e) => {
+                                    setShopCode(e.target.value);
                                     setError('');
                                 }}
-                                className="inline-flex items-center gap-2 text-xs font-semibold text-muted-text hover:text-white transition-colors"
-                            >
-                                <ChevronLeft size={14} />
-                                Change Business ID
-                            </button>
+                                className="w-full bg-brand-surface border border-brand-border rounded-xl px-5 py-4 text-sm text-brand-text placeholder:text-brand-muted/60 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary/40 transition-all"
+                                placeholder="Enter business code"
+                                type="text"
+                                autoFocus={!shopCode}
+                                required
+                            />
+                        </div>
 
-                            <div className="bg-card-dark border border-white/10 rounded-2xl px-4 py-3 text-sm">
-                                <div className="text-muted-text text-[10px] uppercase tracking-widest mb-1">Current Business ID</div>
-                                <div className="font-bold text-white">{shopCode}</div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest text-muted-text font-bold ml-1">
-                                    PIN
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        value={pin}
-                                        onChange={(e) => {
-                                            setPin(e.target.value);
-                                            setError('');
-                                        }}
-                                        className="w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 pr-16 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                                        placeholder="Enter your PIN"
-                                        type={showPin ? 'text' : 'password'}
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPin((v) => !v)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-text hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest"
-                                        aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
-                                    >
-                                        {showPin ? 'Hide' : 'Show'}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end">
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase tracking-widest text-brand-muted font-bold ml-1">
+                                PIN
+                            </label>
+                            <div className="relative">
+                                <input
+                                    value={pin}
+                                    onChange={(e) => {
+                                        setPin(e.target.value);
+                                        setError('');
+                                    }}
+                                    className="w-full bg-brand-surface border border-brand-border rounded-xl px-5 py-4 pr-16 text-sm text-brand-text placeholder:text-brand-muted/60 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary/40 transition-all"
+                                    placeholder="Enter your PIN"
+                                    type={showPin ? 'text' : 'password'}
+                                    autoFocus={!!shopCode && !pin}
+                                    required
+                                />
                                 <button
                                     type="button"
-                                    onClick={() => router.push('/forgot-password')}
-                                    className="text-[10px] uppercase tracking-widest text-blue-500 font-bold hover:underline"
+                                    onClick={() => setShowPin((v) => !v)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-muted hover:text-brand-text transition-colors text-[10px] font-bold uppercase tracking-widest"
+                                    aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
                                 >
-                                    Forgot Pin?
+                                    {showPin ? 'Hide' : 'Show'}
                                 </button>
                             </div>
+                        </div>
 
+                        <div className="flex items-center justify-between">
                             <label className="flex items-center gap-3 select-none">
                                 <input
                                     type="checkbox"
                                     checked={rememberMe}
                                     onChange={(e) => handleRememberChange(e.target.checked)}
-                                    className="size-4 accent-primary"
+                                    className="size-4 accent-brand-primary"
                                 />
-                                <span className="text-xs text-muted-text">Remember ID &amp; PIN</span>
+                                <span className="text-xs text-brand-muted">Remember ID &amp; PIN</span>
                             </label>
 
                             <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full h-14 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/25 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                type="button"
+                                onClick={() => router.push('/forgot-password')}
+                                className="text-[10px] uppercase tracking-widest text-brand-primary font-bold hover:underline"
                             >
-                                <span>{isSubmitting ? 'Logging in...' : 'Login'}</span>
-                                {!isSubmitting && <span className="material-symbols-outlined text-xl">arrow_forward</span>}
+                                Forgot Pin?
                             </button>
-                        </form>
-                    )}
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full h-14 bg-brand-primary hover:bg-brand-primary/90 text-white font-bold rounded-2xl shadow-lg shadow-brand-primary/20 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                            <span>{isSubmitting ? 'Logging in...' : 'Login'}</span>
+                            {!isSubmitting && <span className="material-symbols-outlined text-xl">arrow_forward</span>}
+                        </button>
+                    </form>
                 </>
             )}
 
             <div className="mt-auto pt-8 text-center">
                 <button
                     onClick={() => router.push('/register')}
-                    className="inline-flex items-center gap-2 text-muted-text hover:text-white transition-colors group cursor-pointer"
+                    className="inline-flex items-center gap-2 text-brand-muted hover:text-brand-text transition-colors group cursor-pointer"
                 >
                     <span className="text-sm font-semibold tracking-wide">Create Account</span>
                 </button>
             </div>
 
-            <div className="absolute -top-24 -left-24 size-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
-            <div className="absolute top-1/2 -right-32 size-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+            <div className="absolute -top-24 -left-24 size-64 bg-brand-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
+            <div className="absolute top-1/2 -right-32 size-80 bg-brand-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
         </div>
     );
 };

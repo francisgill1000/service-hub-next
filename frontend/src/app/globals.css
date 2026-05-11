@@ -292,8 +292,8 @@
 @layer base {
   body {
     font-family: var(--font-display);
-    background-color: var(--color-brand-dark);
-    color: white;
+    background-color: var(--color-brand-bg);
+    color: var(--color-brand-text);
     -webkit-tap-highlight-color: transparent;
 
   }

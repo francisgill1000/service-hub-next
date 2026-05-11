@@ -11,17 +11,16 @@ export const metadata = {
 };
 
 // Inline pre-paint script — applies the saved theme class on <html> before first
-// paint to prevent a flash. Defaults to "dark" so the existing landing/customer
-// pages (which were always-dark) keep their look until the user toggles.
-// Also applies the saved light-mode palette class (.theme-{name}).
+// paint to prevent a flash. Defaults to "light" — only opt into dark if the user
+// has explicitly chosen it. Also applies the saved palette class (.theme-{name}).
 const themeScript = `
 (function () {
   var root = document.documentElement;
   try {
     var t = localStorage.getItem('rezzy.theme');
-    if (t === 'light') root.classList.remove('dark');
-    else root.classList.add('dark');
-  } catch (e) { root.classList.add('dark'); }
+    if (t === 'dark') root.classList.add('dark');
+    else root.classList.remove('dark');
+  } catch (e) { root.classList.remove('dark'); }
   try {
     var valid = ['charcoal','cream','blue','sage','rose','slate'];
     var p = localStorage.getItem('rezzy.palette');
@@ -46,12 +45,12 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased bg-brand-dark min-h-screen text-white">
-        {/* Wrapping children in a div helps maintain that 
-            mobile-app width (480px) across your whole site 
+      <body className="antialiased bg-brand-bg min-h-screen text-brand-text">
+        {/* Wrapping children in a div helps maintain that
+            mobile-app width (480px) across your whole site
         */}
         <ShopProviders>
-          <div className="relative flex min-h-screen w-full flex-col bg-brand-dark overflow-x-hidden">
+          <div className="relative flex min-h-screen w-full flex-col bg-brand-bg text-brand-text overflow-x-hidden">
             <Header />
             {/* <GuestHeader /> */}
             {children}

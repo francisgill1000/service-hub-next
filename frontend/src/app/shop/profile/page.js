@@ -373,7 +373,7 @@ export default function ShopProfile() {
                                     type="button"
                                     onClick={handleUseCurrentLocation}
                                     disabled={isLocating}
-                                    className="mt-2 flex items-center justify-center w-full bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 py-2.5 px-4 rounded-xl text-sm font-semibold text-white disabled:opacity-50 transition-all"
+                                    className="mt-2 flex items-center justify-center w-full bg-brand-elevated hover:bg-brand-hover border border-brand-border/40 py-2.5 px-4 rounded-xl text-sm font-semibold text-brand-text disabled:opacity-50 transition-all"
                                 >
                                     {isLocating ? 'Fetching location...' : 'Use Current Location'}
                                 </button>
@@ -401,7 +401,7 @@ export default function ShopProfile() {
                             </button>
                             <button
                                 onClick={() => router.push('/shop/dashboard')}
-                                className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 text-white font-semibold py-3 rounded-xl transition-all text-sm"
+                                className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/40 text-brand-text font-semibold py-3 rounded-xl transition-all text-sm"
                             >
                                 Back to Dashboard
                             </button>
@@ -441,13 +441,13 @@ export default function ShopProfile() {
                             <div className="w-full flex gap-2">
                                 <button
                                     onClick={downloadQr}
-                                    className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/40 text-brand-text text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
                                     Download
                                 </button>
                                 <button
                                     onClick={printQr}
-                                    className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/30 text-white text-xs font-bold py-2.5 rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center bg-brand-elevated hover:bg-brand-hover border border-brand-border/40 text-brand-text text-xs font-bold py-2.5 rounded-xl transition-all"
                                 >
                                     Print
                                 </button>

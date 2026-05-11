@@ -7,7 +7,8 @@
     "serve-backend": "backend/php/php.exe artisan serve --host 0.0.0.0",
     "dev:all": "concurrently \"npm run serve-backend\" \"npm run dev\"",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "deploy": "powershell -ExecutionPolicy Bypass -File ../deploy-frontend.ps1"
   },
   "dependencies": {
     "axios": "^1.13.4",

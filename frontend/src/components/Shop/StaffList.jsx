@@ -111,19 +111,19 @@ export default function StaffList() {
         {/* Add form */}
         <form
           onSubmit={addStaff}
-          className="bg-brand-surface rounded-xl p-4 md:p-5 border border-brand-border/20 flex gap-3"
+          className="bg-brand-surface rounded-xl p-4 md:p-5 border border-brand-border/20 flex flex-col sm:flex-row gap-3"
         >
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="New staff name (e.g. Ali)"
-            className="flex-1 h-11 bg-brand-bg border border-brand-border/40 rounded-xl px-4 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
+            className="flex-1 min-w-0 h-11 bg-brand-bg border border-brand-border/40 rounded-xl px-4 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
           />
           <button
             type="submit"
             disabled={adding || !newName.trim()}
-            className="h-11 px-4 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-sm font-black text-white"
+            className="h-11 px-5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-sm font-black text-white whitespace-nowrap shrink-0"
           >
             {adding ? "Adding…" : "Add staff"}
           </button>
@@ -140,71 +140,78 @@ export default function StaffList() {
           ) : (
             <ul className="divide-y divide-brand-border/10">
               {staff.map((s) => (
-                <li key={s.id} className="px-5 py-4 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
-                    {s.name.charAt(0).toUpperCase()}
+                <li
+                  key={s.id}
+                  className="px-4 sm:px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3"
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
+                      {s.name.charAt(0).toUpperCase()}
+                    </div>
+
+                    {editingId === s.id ? (
+                      <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && saveEdit(s.id)}
+                        autoFocus
+                        className="flex-1 min-w-0 h-9 bg-brand-bg border border-brand-border/40 rounded-lg px-3 text-sm font-semibold text-brand-text"
+                      />
+                    ) : (
+                      <p className="flex-1 min-w-0 truncate text-sm font-bold text-brand-text">{s.name}</p>
+                    )}
+
+                    <span
+                      className={`shrink-0 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${
+                        s.is_active
+                          ? "bg-brand-success/15 text-brand-success border border-brand-success/20"
+                          : "bg-brand-border/40 text-brand-muted border border-brand-border/30"
+                      }`}
+                    >
+                      {s.is_active ? "Active" : "Inactive"}
+                    </span>
                   </div>
 
-                  {editingId === s.id ? (
-                    <input
-                      type="text"
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && saveEdit(s.id)}
-                      autoFocus
-                      className="flex-1 h-9 bg-brand-bg border border-brand-border/40 rounded-lg px-3 text-sm font-semibold text-white"
-                    />
-                  ) : (
-                    <p className="flex-1 text-sm font-bold text-brand-text">{s.name}</p>
-                  )}
-
-                  <span
-                    className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg ${
-                      s.is_active
-                        ? "bg-brand-success/15 text-brand-success border border-brand-success/20"
-                        : "bg-brand-border/40 text-brand-muted border border-brand-border/30"
-                    }`}
-                  >
-                    {s.is_active ? "Active" : "Inactive"}
-                  </span>
-
-                  {editingId === s.id ? (
-                    <>
-                      <button
-                        onClick={() => saveEdit(s.id)}
-                        disabled={busyRow === s.id}
-                        className="h-8 px-3 rounded-lg bg-brand-primary text-[11px] font-black text-white"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="h-8 px-3 rounded-lg bg-brand-hover text-[11px] font-black text-brand-text"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => startEdit(s)}
-                        className="h-8 px-3 rounded-lg bg-brand-hover text-[11px] font-black text-brand-text hover:bg-brand-border"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => toggleActive(s)}
-                        disabled={busyRow === s.id}
-                        className={`h-8 px-3 rounded-lg text-[11px] font-black ${
-                          s.is_active
-                            ? "bg-brand-border/40 text-brand-muted hover:bg-brand-border"
-                            : "bg-brand-success/20 text-brand-success hover:bg-brand-success/30"
-                        }`}
-                      >
-                        {s.is_active ? "Deactivate" : "Activate"}
-                      </button>
-                    </>
-                  )}
+                  <div className="flex gap-2 justify-end sm:justify-start shrink-0">
+                    {editingId === s.id ? (
+                      <>
+                        <button
+                          onClick={() => saveEdit(s.id)}
+                          disabled={busyRow === s.id}
+                          className="h-8 px-3 rounded-lg bg-brand-primary text-[11px] font-black text-white whitespace-nowrap"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="h-8 px-3 rounded-lg bg-brand-hover text-[11px] font-black text-brand-text whitespace-nowrap"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => startEdit(s)}
+                          className="h-8 px-3 rounded-lg bg-brand-hover text-[11px] font-black text-brand-text hover:bg-brand-border whitespace-nowrap"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => toggleActive(s)}
+                          disabled={busyRow === s.id}
+                          className={`h-8 px-3 rounded-lg text-[11px] font-black whitespace-nowrap ${
+                            s.is_active
+                              ? "bg-brand-border/40 text-brand-muted hover:bg-brand-border"
+                              : "bg-brand-success/20 text-brand-success hover:bg-brand-success/30"
+                          }`}
+                        >
+                          {s.is_active ? "Deactivate" : "Activate"}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

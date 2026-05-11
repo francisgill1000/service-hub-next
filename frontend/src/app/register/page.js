@@ -28,15 +28,15 @@ const BusinessCreatedModal = ({ shop, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="bg-[#151921] p-6 rounded-xl max-w-sm w-full text-white shadow-lg animate-fade-in">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
+            <div className="bg-brand-surface border border-brand-border p-6 rounded-2xl max-w-sm w-full text-brand-text shadow-xl animate-fade-in">
                 <h2 className="text-xl font-bold mb-4 text-center">Welcome!</h2>
-                <p className="text-center mb-4">Your business profile is ready.</p>
+                <p className="text-center text-brand-muted mb-4">Your business profile is ready.</p>
 
                 <div className="flex justify-center mb-2 items-center gap-2">
                     <span>Business Code: <b>{shop.shop_code}</b></span>
                     <span
-                        className={`cursor-pointer text-sm opacity-60 hover:opacity-100 transition-all ${copied ? 'font-bold scale-110' : ''}`}
+                        className={`cursor-pointer text-sm text-brand-muted hover:text-brand-text transition-all ${copied ? 'font-bold scale-110' : ''}`}
                         onClick={copyCode}
                     >
                         {copied ? "Copied ✓" : "(Copy)"}
@@ -49,7 +49,7 @@ const BusinessCreatedModal = ({ shop, onClose }) => {
 
                 <button
                     onClick={onClose}
-                    className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-white transition-all"
+                    className="w-full bg-brand-primary hover:bg-brand-primary/90 py-3 rounded-xl font-bold text-white transition-all"
                 >
                     Close
                 </button>
@@ -105,20 +105,20 @@ const App = () => {
         }
     };
 
-    const inputStyle = "w-full bg-[#151921] border border-white/10 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm placeholder:text-white/20";
-    const labelStyle = "text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] text-center mb-4 block";
+    const inputStyle = "w-full bg-brand-surface border border-brand-border rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary/40 transition-all text-sm text-brand-text placeholder:text-brand-muted/60";
+    const labelStyle = "text-[10px] font-bold text-brand-primary uppercase tracking-[0.2em] text-center mb-4 block";
 
     return (
         <>
-            <div className="min-h-screen text-white font-sans flex justify-center items-start p-4 md:p-8">
+            <div className="min-h-screen bg-brand-bg text-brand-text font-sans flex justify-center items-start p-4 md:p-8">
                 <div className="w-full max-w-xl space-y-12 pb-20">
 
                     {/* Header */}
                     <header className="text-center space-y-2">
-                        <p className="text-[11px] text-white/40 uppercase tracking-[0.2em] font-bold">Rezzy</p>
-                        <p className="text-[9px] text-white/30 tracking-wider">powered by Eloquent</p>
-                        <h1 className="text-3xl font-bold tracking-tight">Register Your Business</h1>
-                        <p className="text-white/40 text-sm">Tell us about your business to get started.</p>
+                        <p className="text-[11px] text-brand-muted uppercase tracking-[0.2em] font-bold">Rezzy</p>
+                        <p className="text-[9px] text-brand-muted/70 tracking-wider">powered by Eloquent</p>
+                        <h1 className="text-3xl font-bold tracking-tight text-brand-text">Register Your Business</h1>
+                        <p className="text-brand-muted text-sm">Tell us about your business to get started.</p>
                     </header>
 
                     <div className="space-y-10">
@@ -147,7 +147,7 @@ const App = () => {
                                     <LogoUploader
                                         onChange={(base64) => setForm(prev => ({ ...prev, logo: base64 }))}
                                     />
-                                    <p className="text-[10px] text-white/30 uppercase tracking-widest font-medium">
+                                    <p className="text-[10px] text-brand-muted uppercase tracking-widest font-medium">
                                         Business Logo
                                     </p>
                                 </div>
@@ -155,13 +155,13 @@ const App = () => {
                                 {/* Hero Image */}
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-end px-1">
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest font-medium">
+                                        <p className="text-[10px] text-brand-muted uppercase tracking-widest font-medium">
                                             Cover Banner
                                         </p>
-                                        <p className="text-[9px] text-white/20 italic">Recommended: 16:9 aspect ratio</p>
+                                        <p className="text-[9px] text-brand-muted/70 italic">Recommended: 16:9 aspect ratio</p>
                                     </div>
 
-                                    <div className="h-44 w-full bg-[#151921] rounded-2xl border border-white/10 overflow-hidden shadow-inner">
+                                    <div className="h-44 w-full bg-brand-surface rounded-2xl border border-brand-border overflow-hidden shadow-inner">
                                         <HeroImageUploader
                                             label="Select Cover Photo"
                                             onChange={(base64) => setForm(prev => ({ ...prev, hero_image: base64 }))}
@@ -176,13 +176,13 @@ const App = () => {
                         <button
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? 'bg-blue-800' : 'bg-blue-600 hover:bg-blue-500'} active:scale-[0.99] text-white py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-xl shadow-blue-500/20`}
+                            className={`w-full ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-brand-primary/90'} bg-brand-primary active:scale-[0.99] text-white py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-xl shadow-brand-primary/20`}
                         >
                             {isSubmitting ? 'Creating Profile...' : 'Complete Registration'}
                         </button>
 
-                        <p className="text-center text-[11px] text-white/30 leading-relaxed max-w-[320px] mx-auto">
-                            By registering, you agree to our <span className="text-white/60 font-medium cursor-pointer hover:underline">Terms</span> and <span className="text-white/60 font-medium cursor-pointer hover:underline">Privacy Policy</span>.
+                        <p className="text-center text-[11px] text-brand-muted leading-relaxed max-w-[320px] mx-auto">
+                            By registering, you agree to our <span className="text-brand-text font-medium cursor-pointer hover:underline">Terms</span> and <span className="text-brand-text font-medium cursor-pointer hover:underline">Privacy Policy</span>.
                         </p>
                     </footer>
                 </div>

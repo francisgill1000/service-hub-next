@@ -105,26 +105,28 @@ export default function RevenueReport({ shopId, from, to }) {
         {data.top_services.length === 0 ? (
           <p className="text-center text-brand-muted text-sm py-8">No services in range.</p>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-brand-elevated border-b border-brand-border">
-                <th className="px-5 py-3 text-left text-[10px] font-bold text-brand-muted uppercase tracking-widest">Service</th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Count</th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Revenue</th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest">Avg price</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-border/40">
-              {data.top_services.map((s) => (
-                <tr key={s.title}>
-                  <td className="px-5 py-3 text-sm font-bold text-brand-text">{s.title}</td>
-                  <td className="px-5 py-3 text-right text-sm font-semibold text-brand-text">{s.count}</td>
-                  <td className="px-5 py-3 text-right text-sm font-black text-brand-text">{aed(s.revenue)}</td>
-                  <td className="px-5 py-3 text-right text-sm font-semibold text-brand-text">{aed(s.avg_price)}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px]">
+              <thead>
+                <tr className="bg-brand-elevated border-b border-brand-border">
+                  <th className="px-3 sm:px-5 py-3 text-left text-[10px] font-bold text-brand-muted uppercase tracking-widest whitespace-nowrap">Service</th>
+                  <th className="px-3 sm:px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest whitespace-nowrap">Count</th>
+                  <th className="px-3 sm:px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest whitespace-nowrap">Revenue</th>
+                  <th className="px-3 sm:px-5 py-3 text-right text-[10px] font-bold text-brand-muted uppercase tracking-widest whitespace-nowrap">Avg price</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-brand-border/40">
+                {data.top_services.map((s) => (
+                  <tr key={s.title}>
+                    <td className="px-3 sm:px-5 py-3 text-sm font-bold text-brand-text whitespace-nowrap">{s.title}</td>
+                    <td className="px-3 sm:px-5 py-3 text-right text-sm font-semibold text-brand-text whitespace-nowrap">{s.count}</td>
+                    <td className="px-3 sm:px-5 py-3 text-right text-sm font-black text-brand-text whitespace-nowrap">{aed(s.revenue)}</td>
+                    <td className="px-3 sm:px-5 py-3 text-right text-sm font-semibold text-brand-text whitespace-nowrap">{aed(s.avg_price)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

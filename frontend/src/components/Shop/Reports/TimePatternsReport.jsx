@@ -90,46 +90,51 @@ export default function TimePatternsReport({ shopId, from, to }) {
           </div>
         </div>
 
-        {/* Hour header row */}
-        <div
-          className="grid items-center gap-[3px] mb-1.5"
-          style={{ gridTemplateColumns: "48px repeat(24, minmax(0, 1fr))" }}
-        >
-          <div></div>
-          {Array.from({ length: 24 }, (_, h) => (
+        {/* Heatmap (horizontally scrollable on small screens) */}
+        <div className="overflow-x-auto -mx-5 px-5">
+          <div className="min-w-[640px]">
+            {/* Hour header row */}
             <div
-              key={h}
-              className={`text-[9px] font-bold text-brand-muted text-center ${h % 3 === 0 ? "" : "opacity-40"}`}
+              className="grid items-center gap-[3px] mb-1.5"
+              style={{ gridTemplateColumns: "48px repeat(24, minmax(22px, 1fr))" }}
             >
-              {String(h).padStart(2, "0")}
-            </div>
-          ))}
-        </div>
-
-        {/* Day rows */}
-        {data.day_labels.map((label, dow) => (
-          <div
-            key={label}
-            className="grid items-center gap-[3px] mb-[3px]"
-            style={{ gridTemplateColumns: "48px repeat(24, minmax(0, 1fr))" }}
-          >
-            <div className="pr-2 text-[10px] font-black text-brand-text text-right uppercase tracking-wider">
-              {label}
-            </div>
-            {Array.from({ length: 24 }, (_, h) => {
-              const v = data.grid[dow][h] || 0;
-              return (
+              <div></div>
+              {Array.from({ length: 24 }, (_, h) => (
                 <div
                   key={h}
-                  title={`${label} ${String(h).padStart(2, "0")}:00 — ${v} booking${v !== 1 ? "s" : ""}`}
-                  className={`rounded-md flex items-center justify-center text-[10px] font-black h-8 ${intensityClass(v, maxCell)} ${textColor(v, maxCell)} transition-transform hover:scale-110 cursor-default`}
+                  className={`text-[9px] font-bold text-brand-muted text-center ${h % 3 === 0 ? "" : "opacity-40"}`}
                 >
-                  {v > 0 ? v : ""}
+                  {String(h).padStart(2, "0")}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            {/* Day rows */}
+            {data.day_labels.map((label, dow) => (
+              <div
+                key={label}
+                className="grid items-center gap-[3px] mb-[3px]"
+                style={{ gridTemplateColumns: "48px repeat(24, minmax(22px, 1fr))" }}
+              >
+                <div className="pr-2 text-[10px] font-black text-brand-text text-right uppercase tracking-wider">
+                  {label}
+                </div>
+                {Array.from({ length: 24 }, (_, h) => {
+                  const v = data.grid[dow][h] || 0;
+                  return (
+                    <div
+                      key={h}
+                      title={`${label} ${String(h).padStart(2, "0")}:00 — ${v} booking${v !== 1 ? "s" : ""}`}
+                      className={`rounded-md flex items-center justify-center text-[10px] font-black h-8 ${intensityClass(v, maxCell)} ${textColor(v, maxCell)} transition-transform hover:scale-110 cursor-default`}
+                    >
+                      {v > 0 ? v : ""}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       {/* By day + by hour */}

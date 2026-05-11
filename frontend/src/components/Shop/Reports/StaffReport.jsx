@@ -48,7 +48,7 @@ export default function StaffReport({ shopId, from, to }) {
   const Th = ({ k, label, right }) => (
     <th
       onClick={() => setSort(k)}
-      className={`px-4 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest cursor-pointer hover:text-brand-primary ${right ? "text-right" : "text-left"}`}
+      className={`px-3 sm:px-4 py-3 text-[10px] font-bold text-brand-muted uppercase tracking-widest cursor-pointer hover:text-brand-primary whitespace-nowrap ${right ? "text-right" : "text-left"}`}
     >
       {label}{sortKey === k && (sortDir === "asc" ? " ↑" : " ↓")}
     </th>
@@ -77,8 +77,8 @@ export default function StaffReport({ shopId, from, to }) {
       </div>
 
       {/* Per-staff table */}
-      <div className="bg-brand-surface border border-brand-border rounded-xl overflow-hidden overflow-x-auto shadow-md">
-        <table className="w-full">
+      <div className="bg-brand-surface border border-brand-border rounded-xl overflow-x-auto shadow-md">
+        <table className="w-full min-w-[680px]">
           <thead>
             <tr className="bg-brand-elevated border-b border-brand-border">
               <Th k="staff_name" label="Staff" />
@@ -93,13 +93,13 @@ export default function StaffReport({ shopId, from, to }) {
           <tbody className="divide-y divide-brand-border/40">
             {rows.map((r) => (
               <tr key={r.staff_id ?? r.staff_name}>
-                <td className="px-4 py-3 text-sm font-bold text-brand-text">{r.staff_name}</td>
-                <td className="px-4 py-3 text-right text-sm font-semibold text-brand-text">{r.total_bookings}</td>
-                <td className="px-4 py-3 text-right text-sm font-semibold text-brand-success">{r.completed}</td>
-                <td className="px-4 py-3 text-right text-sm font-semibold text-brand-danger">{r.cancelled}</td>
-                <td className="px-4 py-3 text-right text-sm font-black text-brand-text">{aed(r.revenue)}</td>
-                <td className="px-4 py-3 text-right text-sm font-semibold text-brand-text">{aed(r.avg_booking_value)}</td>
-                <td className="px-4 py-3 text-right text-sm font-semibold text-brand-text">{r.completion_rate}%</td>
+                <td className="px-3 sm:px-4 py-3 text-sm font-bold text-brand-text whitespace-nowrap">{r.staff_name}</td>
+                <td className="px-3 sm:px-4 py-3 text-right text-sm font-semibold text-brand-text whitespace-nowrap">{r.total_bookings}</td>
+                <td className="px-3 sm:px-4 py-3 text-right text-sm font-semibold text-brand-success whitespace-nowrap">{r.completed}</td>
+                <td className="px-3 sm:px-4 py-3 text-right text-sm font-semibold text-brand-danger whitespace-nowrap">{r.cancelled}</td>
+                <td className="px-3 sm:px-4 py-3 text-right text-sm font-black text-brand-text whitespace-nowrap">{aed(r.revenue)}</td>
+                <td className="px-3 sm:px-4 py-3 text-right text-sm font-semibold text-brand-text whitespace-nowrap">{aed(r.avg_booking_value)}</td>
+                <td className="px-3 sm:px-4 py-3 text-right text-sm font-semibold text-brand-text whitespace-nowrap">{r.completion_rate}%</td>
               </tr>
             ))}
           </tbody>

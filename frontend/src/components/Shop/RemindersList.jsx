@@ -146,14 +146,14 @@ export default function RemindersList() {
     <div className="min-h-screen bg-brand-bg text-brand-text pb-28 md:pb-10">
       <div className="w-full px-4 md:px-6 pt-6 md:pt-8 space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="space-y-4 sm:space-y-0 sm:flex sm:items-end sm:justify-between sm:gap-4">
           <div>
             <h2 className="text-2xl font-black text-brand-text tracking-tight">Reminders</h2>
             <p className="text-brand-muted font-semibold mt-1 text-sm">
               Tomorrow · {label}
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1.5 bg-brand-surface border border-brand-border/30 rounded-xl text-[11px] font-bold text-brand-text">
               {bookings.length} bookings
             </span>
@@ -163,16 +163,19 @@ export default function RemindersList() {
             <span className="px-3 py-1.5 bg-brand-success/10 border border-brand-success/20 rounded-xl text-[11px] font-bold text-brand-success">
               {sentCount} reminded
             </span>
-            <button
-              onClick={remindAll}
-              disabled={pendingCount === 0}
-              className="h-9 px-3 rounded-xl bg-[#25D366] hover:bg-[#25D366]/90 disabled:opacity-40 disabled:cursor-not-allowed text-[11px] font-black text-white inline-flex items-center gap-1.5 transition-all"
-            >
-              <span className="material-symbols-outlined text-[16px]">send</span>
-              Remind all
-            </button>
           </div>
         </div>
+
+        {/* Remind all CTA — full-width on mobile, inline on desktop is above; keep compact placement here */}
+        {pendingCount > 0 && (
+          <button
+            onClick={remindAll}
+            className="w-full sm:w-auto h-11 px-4 rounded-xl bg-[#25D366] hover:bg-[#25D366]/90 text-sm font-black text-white inline-flex items-center justify-center gap-2 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">send</span>
+            Remind all ({pendingCount})
+          </button>
+        )}
 
         {/* List */}
         <div className="bg-brand-elevated rounded-xl border border-brand-border/20 overflow-hidden">

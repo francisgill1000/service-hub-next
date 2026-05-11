@@ -118,12 +118,12 @@ export default function StaffList() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="New staff name (e.g. Ali)"
-            className="flex-1 min-w-0 h-11 bg-brand-bg border border-brand-border/40 rounded-xl px-4 text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
+            className="flex-1 min-w-0 h-12 sm:h-11 bg-brand-bg border border-brand-border/40 rounded-xl px-4 text-base sm:text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
           />
           <button
             type="submit"
             disabled={adding || !newName.trim()}
-            className="h-11 px-5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-sm font-black text-white whitespace-nowrap shrink-0"
+            className="h-12 sm:h-11 px-5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-base sm:text-sm font-black text-white whitespace-nowrap shrink-0"
           >
             {adding ? "Adding…" : "Add staff"}
           </button>

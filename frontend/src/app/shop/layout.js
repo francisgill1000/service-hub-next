@@ -125,7 +125,7 @@ export default function ShopLayout({ children }) {
 
   const handleLogout = () => {
     logoutShop();
-    router.push("/login");
+    window.location.href = "/login";
   };
 
   return (

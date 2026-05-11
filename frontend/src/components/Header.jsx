@@ -23,6 +23,9 @@ export default function Header() {
   // Shop routes have their own mobile top bar inside ShopLayout (with hamburger
   // for the side drawer). Don't render this older header for them anymore.
   if (isShopRoute) return null;
+  // This header is shop-session UI (avatar, shop name, logout). Hide it when no
+  // shop is logged in — otherwise it shows on /login, /register, etc.
+  if (!shop) return null;
 
   return (
     <header className="sticky top-0 z-40 bg-[#f5f6f8]/50 dark:bg-[#101622]/100 backdrop-blur-md md:hidden">
@@ -50,7 +53,7 @@ export default function Header() {
           <button
             onClick={() => {
               logoutShop();
-              router.push("/login");
+              window.location.href = "/login";
             }}
             className="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 transition-transform active:scale-95"
           >

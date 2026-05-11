@@ -18,6 +18,7 @@ const SHOP_NAV_ITEMS = [
   { label: "Services", icon: "inventory_2", path: "/shop/catalogs" },
   { label: "Staff", icon: "groups", path: "/shop/staff" },
   { label: "Working Hours", icon: "schedule", path: "/shop/working_hours" },
+  { label: "Login Activity", icon: "history", path: "/shop/login-activity" },
   { label: "Profile", icon: "person", path: "/shop/profile" },
 ];
 

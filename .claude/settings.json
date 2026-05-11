@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -l app/Http/Controllers/ShopController.php)",
+      "Bash(php -l app/Http/Controllers/ShopQrLoginController.php)",
+      "Bash(php -l app/Http/Controllers/ShopLoginActivityController.php)",
+      "Bash(php -l app/Models/Shop.php)",
+      "Bash(php -l app/Models/ShopLoginActivity.php)"
+    ]
+  }
+}

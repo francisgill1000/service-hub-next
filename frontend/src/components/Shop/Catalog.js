@@ -156,7 +156,7 @@ const AddToCatalog = () => {
         <div className="mt-8 space-y-6">
           {/* Service Title */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-navy-muted ml-1">
+            <label className="text-sm font-medium text-brand-muted ml-1">
               Service Title
             </label>
             <input
@@ -164,7 +164,7 @@ const AddToCatalog = () => {
               value={formData.title}
               onChange={handleInputChange}
               disabled={loading}
-              className="w-full h-12 px-4 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none text-base disabled:opacity-50 text-white placeholder-navy-muted"
+              className="w-full h-12 px-4 bg-brand-elevated border border-brand-border/30 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 transition-all outline-none text-base disabled:opacity-50 text-brand-text placeholder:text-brand-muted"
               placeholder="e.g., Full House Plumbing Check"
               type="text"
             />
@@ -172,7 +172,7 @@ const AddToCatalog = () => {
 
           {/* Description */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-navy-muted ml-1">
+            <label className="text-sm font-medium text-brand-muted ml-1">
               Description
             </label>
             <textarea
@@ -180,7 +180,7 @@ const AddToCatalog = () => {
               value={formData.description}
               onChange={handleInputChange}
               disabled={loading}
-              className="w-full p-4 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none text-base resize-none disabled:opacity-50 text-white placeholder-navy-muted"
+              className="w-full p-4 bg-brand-elevated border border-brand-border/30 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 transition-all outline-none text-base resize-none disabled:opacity-50 text-brand-text placeholder:text-brand-muted"
               placeholder="Describe what's included in this service..."
               rows="4"
             />
@@ -188,7 +188,7 @@ const AddToCatalog = () => {
 
           {/* Price Field */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-navy-muted ml-1">
+            <label className="text-sm font-medium text-brand-muted ml-1">
               Price (AED)
             </label>
             <div className="relative">
@@ -200,7 +200,7 @@ const AddToCatalog = () => {
                 value={formData.price}
                 onChange={handleInputChange}
                 disabled={loading}
-                className="w-full h-12 pl-14 pr-4 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none text-base font-semibold disabled:opacity-50 text-white placeholder-navy-muted"
+                className="w-full h-12 pl-14 pr-4 bg-brand-elevated border border-brand-border/30 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 transition-all outline-none text-base font-semibold disabled:opacity-50 text-brand-text placeholder:text-brand-muted"
                 placeholder="0.00"
                 type="number"
                 step="0.01"

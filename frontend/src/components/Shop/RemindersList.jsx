@@ -200,32 +200,34 @@ export default function RemindersList() {
                   const reminded = !!b.reminder_sent_at;
                   const noPhone = !b.customer_whatsapp;
                   return (
-                    <li key={b.id} className="px-5 py-4 flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
-                        {initials}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-bold text-brand-text truncate">{customerName}</p>
-                          <span className="text-[10px] font-bold text-brand-muted">{b.booking_reference}</span>
+                    <li key={b.id} className="px-4 sm:px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-brand-hover flex items-center justify-center font-bold text-sm text-brand-primary shrink-0">
+                          {initials}
                         </div>
-                        <p className="text-[11px] text-brand-muted font-medium mt-0.5 truncate">{services}</p>
-                        <div className="flex items-center gap-3 mt-1.5 text-[11px] text-brand-muted">
-                          <span className="inline-flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[12px]">schedule</span>
-                            {time}
-                          </span>
-                          {b.customer_whatsapp && (
-                            <span className="inline-flex items-center gap-1 text-brand-success">
-                              <span className="material-symbols-outlined text-[12px]">chat</span>
-                              {b.customer_whatsapp}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-bold text-brand-text truncate">{customerName}</p>
+                            <span className="text-[10px] font-bold text-brand-muted">{b.booking_reference}</span>
+                          </div>
+                          <p className="text-[11px] text-brand-muted font-medium mt-0.5 truncate">{services}</p>
+                          <div className="flex items-center gap-3 mt-1.5 text-[11px] text-brand-muted flex-wrap">
+                            <span className="inline-flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">schedule</span>
+                              {time}
                             </span>
-                          )}
+                            {b.customer_whatsapp && (
+                              <span className="inline-flex items-center gap-1 text-brand-success">
+                                <span className="material-symbols-outlined text-[12px]">chat</span>
+                                {b.customer_whatsapp}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="shrink-0">
+                      <div className="shrink-0 self-stretch sm:self-auto flex">
                         {noPhone ? (
-                          <span className="px-3 py-1.5 rounded-lg bg-brand-border/40 text-brand-muted font-bold text-[10px] uppercase tracking-wider">
+                          <span className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-brand-border/40 text-brand-muted font-bold text-[10px] uppercase tracking-wider">
                             No WhatsApp
                           </span>
                         ) : reminded ? (
@@ -233,7 +235,7 @@ export default function RemindersList() {
                             onClick={() => sendReminder(b)}
                             disabled={busyId === b.id}
                             title="Send again"
-                            className="h-9 px-3 rounded-lg bg-brand-success/15 hover:bg-brand-success/25 border border-brand-success/30 text-brand-success font-black text-[10px] uppercase tracking-wider inline-flex items-center gap-1.5"
+                            className="flex-1 sm:flex-none h-9 px-3 rounded-lg bg-brand-success/15 hover:bg-brand-success/25 border border-brand-success/30 text-brand-success font-black text-[10px] uppercase tracking-wider inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
                           >
                             <span className="material-symbols-outlined text-[14px]">check</span>
                             Reminded · Resend
@@ -242,7 +244,7 @@ export default function RemindersList() {
                           <button
                             onClick={() => sendReminder(b)}
                             disabled={busyId === b.id}
-                            className="h-9 px-3 rounded-lg bg-[#25D366] hover:bg-[#25D366]/90 disabled:opacity-40 text-white font-black text-[10px] uppercase tracking-wider inline-flex items-center gap-1.5"
+                            className="flex-1 sm:flex-none h-9 px-3 rounded-lg bg-[#25D366] hover:bg-[#25D366]/90 disabled:opacity-40 text-white font-black text-[10px] uppercase tracking-wider inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
                           >
                             <span className="material-symbols-outlined text-[14px]">send</span>
                             {busyId === b.id ? "…" : "Send"}

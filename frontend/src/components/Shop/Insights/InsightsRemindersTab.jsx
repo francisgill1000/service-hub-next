@@ -3,10 +3,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import api from "@/utils/api";
 import { useShop } from "@/context/ShopContext";
-import { DEFAULT_TEMPLATE, loadTemplate } from "./sendWhatsApp";
+import { DEFAULT_TEMPLATE, loadTemplate, loadContactedToday } from "./sendWhatsApp";
 import ReminderTemplateEditor from "./ReminderTemplateEditor";
 import ReminderCustomerList   from "./ReminderCustomerList";
 import ReminderBucketCard     from "./ReminderBucketCard";
+import ReminderManualFilters  from "./ReminderManualFilters";
 
 const daysSince = (iso) => {
   if (!iso) return Infinity;
@@ -29,6 +30,9 @@ export default function InsightsRemindersTab() {
   const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
   const [activeBucket, setActiveBucket] = useState(null);
   const [showTruncationWarning, setShowTruncationWarning] = useState(false);
+  const [manualFilters, setManualFilters] = useState({
+    fromDate: "", toDate: "", minSpend: "", maxSpend: "", minBookings: "", maxBookings: "", excludeContactedToday: false,
+  });
 
   useEffect(() => {
     if (!shop?.id) return;
@@ -81,6 +85,22 @@ export default function InsightsRemindersTab() {
 
   const sumLV = (list) => list.reduce((s, c) => s + Number(c.total_spent || 0), 0);
 
+  const manualMatches = useMemo(() => {
+    const contacted = manualFilters.excludeContactedToday ? loadContactedToday(shop?.id) : {};
+    return allCustomers.filter((c) => {
+      if (manualFilters.fromDate && (!c.last_visit_date || c.last_visit_date < manualFilters.fromDate)) return false;
+      if (manualFilters.toDate   && (!c.last_visit_date || c.last_visit_date > manualFilters.toDate))   return false;
+      const spent = Number(c.total_spent || 0);
+      if (manualFilters.minSpend !== "" && spent < Number(manualFilters.minSpend)) return false;
+      if (manualFilters.maxSpend !== "" && spent > Number(manualFilters.maxSpend)) return false;
+      const count = Number(c.bookings_count || 0);
+      if (manualFilters.minBookings !== "" && count < Number(manualFilters.minBookings)) return false;
+      if (manualFilters.maxBookings !== "" && count > Number(manualFilters.maxBookings)) return false;
+      if (manualFilters.excludeContactedToday && contacted[c.id]) return false;
+      return true;
+    });
+  }, [allCustomers, manualFilters, shop?.id]);
+
   if (loading) return <div className="text-brand-muted text-sm font-semibold p-12 text-center">Loading customers…</div>;
   if (error)   return <div className="text-red-400 text-sm font-semibold p-12 text-center">{error}</div>;
 
@@ -124,9 +144,20 @@ export default function InsightsRemindersTab() {
         )}
       </div>
 
-      {/* Section B — placeholder for Task 6 */}
-      <div className="text-brand-muted text-sm font-semibold p-6 text-center border border-dashed border-brand-border/40 rounded-xl">
-        Manual reminder builder — coming in Task 6.
+      {/* Section B — Manual builder */}
+      <div className="space-y-3 pt-2">
+        <h3 className="text-[11px] font-black uppercase tracking-widest text-brand-muted">Manual reminder builder</h3>
+        <ReminderManualFilters filters={manualFilters} onChange={setManualFilters} />
+        <div className="bg-brand-surface border border-brand-border/20 rounded-xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">
+            {manualMatches.length} match{manualMatches.length === 1 ? "" : "es"}
+          </p>
+          <ReminderCustomerList
+            customers={manualMatches}
+            template={template}
+            emptyMsg="No customers match these filters."
+          />
+        </div>
       </div>
     </div>
   );

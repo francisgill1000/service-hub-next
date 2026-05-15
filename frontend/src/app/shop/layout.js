@@ -14,6 +14,7 @@ const SHOP_NAV_ITEMS = [
   { label: "Customers", icon: "group", path: "/shop/customers" },
   { label: "Reminders", icon: "notifications_active", path: "/shop/reminders" },
   { label: "Reports", icon: "bar_chart", path: "/shop/reports" },
+  { label: "Insights", icon: "insights", path: "/shop/insights" },
   { label: "Marketing", icon: "campaign", path: "/shop/marketing" },
   { label: "Services", icon: "inventory_2", path: "/shop/catalogs" },
   { label: "Staff", icon: "groups", path: "/shop/staff" },

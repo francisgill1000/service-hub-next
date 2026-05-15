@@ -19,11 +19,11 @@ Then scan the QR code in **Expo Go** (install from App Store / Play Store).
 ## Features
 
 ### Customer / Guest
-- **Home & Explore** — Browse all shops with search
+- **Home & Explore** — Browse all businesses with search
 - **Near Me** — GPS-based nearby shop discovery
 - **Shop Detail** — View catalog, select services, choose date/time, book
 - **Bookings** — View your booking history
-- **Favourites** — Saved favourite shops
+- **Favourites** — Saved favourite businesses
 
 ### Shop Owner
 - **Dashboard** — KPIs (total bookings, revenue, today's schedule, recent activity)

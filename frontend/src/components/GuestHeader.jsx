@@ -24,7 +24,7 @@ export default function GuestHeader() {
 
   const getHeaderTitle = () => {
     if (pathname === "/") return "Rezzy";
-    if (pathname?.startsWith("/detail")) return "Shop Details";
+    if (pathname?.startsWith("/detail")) return "Business Details";
     if (pathname?.startsWith("/booking")) return "Booking";
     if (pathname === "/explore") return "Explore";
     if (pathname === "/near-me") return "Near Me";
@@ -76,7 +76,7 @@ export default function GuestHeader() {
                 href="/shop/dashboard"
                 className="h-10 px-4 rounded-xl text-sm font-bold text-white bg-primary hover:bg-primary/90 transition-colors flex items-center"
               >
-                My Shop
+                My Business
               </Link>
             ) : (
               <button

@@ -137,7 +137,7 @@ function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { num: '01', icon: 'app_registration', title: 'Sign up free', desc: 'Register your shop in 60 seconds. No credit card.' },
+              { num: '01', icon: 'app_registration', title: 'Sign up free', desc: 'Register your Business in 60 seconds. No credit card.' },
               { num: '02', icon: 'link', title: 'Connect WhatsApp', desc: 'Link your business number, import your services.' },
               { num: '03', icon: 'event_available', title: 'Take bookings', desc: 'Customers book online. You get notified instantly.' },
             ].map((step, i) => (
@@ -194,7 +194,7 @@ function LandingPage() {
             </div>
             <div className="space-y-8">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#4b8eff]">Business OS</p>
-              <h2 className="text-5xl font-black text-white tracking-tighter italic leading-tight">Run your shop <br /> on autopilot.</h2>
+              <h2 className="text-5xl font-black text-white tracking-tighter italic leading-tight">Run your business <br /> on autopilot.</h2>
               <div className="space-y-6">
                 {[
                   { title: 'WhatsApp Automation', desc: 'Sync with your official business number.' },
@@ -218,7 +218,7 @@ function LandingPage() {
         >
           <div className="text-center mb-16">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#4b8eff] mb-4">What Owners Say</p>
-            <h2 className="text-5xl font-black text-white tracking-tighter italic leading-tight">Trusted by shop owners <br /> across the UAE.</h2>
+            <h2 className="text-5xl font-black text-white tracking-tighter italic leading-tight">Trusted by business owners <br /> across the UAE.</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -394,12 +394,12 @@ function LandingPage() {
                 Scale your business.
               </h2>
               <p className="text-base md:text-lg font-semibold text-[#8b90a0] max-w-xl mx-auto leading-relaxed mb-10">
-                Join 850+ UAE shop owners who replaced WhatsApp chaos with a system that actually works.
+                Join 850+ UAE business owners who replaced WhatsApp chaos with a system that actually works.
               </p>
 
               <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
                  <a href="/register" className="inline-flex items-center justify-center h-14 px-10 rounded-2xl bg-[#4b8eff] text-white font-black text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#4b8eff]/30">
-                  Register My Shop
+                  Register My Business
                 </a>
                 <a href="https://wa.me/971557369629" className="inline-flex items-center justify-center h-14 px-10 rounded-2xl border border-[#414755] text-white font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black hover:border-white transition-all">
                   Request a Demo

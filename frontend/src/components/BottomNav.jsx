@@ -33,7 +33,6 @@ export default function BottomNav() {
     pathname?.startsWith('/customer/');
   if (!isClient || hideNav) return null;
 
-  // Determine if shop owner or guest
   const isShopRoute = pathname?.startsWith("/shop");
   const navItems = isShopRoute ? SHOP_NAV_ITEMS : GUEST_NAV_ITEMS;
 

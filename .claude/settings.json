@@ -5,7 +5,14 @@
       "Bash(php -l app/Http/Controllers/ShopQrLoginController.php)",
       "Bash(php -l app/Http/Controllers/ShopLoginActivityController.php)",
       "Bash(php -l app/Models/Shop.php)",
-      "Bash(php -l app/Models/ShopLoginActivity.php)"
+      "Bash(php -l app/Models/ShopLoginActivity.php)",
+      "Bash(git commit -m ' *)",
+      "Skill(superpowers:executing-plans)",
+      "Skill(superpowers:executing-plans:*)",
+      "Bash(git commit *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(tasklist /FI \"PID eq 10736\" /FO LIST)"
     ]
   }
 }

@@ -106,7 +106,7 @@ const App = () => {
                 <section className='space-y-4'>
                     <div className="mb-5">
                         <h3 className="text-xl font-semibold mb-1">Location</h3>
-                        <p className="text-white/40 text-sm">Pinpoint your shop for local customers.</p>
+                        <p className="text-white/40 text-sm">Pinpoint your business for local customers.</p>
                     </div>
 
                     <GPSTracker

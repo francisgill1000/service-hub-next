@@ -132,7 +132,7 @@ export default function ShopLoginActivityPage() {
                     <div>
                         <h1 className="text-2xl md:text-3xl font-black tracking-tight">Login Activity</h1>
                         <p className="text-[12px] text-brand-muted font-semibold mt-1">
-                            Every sign-in to your shop account — see when, how, and from where.
+                            Every sign-in to your business account — see when, how, and from where.
                         </p>
                     </div>
                     <span className="px-3 py-1.5 rounded-xl bg-brand-elevated border border-brand-border/30 text-[11px] font-black text-brand-text">

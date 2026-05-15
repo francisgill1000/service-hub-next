@@ -203,7 +203,7 @@ const Login = () => {
     if (contextLoading) return null;
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col bg-brand-bg text-brand-text max-w-[480px] mx-auto overflow-x-hidden shadow-2xl px-8 pt-14 pb-10 font-display">
+        <div className="relative flex min-h-screen w-full flex-col bg-brand-bg text-brand-text max-w-[480px] mx-auto overflow-x-hidden px-8 pt-14 pb-10 font-display">
             <div className="mb-8 grid grid-cols-2 bg-brand-elevated border border-brand-border rounded-2xl p-1">
                 <button
                     type="button"
@@ -279,7 +279,7 @@ const Login = () => {
 
                     <div className="mb-8 text-center">
                         <h1 className="text-3xl font-extrabold text-brand-text mb-3">
-                            Sign in to your shop
+                            Sign in to your account
                         </h1>
                         <p className="text-brand-muted text-sm leading-relaxed px-4">
                             Enter your Business ID and PIN to access your dashboard.
@@ -380,8 +380,6 @@ const Login = () => {
                 </button>
             </div>
 
-            <div className="absolute -top-24 -left-24 size-64 bg-brand-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
-            <div className="absolute top-1/2 -right-32 size-80 bg-brand-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
         </div>
     );
 };

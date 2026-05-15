@@ -1,6 +1,6 @@
 // frontend/src/components/Shop/Insights/sendWhatsApp.js
 //
-// Single source of truth for sending WhatsApp reminders to shop customers.
+// Single source of truth for sending WhatsApp reminders to business customers.
 // Token resolution, popup-block detection, bulk-send stagger, and
 // "contacted today" persistence all live here.
 

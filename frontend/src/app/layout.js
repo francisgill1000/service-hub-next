@@ -7,7 +7,7 @@ import ShopProviders from "./ShopProviders";
 // We'll remove Geist since your design uses Manrope via the Google Fonts link
 export const metadata = {
   title: "Rezzy",
-  description: "Your one-stop shop for professional services",
+  description: "Your one-stop Business platform for professional services",
 };
 
 // Inline pre-paint script — applies the saved theme class on <html> before first

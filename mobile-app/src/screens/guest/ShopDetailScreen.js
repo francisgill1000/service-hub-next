@@ -94,7 +94,7 @@ export default function ShopDetailScreen({ route, navigation }) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Loading shop details...</Text>
+        <Text style={styles.loadingText}>Loading business details...</Text>
       </View>
     );
   }
@@ -102,7 +102,7 @@ export default function ShopDetailScreen({ route, navigation }) {
   if (!shop) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={{ color: Colors.white }}>Shop not found.</Text>
+        <Text style={{ color: Colors.white }}>Business not found.</Text>
       </View>
     );
   }

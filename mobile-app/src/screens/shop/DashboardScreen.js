@@ -94,7 +94,7 @@ export default function DashboardScreen() {
 
   const handleLogout = async () => {
     await logoutShop();
-    // AppNavigator automatically switches to Guest stack when shop becomes null
+    // AppNavigator automatically switches to Guest stack when business becomes null
   };
 
   return (

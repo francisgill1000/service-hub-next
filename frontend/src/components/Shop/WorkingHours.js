@@ -46,7 +46,6 @@ const WorkingHours = () => {
         setDays(buildDaysFromWorkingHours(shop?.working_hours || []));
     }, [shop?.id, shop?.working_hours]);
 
-    // Refresh latest shop data on page load/reload
     useEffect(() => {
         if (!shop?.id) return;
 
@@ -60,7 +59,7 @@ const WorkingHours = () => {
                     loginShop(freshShop, token);
                 }
             } catch (error) {
-                console.error('Error fetching latest shop hours:', error);
+                console.error('Error fetching latest working hours:', error);
             }
         };
 
@@ -88,7 +87,7 @@ const WorkingHours = () => {
             await notify({
                 icon: 'error',
                 title: 'Error',
-                text: 'Shop information not found'
+                text: 'Business information not found'
             });
             return;
         }
@@ -143,7 +142,7 @@ const WorkingHours = () => {
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
                     <div>
                         <h2 className="text-2xl font-black text-brand-text tracking-tight">Working Hours</h2>
-                        <p className="text-brand-muted font-semibold mt-1 text-sm">Set the days and times your shop is open for bookings.</p>
+                        <p className="text-brand-muted font-semibold mt-1 text-sm">Set the days and times your business is open for bookings.</p>
                     </div>
                     <button
                         onClick={handleSaveWorkingHours}

@@ -139,8 +139,8 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Shop Profile</Text>
-          <Text style={styles.headerSubtitle}>Manage your shop identity and public information.</Text>
+          <Text style={styles.headerTitle}>Business Profile</Text>
+          <Text style={styles.headerSubtitle}>Manage your business identity and public information.</Text>
         </View>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
 
@@ -240,9 +240,8 @@ export default function ProfileScreen() {
 
           {/* Credentials Section */}
           <View style={styles.credRow}>
-            {/* Shop Code */}
             <View style={[styles.credCard, { flex: 1 }]}>
-              <Text style={styles.credLabel}>Shop Code</Text>
+              <Text style={styles.credLabel}>Business Code</Text>
               <View style={styles.credValueRow}>
                 <Text style={styles.credValue}>{shop?.shop_code || '—'}</Text>
                 <View style={styles.credIcon}>
@@ -266,7 +265,7 @@ export default function ProfileScreen() {
           {/* QR Code Section */}
           {qrTarget ? (
             <View style={styles.qrSection}>
-              <Text style={styles.qrTitle}>Shop QR Code</Text>
+              <Text style={styles.qrTitle}>Business QR Code</Text>
               <View style={styles.qrWrapper}>
                 <QRCode
                   value={qrTarget}
@@ -275,7 +274,7 @@ export default function ProfileScreen() {
                   backgroundColor="#fff"
                 />
               </View>
-              <Text style={styles.qrHint}>Customers can scan this to find your shop</Text>
+              <Text style={styles.qrHint}>Customers can scan this to find your business</Text>
               <TouchableOpacity style={styles.shareBtn} onPress={handleShareQr}>
                 <MaterialIcons name="share" size={16} color={Colors.lightBlue} />
                 <Text style={styles.shareBtnText}>Share Link</Text>

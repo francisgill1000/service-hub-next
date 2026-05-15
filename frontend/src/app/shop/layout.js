@@ -26,7 +26,6 @@ const SHOP_NAV_ITEMS = [
 function SidebarContent({ shop, pathname, bookingCount, onItemClick, onLogout, onClose }) {
   return (
     <>
-      {/* Shop identity */}
       <div className="flex items-center gap-3 p-5 border-b border-brand-sidebarborder">
         <div
           className="size-10 rounded-full border-2 border-brand-accent/60 bg-slate-300 bg-cover bg-center shrink-0"
@@ -131,7 +130,7 @@ export default function ShopLayout({ children }) {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
-      {/* MOBILE TOP BAR — replaces the global Header on shop routes */}
+      {/* MOBILE TOP BAR — replaces the global Header on business routes */}
       <header className="md:hidden sticky top-0 z-40 bg-brand-sidebar border-b border-brand-sidebarborder px-4 py-3 flex items-center gap-3">
         <button
           type="button"

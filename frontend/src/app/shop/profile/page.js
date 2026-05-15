@@ -146,7 +146,7 @@ export default function ShopProfile() {
             const response = await api.put(`/shops/${shop.id}`, payload);
             console.log('API Response:', response?.data);
 
-            // Prefer API response; fallback to merging old shop with payload
+            // Prefer API response; fallback to merging old business with payload
             let updatedShop;
             if (response?.data?.shop) {
                 updatedShop = response.data.shop;
@@ -288,8 +288,8 @@ export default function ShopProfile() {
 
                 {/* Page heading */}
                 <div className="mb-6">
-                    <h2 className="text-2xl font-black text-brand-text tracking-tight">Shop Profile</h2>
-                    <p className="text-brand-muted font-semibold mt-1 text-sm">Manage your shop identity and public information.</p>
+                    <h2 className="text-2xl font-black text-brand-text tracking-tight">Business Profile</h2>
+                    <p className="text-brand-muted font-semibold mt-1 text-sm">Manage your business identity and public information.</p>
                 </div>
 
                 {/* Hero / Cover */}
@@ -410,9 +410,8 @@ export default function ShopProfile() {
 
                     {/* Right: Credentials + QR */}
                     <div className="space-y-4">
-                        {/* Shop Code */}
                         <div className="bg-brand-surface rounded-xl p-5">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">Shop Code</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-3">Business Code</p>
                             <div className="flex items-center justify-between">
                                 <span className="font-mono font-black text-2xl text-brand-primary tracking-widest">{shop.shop_code || '—'}</span>
                                 <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center">
@@ -434,9 +433,9 @@ export default function ShopProfile() {
 
                         {/* QR Code */}
                         <div className="bg-brand-surface rounded-xl p-6 flex flex-col items-center text-center">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-4">Shop QR Code</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-4">Business QR Code</p>
                             <div className="p-3 bg-white rounded-xl shadow-lg shadow-black/30 mb-4">
-                                <img src={qrImageUrl} alt="shop-qr" className="w-40 h-40 object-contain" />
+                                <img src={qrImageUrl} alt="business-qr" className="w-40 h-40 object-contain" />
                             </div>
                             <div className="w-full flex gap-2">
                                 <button

@@ -111,22 +111,27 @@ export default function StaffList() {
         {/* Add form */}
         <form
           onSubmit={addStaff}
-          className="bg-brand-surface rounded-xl p-4 md:p-5 border border-brand-border/20 flex flex-col sm:flex-row gap-3"
+          className="bg-brand-surface rounded-2xl p-5 md:p-6 border border-brand-border/20 space-y-3"
         >
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="New staff name (e.g. Ali)"
-            className="flex-1 min-w-0 h-12 sm:h-11 bg-brand-bg border border-brand-border/40 rounded-xl px-4 text-base sm:text-sm font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
-          />
-          <button
-            type="submit"
-            disabled={adding || !newName.trim()}
-            className="h-12 sm:h-11 px-5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 text-base sm:text-sm font-black text-white whitespace-nowrap shrink-0"
-          >
-            {adding ? "Adding…" : "Add staff"}
-          </button>
+          <label className="block text-[11px] font-black uppercase tracking-widest text-brand-muted">
+            Add new staff
+          </label>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Staff name (e.g. Ali)"
+              className="flex-1 min-w-0 h-14 bg-brand-bg border border-brand-border/40 rounded-xl px-5 text-base font-semibold text-brand-text placeholder:text-brand-muted focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/40 outline-none"
+            />
+            <button
+              type="submit"
+              disabled={adding || !newName.trim()}
+              className="h-14 px-6 rounded-xl bg-brand-primary hover:bg-brand-primary/90 disabled:bg-brand-muted disabled:opacity-70 text-base font-black text-white whitespace-nowrap shrink-0 transition-all"
+            >
+              {adding ? "Adding…" : "Add staff"}
+            </button>
+          </div>
         </form>
 
         {/* List */}

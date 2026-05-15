@@ -113,7 +113,7 @@ export default function CatalogsScreen() {
           <Text style={styles.headerSubtitle}>
             {catalogs.length > 0
               ? `${catalogs.length} service${catalogs.length !== 1 ? 's' : ''} listed`
-              : 'Manage the services your shop offers.'}
+              : 'Manage the services your business offers.'}
           </Text>
         </View>
         <TouchableOpacity

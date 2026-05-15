@@ -76,7 +76,7 @@ const CatalogList = () => {
             <p className="text-brand-muted font-semibold mt-1 text-sm">
               {catalogs.length > 0
                 ? `${catalogs.length} service${catalogs.length !== 1 ? 's' : ''} listed`
-                : 'Manage the services your shop offers.'}
+                : 'Manage the services your business offers.'}
             </p>
           </div>
           <button

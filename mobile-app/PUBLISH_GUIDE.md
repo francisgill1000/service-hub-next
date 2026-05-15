@@ -77,19 +77,19 @@ eas build --platform android --profile production
 | **App category** | Business or Lifestyle |
 
 #### Short description example:
-> Book local services, manage your shop, and track appointments instantly.
+> Book local services, manage your business, and track appointments instantly.
 
 #### Full description example:
 > Rezzy powered by Eloquent — your all-in-one service booking platform.
 >
 > For Customers:
-> - Discover local shops and service providers nearby
+> - Discover local businesses and service providers nearby
 > - Book appointments with a few taps
-> - Track your bookings and favourite shops
-> - Find shops using GPS-based location search
+> - Track your bookings and favourite businesses
+> - Find businesses using GPS-based location search
 >
 > For Business Owners:
-> - Manage your shop profile, services, and working hours
+> - Manage your business profile, services, and working hours
 > - View and manage all bookings from a single dashboard
 > - Track revenue and booking statistics
 > - QR code login for seamless desktop-mobile authentication
@@ -98,7 +98,7 @@ eas build --platform android --profile production
 > - Dark-themed modern interface
 > - Biometric login support (fingerprint/face)
 > - Real-time booking management
-> - Image uploads for shop logos and service catalogs
+> - Image uploads for business logos and service catalogs
 > - Remember me & saved credentials
 
 ### 4d. Content Rating
@@ -113,9 +113,9 @@ Declare what data your app collects:
 |---|---|---|---|
 | Email address | Yes | No | Account login |
 | Name | Yes | No | Account profile |
-| Location | Yes | No | Finding nearby shops |
+| Location | Yes | No | Finding nearby businesses |
 | Device ID | Yes | No | Booking tracking |
-| Photos | Yes | No | Shop image uploads |
+| Photos | Yes | No | Business image uploads |
 
 ---
 

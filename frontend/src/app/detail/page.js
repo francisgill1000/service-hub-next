@@ -11,7 +11,7 @@ const DetailPageLoader = () => (
     <div className="relative flex h-screen w-full flex-col overflow-x-hidden items-center justify-center">
         <div className="text-center">
             <div className="animate-spin inline-block w-8 h-8 border-4 border-white/20 border-t-primary rounded-full mb-4"></div>
-            <p className="text-gray-400 text-sm">Loading shop details...</p>
+            <p className="text-gray-400 text-sm">Loading business details...</p>
         </div>
     </div>
 );
@@ -77,7 +77,6 @@ function DetailPageContent() {
                 date: formatLocalDate(selectedDate)
             }
         }).then(res => {
-            console.log("Shop data:", res.data);
             // Handle both response structures: {data: {...}} or direct object
             const shopData = res.data.data || res.data;
             // Ensure catalogs is an array
@@ -86,7 +85,7 @@ function DetailPageContent() {
             }
             setShop(shopData);
         }).catch(err => {
-            console.error("Error fetching shop:", err);
+            console.error("Error fetching business:", err);
             setShop(null);
         });
     }, [shopId, selectedDate]);

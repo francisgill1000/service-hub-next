@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useShop } from "@/context/ShopContext";
+import InsightsCustomersTab from "@/components/Shop/Insights/InsightsCustomersTab";
 
 const TABS = [
   { key: "customers", label: "Customers", icon: "group" },
@@ -64,9 +65,7 @@ export default function InsightsPage() {
           {!shop?.id && (
             <p className="text-brand-muted text-sm font-semibold">Loading shop…</p>
           )}
-          {shop?.id && activeTab === "customers" && (
-            <div className="text-brand-muted text-sm font-semibold p-8 text-center">Customers tab coming in Task 3.</div>
-          )}
+          {shop?.id && activeTab === "customers" && <InsightsCustomersTab />}
           {shop?.id && activeTab === "reminders" && (
             <div className="text-brand-muted text-sm font-semibold p-8 text-center">Reminders tab coming in Task 5–6.</div>
           )}

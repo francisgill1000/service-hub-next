@@ -9,6 +9,20 @@
   .mobile-app { border-left: none; border-right: none; }
 }
 
+/* Pin the bottom nav to the viewport, constrained to the app column */
+.m-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+}
+/* Reserve space so scroll content isn't hidden behind the fixed tab bar */
+.m-scroll {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
 /* Generic page scaffold reuse */
 .c-page { display: flex; flex-direction: column; height: 100%; }
 

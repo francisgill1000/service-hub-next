@@ -28,7 +28,8 @@
 .c-shop-card {
   display: flex; gap: 14px; background: var(--surface-1);
   border: 1px solid var(--border-1); border-radius: var(--r-lg);
-  padding: 14px; margin: 0 16px 12px; cursor: pointer; text-align: left;
+  padding: 14px; margin: 0 0 12px; cursor: pointer; text-align: left;
+  width: 100%; box-sizing: border-box;
 }
 .c-shop-card .thumb {
   width: 90px; height: 90px; border-radius: var(--r-md);

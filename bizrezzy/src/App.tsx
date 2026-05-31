@@ -1,3 +1,49 @@
+import { Routes, Route } from 'react-router-dom';
+import { ShopProvider } from '@/context/ShopContext';
+import { MobileLayout } from '@/layout/MobileLayout';
+import { RequireShop } from '@/layout/RequireShop';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import ForgotPin from '@/pages/ForgotPin';
+import ScanApprove from '@/pages/ScanApprove';
+import Dashboard from '@/pages/Dashboard';
+import Bookings from '@/pages/Bookings';
+import BookingAction from '@/pages/BookingAction';
+import Reminders from '@/pages/Reminders';
+import Services from '@/pages/Services';
+import ServiceEdit from '@/pages/ServiceEdit';
+import Staff from '@/pages/Staff';
+import WorkingHours from '@/pages/WorkingHours';
+import Profile from '@/pages/Profile';
+
 export default function App() {
-  return <div>bizrezzy</div>;
+  return (
+    <ShopProvider>
+      <Routes>
+        {/* Public / full-screen */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-pin" element={<ForgotPin />} />
+        <Route path="/scan/:token" element={<ScanApprove />} />
+
+        {/* Authenticated full-screen */}
+        <Route element={<RequireShop />}>
+          <Route path="/booking/:id" element={<BookingAction />} />
+          <Route path="/services/new" element={<ServiceEdit />} />
+          <Route path="/services/:id/edit" element={<ServiceEdit />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/working-hours" element={<WorkingHours />} />
+
+          {/* Authenticated tabbed */}
+          <Route element={<MobileLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/bookings" element={<Bookings />} />
+            <Route path="/reminders" element={<Reminders />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+        </Route>
+      </Routes>
+    </ShopProvider>
+  );
 }

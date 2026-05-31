@@ -151,3 +151,33 @@
 
 /* Floating account/back actions */
 .c-back { display: inline-flex; align-items: center; gap: 4px; color: var(--text-3); background: none; border: none; font-size: 14px; cursor: pointer; padding: 8px 0; }
+
+/* ---- Provider (bizrezzy) ---- */
+.c-icon-btn { width: 36px; height: 36px; border-radius: 12px; background: var(--surface-1); border: 1px solid var(--border-1); display: grid; place-items: center; color: var(--text-2); cursor: pointer; }
+
+.c-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 16px 4px; }
+.c-stat { background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); padding: 14px; }
+.c-stat-label { color: var(--text-3); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.c-stat-value { color: var(--text-1); font-size: 22px; font-weight: 800; margin-top: 6px; }
+
+.c-section-title { color: var(--text-2); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 20px 16px 10px; }
+
+.c-row-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 14px 16px; background: none; border: none; color: var(--text-1); cursor: pointer; text-align: left; }
+.c-row-title { font-size: 15px; font-weight: 600; color: var(--text-1); }
+.c-row-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+
+.c-booking-card { display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer; text-align: left; }
+
+.c-list-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border-1); }
+.c-list-row:first-child { border-top: none; }
+
+.c-chip { display: inline-block; padding: 3px 10px; border-radius: var(--r-pill); font-size: 11px; font-weight: 700; text-transform: capitalize; }
+.c-chip-booked { background: var(--info-soft); color: var(--info); }
+.c-chip-completed { background: var(--mint-soft); color: var(--mint-300); }
+.c-chip-cancelled { background: var(--danger-soft); color: var(--danger); }
+.c-chip-pending { background: var(--warn-soft); color: var(--warn); }
+
+.c-day-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border-1); }
+.c-day-row:first-child { border-top: none; }
+.c-day-name { width: 96px; font-weight: 600; font-size: 14px; }
+.c-time-input { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--text-1); padding: 6px 8px; font-size: 13px; }

@@ -1,0 +1,153 @@
+/* Responsive shell: full-bleed on phones, centered ~480px column on desktop */
+.mobile-app {
+  max-width: 480px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border-1);
+  border-right: 1px solid var(--border-1);
+}
+@media (max-width: 480px) {
+  .mobile-app { border-left: none; border-right: none; }
+}
+
+/* Pin the bottom nav to the viewport, constrained to the app column.
+   Centered with auto margins (not transform) — a transformed fixed element
+   combined with backdrop-filter corrupts the GPU layer on Android/Samsung. */
+.m-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 480px;
+}
+/* Reserve space so scroll content isn't hidden behind the fixed tab bar */
+.m-scroll {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Generic page scaffold reuse */
+.c-page { display: flex; flex-direction: column; height: 100%; }
+
+/* Search bar (reuses m-history-search look) */
+.c-search {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface-1); border: 1px solid var(--border-1);
+  border-radius: var(--r-lg); padding: 0 14px; height: 48px;
+  margin: 4px 16px 12px; color: var(--text-3);
+}
+.c-search input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text-1); font-size: 15px; height: 100%;
+}
+
+/* Shop card */
+.c-shop-card {
+  display: flex; gap: 14px; background: var(--surface-1);
+  border: 1px solid var(--border-1); border-radius: var(--r-lg);
+  padding: 14px; margin: 0 0 12px; cursor: pointer; text-align: left;
+  width: 100%; box-sizing: border-box;
+}
+.c-shop-card .thumb {
+  width: 90px; height: 90px; border-radius: var(--r-md);
+  background: var(--surface-3); object-fit: cover; flex-shrink: 0;
+}
+.c-shop-card .body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.c-shop-card .top { display: flex; justify-content: space-between; align-items: center; }
+.c-open { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mint-400); }
+.c-open.closed { color: var(--warn); }
+.c-fav { background: none; border: none; cursor: pointer; color: var(--text-4); display: inline-flex; }
+.c-fav.on { color: var(--mint-400); }
+.c-shop-name { font-size: 16px; font-weight: 700; color: var(--text-1); margin-top: 2px; }
+.c-code-pill {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 3px;
+  background: var(--mint-soft); border: 1px solid var(--border-mint);
+  color: var(--mint-300); font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--r-xs); margin-top: 4px;
+}
+.c-shop-meta { font-size: 11px; color: var(--text-3); font-weight: 600; margin-top: 4px; display: flex; gap: 8px; }
+.c-shop-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.c-hours { font-size: 12px; color: var(--text-2); }
+
+/* Buttons */
+.c-btn {
+  background: var(--mint-500); color: #04140f; border: none;
+  font-weight: 700; border-radius: var(--r-pill); padding: 8px 16px;
+  font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.03em;
+}
+.c-btn-block {
+  width: 100%; height: 54px; border-radius: var(--r-lg); font-size: 15px;
+  text-transform: none; letter-spacing: 0; display: inline-flex;
+  align-items: center; justify-content: center; gap: 8px;
+}
+.c-btn:disabled { opacity: 0.6; cursor: default; }
+.c-btn-ghost {
+  background: var(--surface-1); border: 1px solid var(--border-1);
+  color: var(--text-2); border-radius: var(--r-lg); padding: 12px 20px;
+  font-weight: 600; cursor: pointer;
+}
+
+/* Status pill */
+.c-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 10px; border-radius: var(--r-pill); }
+.c-status.booked { color: var(--info); background: var(--info-soft); }
+.c-status.completed { color: var(--mint-300); background: var(--mint-soft); }
+.c-status.cancelled { color: var(--text-3); background: var(--neutral-soft); }
+
+/* Forms */
+.c-field-label { font-size: 10px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin: 0 0 8px 4px; }
+.c-input-row {
+  display: flex; align-items: center; gap: 10px; background: var(--surface-1);
+  border: 1px solid var(--border-1); border-radius: var(--r-lg);
+  height: 54px; padding: 0 16px; margin-bottom: 18px;
+}
+.c-input-row input { flex: 1; background: none; border: none; outline: none; color: var(--text-1); font-size: 15px; height: 100%; }
+.c-error-box { background: var(--danger-soft); border: 1px solid rgba(248,113,113,0.25); border-radius: var(--r-md); padding: 12px; margin-bottom: 16px; color: var(--danger); font-size: 13px; text-align: center; }
+.c-auth { padding: 24px; max-width: 480px; margin: 0 auto; }
+.c-auth-title { font-size: 26px; font-weight: 800; text-align: center; margin: 8px 0; }
+.c-auth-sub { font-size: 14px; color: var(--text-3); text-align: center; margin-bottom: 28px; }
+.c-link { color: var(--mint-300); }
+.c-muted-center { text-align: center; color: var(--text-3); font-size: 14px; margin-top: 22px; }
+
+/* Date strip + slots (ShopDetail) */
+.c-date-strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 12px; }
+.c-date-strip::-webkit-scrollbar { display: none; }
+.c-date-cell {
+  flex: 0 0 auto; width: 54px; padding: 8px 0; border-radius: var(--r-md);
+  background: var(--surface-1); border: 1px solid var(--border-1);
+  text-align: center; cursor: pointer; color: var(--text-2);
+}
+.c-date-cell.active { background: var(--mint-500); color: #04140f; border-color: transparent; }
+.c-date-cell .dow { font-size: 10px; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
+.c-date-cell .dnum { font-size: 17px; font-weight: 800; }
+.c-slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 16px; }
+.c-slot { padding: 10px 0; border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--border-1); color: var(--text-2); font-size: 13px; font-weight: 600; cursor: pointer; }
+.c-slot.active { background: var(--mint-500); color: #04140f; border-color: transparent; }
+
+/* Service rows */
+.c-service { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-1); cursor: pointer; }
+.c-service.on { background: var(--mint-soft); }
+.c-service .price { color: var(--mint-300); font-weight: 700; }
+
+/* Detail card */
+.c-card { background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); padding: 16px; margin: 0 16px 12px; }
+.c-row { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--border-1); }
+.c-row:first-of-type { border-top: none; }
+.c-row .k { color: var(--text-3); font-size: 13px; }
+.c-row .v { color: var(--text-1); font-size: 13px; font-weight: 600; text-align: right; }
+
+/* Sticky booking footer */
+.c-book-bar {
+  position: sticky; bottom: 0; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(0deg, var(--bg-1) 70%, transparent);
+  display: flex; align-items: center; gap: 12px;
+}
+.c-book-bar .total { font-size: 18px; font-weight: 800; }
+
+/* Avatar (account) */
+.c-avatar { width: 84px; height: 84px; border-radius: 26px; background: var(--mint-soft); border: 2px solid var(--border-mint); color: var(--mint-300); display: grid; place-items: center; font-size: 26px; font-weight: 800; margin: 24px auto 12px; }
+
+/* WhatsApp button */
+.c-wa { width: 36px; height: 36px; border-radius: 12px; background: var(--surface-1); border: 1px solid var(--border-1); display: grid; place-items: center; color: var(--mint-400); cursor: pointer; }
+
+/* Floating account/back actions */
+.c-back { display: inline-flex; align-items: center; gap: 4px; color: var(--text-3); background: none; border: none; font-size: 14px; cursor: pointer; padding: 8px 0; }

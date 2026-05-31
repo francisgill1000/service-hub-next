@@ -57,7 +57,11 @@ export type Booking = {
   charges?: number | string;
   booking_reference?: string;
   reminder_sent?: boolean;
+  reminder_sent_at?: string | null;
   customer_name?: string;
+  customer_whatsapp?: string;
+  staff_id?: number | null;
+  shop_id?: number;
   customer?: { name?: string; phone?: string };
   staff?: StaffMember | null;
   shop?: { id?: number; name?: string; location?: string };

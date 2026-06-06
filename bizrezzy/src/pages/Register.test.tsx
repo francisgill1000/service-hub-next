@@ -44,4 +44,14 @@ describe('Register', () => {
     expect(spy).not.toHaveBeenCalled();
     expect(screen.getByText(/business name is required/i)).toBeInTheDocument();
   });
+
+  it('blocks submit without a phone number', async () => {
+    const spy = vi.spyOn(shops, 'registerShop').mockResolvedValue({});
+    render(<MemoryRouter><ShopProvider><Register /></ShopProvider></MemoryRouter>);
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText(/business name/i), 'Acme Salon');
+    await user.click(screen.getByRole('button', { name: /register business/i }));
+    expect(spy).not.toHaveBeenCalled();
+    expect(screen.getByText(/phone number is required/i)).toBeInTheDocument();
+  });
 });

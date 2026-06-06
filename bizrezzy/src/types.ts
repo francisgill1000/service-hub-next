@@ -117,5 +117,7 @@ export type WaMessage = {
   type?: string;
   body: string;
   status?: string | null;
+  media_url?: string | null;
+  media_mime?: string | null;
   created_at?: string;
 };

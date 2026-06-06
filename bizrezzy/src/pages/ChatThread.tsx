@@ -127,12 +127,18 @@ export default function ChatThread() {
         ) : messages.length === 0 ? (
           <p className="c-thread-empty">No messages yet.</p>
         ) : (
-          messages.map((m) => (
-            <div key={m.id} className={`c-bubble ${m.direction === 'out' ? 'out' : 'in'}`}>
-              <span className="c-bubble-text">{m.body}</span>
-              <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
-            </div>
-          ))
+          messages.map((m) => {
+            const isAudio = !!m.media_url && (m.type === 'audio' || m.type === 'voice');
+            const isImage = !!m.media_url && m.type === 'image';
+            return (
+              <div key={m.id} className={`c-bubble ${m.direction === 'out' ? 'out' : 'in'}`}>
+                {isAudio && <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />}
+                {isImage && <img src={m.media_url!} alt="" className="c-bubble-img" loading="lazy" />}
+                {((!isAudio && !isImage) || !m.body.startsWith('[')) && <span className="c-bubble-text">{m.body}</span>}
+                <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
+              </div>
+            );
+          })
         )}
       </div>
 

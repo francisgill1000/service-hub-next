@@ -40,6 +40,24 @@ describe('ChatThread', () => {
     expect(read).toHaveBeenCalledWith(5);
   });
 
+  it('renders an audio player for voice notes and transcript text', async () => {
+    vi.spyOn(chatsLib, 'getWaContacts').mockResolvedValue({
+      connected: true,
+      data: [{ id: 5, wa_number: '971501112222', name: 'Ali', unread_count: 0 }],
+    });
+    vi.spyOn(chatsLib, 'getWaMessages').mockResolvedValue([
+      { id: 1, direction: 'in', type: 'audio', body: '[audio message]', media_url: 'https://api.example/storage/wa-media/1/m1.ogg', created_at: '2026-06-07T10:00:00Z' },
+      { id: 2, direction: 'in', type: 'audio', body: '🎤 book me for tomorrow', media_url: 'https://api.example/storage/wa-media/1/m2.ogg', created_at: '2026-06-07T10:01:00Z' },
+    ]);
+    vi.spyOn(chatsLib, 'markWaRead').mockResolvedValue();
+
+    const { container } = setup();
+    expect(await screen.findByText(/book me for tomorrow/)).toBeInTheDocument();
+    expect(container.querySelectorAll('audio')).toHaveLength(2);
+    // raw placeholder is hidden when we have a player
+    expect(screen.queryByText('[audio message]')).not.toBeInTheDocument();
+  });
+
   it('sends a reply', async () => {
     vi.spyOn(chatsLib, 'getWaContacts').mockResolvedValue({
       connected: true,

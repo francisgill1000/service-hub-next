@@ -314,3 +314,7 @@
 /* Category select */
 .c-input-row select { flex: 1; background: none; border: none; outline: none; color: var(--text-1); font-size: 15px; height: 100%; appearance: none; cursor: pointer; }
 .c-input-row select option { background: var(--surface-2); color: var(--text-1); }
+
+/* Chat media bubbles */
+.c-bubble-audio { width: min(240px, 62vw); height: 40px; }
+.c-bubble-img { max-width: min(240px, 62vw); border-radius: 10px; display: block; }

@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AppBar } from '@/layout/AppBar';
 import { Spinner } from '@/components/Spinner';
 import { EmptyState } from '@/components/EmptyState';
 import { Icons } from '@/components/Icons';
@@ -23,14 +22,13 @@ function dateOf(b: Booking): string {
   return String(b.date ?? '').slice(0, 10);
 }
 
-const QUICK_ACTIONS: { label: string; sub: string; to: string }[] = [
-  { label: 'All Bookings', sub: 'View & manage', to: '/bookings' },
-  { label: 'Chats', sub: 'WhatsApp conversations', to: '/chats' },
-  // Reminders hidden for now — page still lives at /reminders.
-  { label: 'Staff', sub: 'Add & toggle staff', to: '/staff' },
-  { label: 'Services', sub: 'Add or edit', to: '/services' },
-  { label: 'Working Hours', sub: 'Set open & close', to: '/working-hours' },
-  { label: 'Business Profile', sub: 'Edit info & images', to: '/profile' },
+const QUICK_ACTIONS: { label: string; to: string; icon: keyof typeof Icons }[] = [
+  { label: 'Bookings', to: '/bookings', icon: 'Calendar' },
+  { label: 'Chats', to: '/chats', icon: 'Chat' },
+  { label: 'Staff', to: '/staff', icon: 'Users' },
+  { label: 'Services', to: '/services', icon: 'Grid' },
+  { label: 'Hours', to: '/working-hours', icon: 'Clock' },
+  { label: 'Profile', to: '/profile', icon: 'Store' },
 ];
 
 export default function Dashboard() {
@@ -97,57 +95,77 @@ export default function Dashboard() {
     .slice(0, 5);
 
   return (
-    <div className="m-screen">
-      <AppBar
-        title={shop?.name ?? 'Dashboard'}
-        sub={shop?.is_open ? '● Open Now' : '● Closed'}
-        actions={
-          <button className="c-icon-btn" aria-label="Log out" onClick={() => { logoutShop(); navigate('/login'); }}>
-            <Icons.Logout size={20} />
-          </button>
-        }
-      />
+    <div className="m-screen c-dash">
       <div className="m-scroll">
-        {error && <div className="c-error-box">{error}</div>}
-
-        <div className="c-stat-grid">
-          <div className="c-stat"><div className="c-stat-label">Total Bookings</div><div className="c-stat-value">{totalBookings ?? '—'}</div></div>
-          <div className="c-stat"><div className="c-stat-label">Total Revenue</div><div className="c-stat-value">{totalRevenue != null ? `AED ${totalRevenue.toLocaleString()}` : '—'}</div></div>
-          <div className="c-stat"><div className="c-stat-label">Today</div><div className="c-stat-value">{todayCount}</div></div>
-          <div className="c-stat"><div className="c-stat-label">Completed</div><div className="c-stat-value">{completedCount}</div></div>
+        {/* Greeting header */}
+        <div className="c-dash-head">
+          <div className="c-dash-orb">
+            {shop?.logo
+              ? <img src={shop.logo} alt="" />
+              : (Array.from(shop?.name || '?')[0] || '?').toUpperCase()}
+          </div>
+          <div className="c-dash-head-text">
+            <div className="c-dash-name">{shop?.name ?? 'Dashboard'}</div>
+            <div className="c-dash-status">
+              <span className={`c-live-dot${shop?.is_open ? '' : ' off'}`} />
+              {shop?.is_open ? 'Open now' : 'Closed'}
+            </div>
+          </div>
+          <button className="c-icon-btn" aria-label="Log out" onClick={() => { logoutShop(); navigate('/login'); }}>
+            <Icons.Logout size={18} />
+          </button>
         </div>
 
-        <div className="c-section-title">Quick Actions</div>
-        <div className="c-card" style={{ padding: 0 }}>
-          {QUICK_ACTIONS.map((a, i) => (
-            <Link key={a.to} to={a.to} className="c-row-link" style={{ borderBottom: i < QUICK_ACTIONS.length - 1 ? '1px solid var(--border-1)' : 'none' }}>
-              <div>
-                <div className="c-row-title">{a.label}</div>
-                <div className="c-row-sub">{a.sub}</div>
-              </div>
-              <Icons.Chevron size={18} />
-            </Link>
-          ))}
+        {error && <div className="c-error-box" style={{ margin: '0 16px 12px' }}>{error}</div>}
+
+        {/* Hero revenue card */}
+        <div className="c-hero-stat">
+          <div className="c-hero-label">Total revenue</div>
+          <div className="c-hero-value">{totalRevenue != null ? `AED ${totalRevenue.toLocaleString()}` : '—'}</div>
+          <div className="c-hero-foot">{totalBookings ?? '—'} bookings all time</div>
         </div>
 
-        <div className="c-section-title">Upcoming Bookings</div>
+        {/* Mini stats */}
+        <div className="c-mini-stats">
+          <div className="c-mini"><span className="v">{todayCount}</span><span className="k">Today</span></div>
+          <div className="c-mini"><span className="v">{completedCount}</span><span className="k">Completed</span></div>
+          <div className="c-mini"><span className="v">{totalBookings ?? '—'}</span><span className="k">Bookings</span></div>
+        </div>
+
+        {/* Quick actions */}
+        <div className="c-section-title">Quick actions</div>
+        <div className="c-qa-grid">
+          {QUICK_ACTIONS.map((a) => {
+            const Icon = Icons[a.icon];
+            return (
+              <Link key={a.to} to={a.to} className="c-qa-tile">
+                <span className="c-qa-ic"><Icon size={18} /></span>
+                <span>{a.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="c-section-title">Upcoming bookings</div>
         {loading ? (
           <Spinner label="Loading bookings…" />
         ) : upcoming.length > 0 ? (
           upcoming.map((b) => {
             const name = b.customer?.name || b.customer_name || 'Guest';
             const services = b.services?.map((s) => s.title || s.name).filter(Boolean).join(', ') || 'Service';
+            const isToday = dateOf(b) === todayISO;
+            const when = b.start_time ? formatTime(b.start_time) : (b.show_date ?? 'TBD');
             return (
-              <button key={b.id} className="c-card c-booking-card" onClick={() => navigate(`/booking/${b.id}`)}>
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <div className="c-row-title">{name}</div>
-                  <div className="c-row-sub">{services}</div>
-                  <div className="c-row-sub"><Icons.Clock size={12} /> {b.start_time ? formatTime(b.start_time) : (b.show_date ?? 'TBD')}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div className="c-row-title">AED {b.charges ?? 0}</div>
-                  <Icons.Chevron size={16} />
-                </div>
+              <button key={b.id} className="c-up-row" onClick={() => navigate(`/booking/${b.id}`)}>
+                <span className="c-up-time">
+                  {isToday ? 'Today' : dateOf(b).slice(5).replace('-', '/')}
+                  <em>{when}</em>
+                </span>
+                <span className="c-up-body">
+                  <span className="c-up-name">{name}</span>
+                  <span className="c-up-sub">{services}</span>
+                </span>
+                <span className="c-up-price">AED {b.charges ?? 0}</span>
               </button>
             );
           })

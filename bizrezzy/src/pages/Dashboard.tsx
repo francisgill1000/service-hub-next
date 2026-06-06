@@ -6,6 +6,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
 import { getShopBookings } from '@/lib/bookings';
+import { getWaAccount } from '@/lib/chats';
+import { storage } from '@/lib/storage';
 import { formatLocalDate } from '@/lib/date';
 import type { Booking } from '@/types';
 
@@ -23,6 +25,7 @@ function dateOf(b: Booking): string {
 
 const QUICK_ACTIONS: { label: string; sub: string; to: string }[] = [
   { label: 'All Bookings', sub: 'View & manage', to: '/bookings' },
+  { label: 'Chats', sub: 'WhatsApp conversations', to: '/chats' },
   { label: 'Reminders', sub: "Tomorrow's WhatsApp nudges", to: '/reminders' },
   { label: 'Staff', sub: 'Add & toggle staff', to: '/staff' },
   { label: 'Services', sub: 'Add or edit', to: '/services' },
@@ -38,6 +41,20 @@ export default function Dashboard() {
   const [totalRevenue, setTotalRevenue] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // One-time onboarding nudge: after first login, offer WhatsApp setup.
+  useEffect(() => {
+    if (!shop?.id || storage.get('wa_setup_prompted')) return;
+    let alive = true;
+    getWaAccount()
+      .then((acc) => {
+        if (!alive) return;
+        storage.set('wa_setup_prompted', '1');
+        if (!acc.connected) navigate('/chats/setup');
+      })
+      .catch(() => undefined);
+    return () => { alive = false; };
+  }, [shop?.id, navigate]);
 
   const fetchData = useCallback(async () => {
     if (!shop?.id) return;

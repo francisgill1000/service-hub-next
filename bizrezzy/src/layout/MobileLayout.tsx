@@ -6,6 +6,7 @@ type Tab = { id: string; label: string; href: string; icon: keyof typeof Icons }
 const tabs: Tab[] = [
   { id: 'home', label: 'Home', href: '/', icon: 'Home' },
   { id: 'bookings', label: 'Bookings', href: '/bookings', icon: 'Calendar' },
+  { id: 'chats', label: 'Chats', href: '/chats', icon: 'Chat' },
   { id: 'reminders', label: 'Reminders', href: '/reminders', icon: 'Bell' },
   { id: 'services', label: 'Services', href: '/services', icon: 'Grid' },
   { id: 'profile', label: 'Profile', href: '/profile', icon: 'Store' },
@@ -14,6 +15,7 @@ const tabs: Tab[] = [
 function activeTab(path: string): string {
   if (path === '/') return 'home';
   if (path.startsWith('/bookings') || path.startsWith('/booking')) return 'bookings';
+  if (path.startsWith('/chats')) return 'chats';
   if (path.startsWith('/reminders')) return 'reminders';
   if (path.startsWith('/services')) return 'services';
   if (path.startsWith('/profile') || path.startsWith('/staff') || path.startsWith('/working-hours')) return 'profile';

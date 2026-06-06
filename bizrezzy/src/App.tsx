@@ -15,6 +15,9 @@ import ServiceEdit from '@/pages/ServiceEdit';
 import Staff from '@/pages/Staff';
 import WorkingHours from '@/pages/WorkingHours';
 import Profile from '@/pages/Profile';
+import Chats from '@/pages/Chats';
+import ChatThread from '@/pages/ChatThread';
+import WhatsAppSetup from '@/pages/WhatsAppSetup';
 
 export default function App() {
   return (
@@ -33,11 +36,14 @@ export default function App() {
           <Route path="/services/:id/edit" element={<ServiceEdit />} />
           <Route path="/staff" element={<Staff />} />
           <Route path="/working-hours" element={<WorkingHours />} />
+          <Route path="/chats/setup" element={<WhatsAppSetup />} />
+          <Route path="/chats/:id" element={<ChatThread />} />
 
           {/* Authenticated tabbed */}
           <Route element={<MobileLayout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/chats" element={<Chats />} />
             <Route path="/reminders" element={<Reminders />} />
             <Route path="/services" element={<Services />} />
             <Route path="/profile" element={<Profile />} />

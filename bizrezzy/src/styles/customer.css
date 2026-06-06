@@ -181,3 +181,126 @@
 .c-day-row:first-child { border-top: none; }
 .c-day-name { width: 96px; font-weight: 600; font-size: 14px; }
 .c-time-input { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--text-1); padding: 6px 8px; font-size: 13px; }
+
+/* Profile media (logo + cover) */
+.c-hero-pick {
+  position: relative; display: block; width: 100%; height: 150px;
+  border-radius: var(--r-lg); overflow: hidden; cursor: pointer;
+  background: var(--surface-1); border: 1px solid var(--border-1); padding: 0;
+}
+.c-hero-pick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.c-hero-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 100%; color: var(--text-3); border: 1px dashed var(--border-3); border-radius: var(--r-lg); }
+.c-hero-empty span { font-size: 12px; font-weight: 600; }
+.c-media-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.55); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: var(--r-sm); }
+.c-logo-pick {
+  position: relative; width: 76px; height: 76px; border-radius: 24px; overflow: hidden;
+  margin: -38px 0 0 20px; cursor: pointer; padding: 0;
+  background: var(--surface-2); border: 3px solid var(--bg-0);
+}
+.c-logo-pick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.c-logo-empty { display: grid; place-items: center; height: 100%; color: var(--mint-300); background: var(--mint-soft); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+.c-logo-cam { position: absolute; bottom: -2px; right: -2px; width: 26px; height: 26px; border-radius: 13px; background: var(--mint-500); color: #04140f; display: grid; place-items: center; border: 2px solid var(--bg-0); }
+
+/* Credential cards (business code + PIN) */
+.c-cred-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 12px; }
+.c-cred { background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); padding: 14px; }
+.c-cred-label { color: var(--text-3); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+.c-cred-value-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.c-cred-value { font-family: var(--font-mono); font-weight: 800; font-size: 19px; color: var(--text-1); letter-spacing: 1px; }
+.c-cred-icon { width: 32px; height: 32px; border-radius: 10px; background: var(--mint-soft); color: var(--mint-300); display: grid; place-items: center; flex: 0 0 auto; }
+
+/* QR code section */
+.c-qr-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.c-qr-frame { background: #fff; border-radius: var(--r-lg); padding: 14px; line-height: 0; margin-bottom: 12px; }
+.c-qr-hint { color: var(--text-3); font-size: 12px; margin-bottom: 14px; }
+.c-qr-actions { display: flex; gap: 10px; width: 100%; }
+.c-qr-actions .c-btn-ghost { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; font-size: 13px; }
+
+/* Service catalog cards */
+.c-svc-card { background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); overflow: hidden; margin: 0 16px 12px; }
+.c-svc-media { position: relative; width: 100%; height: 160px; background: var(--surface-2); }
+.c-svc-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.c-svc-media-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 100%; color: var(--text-4); }
+.c-svc-media-empty span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.c-svc-price { position: absolute; bottom: 8px; left: 8px; background: rgba(5,7,10,0.78); border: 1px solid var(--border-mint); color: var(--mint-300); font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: var(--r-md); }
+.c-svc-body { padding: 12px 14px 0; }
+.c-svc-actions { display: flex; gap: 8px; padding: 12px 14px; }
+.c-svc-actions .c-btn-ghost { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-size: 12px; }
+
+/* Page intro (sub-pages under a back button) */
+.c-page-head { padding: 0 16px 4px; }
+.c-page-title { font-size: 24px; font-weight: 800; margin: 0; }
+.c-page-sub { color: var(--text-3); font-size: 13px; margin: 4px 0 16px; }
+
+/* Toggle switch */
+.c-switch { position: relative; display: inline-flex; width: 42px; height: 24px; flex: 0 0 auto; }
+.c-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.c-switch .track { position: absolute; inset: 0; background: var(--surface-3); border-radius: var(--r-pill); transition: background 0.18s; }
+.c-switch .track::before { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform 0.18s; box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+.c-switch input:checked + .track { background: var(--mint-500); }
+.c-switch input:checked + .track::before { transform: translateX(18px); }
+
+/* Working hours day cards */
+.c-wh-day { background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); padding: 16px; margin: 0 16px 10px; }
+.c-wh-head { display: flex; align-items: center; justify-content: space-between; }
+.c-wh-name { font-size: 15px; font-weight: 700; color: var(--text-1); }
+.c-wh-name.closed { color: var(--text-4); }
+.c-wh-toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+.c-wh-state { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.c-wh-state.on { color: var(--mint-300); }
+.c-wh-state.off { color: var(--text-4); }
+.c-wh-times { display: flex; align-items: flex-end; gap: 10px; margin-top: 14px; }
+.c-wh-field { flex: 1; }
+.c-wh-field label { display: block; font-size: 10px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.c-wh-select { width: 100%; height: 44px; background: var(--surface-2); border: 1px solid var(--border-2); border-radius: var(--r-md); color: var(--text-1); font-size: 14px; font-weight: 600; padding: 0 12px; cursor: pointer; appearance: none; -webkit-appearance: none; }
+.c-wh-select:focus { outline: none; border-color: var(--border-mint); }
+.c-wh-arrow { color: var(--text-4); margin-bottom: 11px; flex: 0 0 auto; }
+
+/* Staff member cards */
+.c-staff-add { display: flex; gap: 10px; padding: 0 16px 16px; }
+.c-staff-add .c-input-row { flex: 1; margin: 0; }
+.c-staff-card { display: flex; align-items: center; gap: 12px; background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); padding: 14px; margin: 0 16px 10px; }
+.c-staff-avatar { width: 44px; height: 44px; border-radius: 14px; background: var(--mint-soft); border: 1px solid var(--border-mint); color: var(--mint-300); display: grid; place-items: center; font-size: 17px; font-weight: 800; flex: 0 0 auto; }
+.c-staff-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.c-staff-name { font-size: 15px; font-weight: 700; color: var(--text-1); }
+.c-staff-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+.c-staff-actions .c-icon-btn:disabled { opacity: 0.5; cursor: default; }
+.c-icon-btn.on { color: var(--mint-300); border-color: var(--border-mint); background: var(--mint-soft); }
+
+/* Square image picker (service edit) */
+.c-img-pick { position: relative; display: block; width: 100%; aspect-ratio: 1; border-radius: var(--r-lg); overflow: hidden; cursor: pointer; padding: 0; background: var(--surface-1); border: 1px dashed var(--border-3); margin-bottom: 18px; }
+.c-img-pick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.c-img-pick-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 100%; color: var(--text-3); }
+.c-img-pick-empty .ic { width: 52px; height: 52px; border-radius: 16px; background: var(--mint-soft); color: var(--mint-300); display: grid; place-items: center; }
+.c-img-pick-empty .t { font-size: 14px; font-weight: 600; color: var(--text-2); }
+.c-img-pick-empty .h { font-size: 12px; color: var(--text-4); }
+
+/* ─── WhatsApp chats ─── */
+.c-chat-row { display: flex; align-items: center; gap: 12px; background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); padding: 12px 14px; margin: 0 16px 10px; text-decoration: none; color: inherit; }
+.c-chat-row:active { background: var(--surface-2); }
+.c-chat-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.c-chat-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.c-chat-row-name { font-size: 15px; font-weight: 700; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-chat-row-time { font-size: 11px; color: var(--text-3); flex: 0 0 auto; }
+.c-chat-row-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.c-chat-row-preview { font-size: 13px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-chat-unread { min-width: 20px; height: 20px; border-radius: 10px; background: var(--mint-500); color: #04261e; font-size: 11px; font-weight: 800; display: grid; place-items: center; padding: 0 6px; flex: 0 0 auto; }
+
+/* Thread (full-screen) */
+.c-thread-screen { height: 100dvh; }
+.c-thread-head { display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px; border-bottom: 1px solid var(--border-1); background: var(--bg-1); flex: 0 0 auto; }
+.c-thread-head-text { display: flex; flex-direction: column; min-width: 0; }
+.c-thread-title { font-size: 15px; font-weight: 700; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-thread-sub { font-size: 12px; color: var(--text-3); }
+.c-thread-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.c-thread-scroll::-webkit-scrollbar { display: none; }
+.c-thread-empty { text-align: center; color: var(--text-3); font-size: 13px; margin-top: 24px; }
+.c-bubble { max-width: 82%; border-radius: var(--r-md); padding: 9px 12px; display: flex; flex-direction: column; gap: 3px; }
+.c-bubble.in { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--border-1); }
+.c-bubble.out { align-self: flex-end; background: var(--mint-soft); border: 1px solid var(--border-mint); }
+.c-bubble-text { font-size: 14px; color: var(--text-1); white-space: pre-wrap; word-break: break-word; }
+.c-bubble-time { font-size: 10px; color: var(--text-4); align-self: flex-end; }
+.c-composer { display: flex; align-items: center; gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--border-1); background: var(--bg-1); flex: 0 0 auto; }
+.c-composer input { flex: 1; background: var(--surface-1); border: 1px solid var(--border-2); border-radius: var(--r-md); outline: none; color: var(--text-1); font-size: 16px; padding: 12px 14px; }
+.c-composer input:focus { border-color: var(--border-mint); }
+.c-composer-send { width: 46px; height: 46px; padding: 0; flex: 0 0 auto; display: grid; place-items: center; }

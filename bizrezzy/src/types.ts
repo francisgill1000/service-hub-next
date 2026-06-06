@@ -82,3 +82,31 @@ export type Paginated<T> = {
   current_page?: number;
   last_page?: number;
 };
+
+export type WaAccountInfo = {
+  connected: boolean;
+  phone_number?: string | null;
+  phone_number_id?: string;
+  waba_id?: string | null;
+  status?: string;
+  token_preview?: string;
+};
+
+export type WaContact = {
+  id: number;
+  wa_number: string;
+  name?: string | null;
+  last_message_preview?: string | null;
+  last_message_direction?: 'in' | 'out' | null;
+  last_message_at?: string | null;
+  unread_count?: number;
+};
+
+export type WaMessage = {
+  id: number;
+  direction: 'in' | 'out';
+  type?: string;
+  body: string;
+  status?: string | null;
+  created_at?: string;
+};

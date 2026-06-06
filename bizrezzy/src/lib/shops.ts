@@ -1,5 +1,5 @@
 import api from './api';
-import type { Shop, StaffMember, WorkingHours } from '@/types';
+import type { ServiceCategory, Shop, StaffMember, WorkingHours } from '@/types';
 
 export async function shopLogin(shopCode: string, pin: string): Promise<{ token: string; shop: Shop }> {
   const { data } = await api.post('shops/login', { shop_code: shopCode, pin });
@@ -14,6 +14,17 @@ export async function resetPin(shopCode: string): Promise<unknown> {
 export async function registerShop(form: Record<string, unknown>): Promise<{ token?: string; shop?: Shop }> {
   const { data } = await api.post('/shops', form);
   return data;
+}
+
+export async function getServiceCategories(): Promise<ServiceCategory[]> {
+  const { data } = await api.get('/services');
+  return Array.isArray(data) ? data : [];
+}
+
+/** One-time category selection for shops registered before the dropdown existed. Locked after. */
+export async function confirmShopCategory(categoryId: number): Promise<Shop> {
+  const { data } = await api.post('/shop/category', { category_id: categoryId });
+  return data?.shop ?? data;
 }
 
 export async function reverseGeocode(lat: number, lon: number): Promise<{ location?: string; [k: string]: unknown }> {

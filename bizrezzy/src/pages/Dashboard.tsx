@@ -42,9 +42,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // One-time onboarding nudge: after first login, offer WhatsApp setup.
+  // Onboarding chain: 1) old shops must lock in a category once,
+  // 2) then a one-time WhatsApp setup nudge.
   useEffect(() => {
-    if (!shop?.id || storage.get('wa_setup_prompted')) return;
+    if (!shop?.id) return;
+    if (!shop.category_confirmed_at) {
+      navigate('/category-setup');
+      return;
+    }
+    if (storage.get('wa_setup_prompted')) return;
     let alive = true;
     getWaAccount()
       .then((acc) => {
@@ -54,7 +60,7 @@ export default function Dashboard() {
       })
       .catch(() => undefined);
     return () => { alive = false; };
-  }, [shop?.id, navigate]);
+  }, [shop?.id, shop?.category_confirmed_at, navigate]);
 
   const fetchData = useCallback(async () => {
     if (!shop?.id) return;

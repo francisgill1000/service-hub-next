@@ -310,3 +310,7 @@
 .c-cred-row { display: flex; align-items: center; justify-content: space-between; }
 .c-cred-label { font-size: 11px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
 .c-cred-value { font-size: 20px; font-weight: 800; color: var(--mint-300); letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+
+/* Category select */
+.c-input-row select { flex: 1; background: none; border: none; outline: none; color: var(--text-1); font-size: 15px; height: 100%; appearance: none; cursor: pointer; }
+.c-input-row select option { background: var(--surface-2); color: var(--text-1); }

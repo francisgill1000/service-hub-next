@@ -1,30 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerShop } from '@/lib/shops';
+import { getServiceCategories, registerShop } from '@/lib/shops';
 import { useShop } from '@/context/ShopContext';
 import { Icons } from '@/components/Icons';
-import type { Shop } from '@/types';
+import type { ServiceCategory, Shop } from '@/types';
 
 export default function Register() {
   const navigate = useNavigate();
   const { loginShop } = useShop();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [created, setCreated] = useState<{ shop: Shop; token?: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    let alive = true;
+    getServiceCategories()
+      .then((list) => { if (alive) setCategories(list); })
+      .catch(() => undefined);
+    return () => { alive = false; };
+  }, []);
+
   const handleSubmit = async () => {
     if (!name.trim()) { setError('Business name is required.'); return; }
     if (!phone.trim()) { setError('Phone number is required.'); return; }
+    if (!categoryId) { setError('Please choose your service category.'); return; }
     setSubmitting(true);
     setError('');
     try {
       const res = await registerShop({
         name: name.trim(),
         phone: phone.trim(),
-        category_id: 1,
+        category_id: Number(categoryId),
         is_verified: true,
       });
       if (res.shop) {
@@ -114,6 +125,20 @@ export default function Register() {
             onChange={(e) => { setPhone(e.target.value); setError(''); }}
             onKeyDown={(e) => { if (e.key === 'Enter') void handleSubmit(); }} />
         </div>
+
+        <label className="c-field-label" htmlFor="category">Service Category</label>
+        <div className="c-input-row">
+          <select id="category" value={categoryId}
+            onChange={(e) => { setCategoryId(e.target.value); setError(''); }}>
+            <option value="" disabled>Choose your category…</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+        <p className="c-page-sub" style={{ margin: '-6px 4px 14px', fontSize: 12 }}>
+          This cannot be changed later — choose carefully.
+        </p>
 
         <button className="c-btn c-btn-block" disabled={submitting} onClick={() => void handleSubmit()}>
           {submitting ? 'Registering…' : 'Register Business'}

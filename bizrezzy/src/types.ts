@@ -28,10 +28,19 @@ export type Invoice = {
   paid?: boolean;
 };
 
+export type ServiceCategory = {
+  id: number;
+  code?: string;
+  name: string;
+  icon?: string;
+};
+
 export type Shop = {
   id: number;
   name: string;
   shop_code?: string;
+  category_id?: number;
+  category_confirmed_at?: string | null;
   logo?: string;
   hero_image?: string;
   location?: string;

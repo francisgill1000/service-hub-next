@@ -16,7 +16,7 @@ function shortDate(iso?: string | null): string {
 
 export default function MasterShops() {
   const navigate = useNavigate();
-  const { shop } = useShop();
+  const { shop, logoutShop } = useShop();
   const [shops, setShops] = useState<MasterShop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -52,10 +52,14 @@ export default function MasterShops() {
 
   return (
     <div className="m-screen"><div className="m-scroll">
-      <button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={16} /> Back</button>
-      <div className="c-page-head">
-        <h1 className="c-page-title">All Businesses</h1>
-        <p className="c-page-sub">Master view — credentials and activity for every account.</p>
+      <div className="c-page-head" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingTop: 18 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h1 className="c-page-title">All Businesses</h1>
+          <p className="c-page-sub">Master view — credentials and activity for every account.</p>
+        </div>
+        <button className="c-icon-btn" aria-label="Log out" onClick={() => { logoutShop(); navigate('/login'); }}>
+          <Icons.Logout size={18} />
+        </button>
       </div>
 
       {error && <div className="c-error-box">{error}</div>}

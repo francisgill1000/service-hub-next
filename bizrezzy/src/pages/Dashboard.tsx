@@ -40,10 +40,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Onboarding chain: 1) old shops must lock in a category once,
+  // Master accounts skip the provider experience entirely.
+  // Onboarding chain for regular shops: 1) lock in a category once,
   // 2) then a one-time WhatsApp setup nudge.
   useEffect(() => {
     if (!shop?.id) return;
+    if (shop.is_master) {
+      navigate('/master', { replace: true });
+      return;
+    }
     if (!shop.category_confirmed_at) {
       navigate('/category-setup');
       return;

@@ -15,6 +15,7 @@ import ServiceEdit from '@/pages/ServiceEdit';
 import Staff from '@/pages/Staff';
 import WorkingHours from '@/pages/WorkingHours';
 import Profile from '@/pages/Profile';
+import Settings from '@/pages/Settings';
 import CategorySetup from '@/pages/CategorySetup';
 import Chats from '@/pages/Chats';
 import ChatThread from '@/pages/ChatThread';
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="/chats" element={<Chats />} />
             <Route path="/reminders" element={<Reminders />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>

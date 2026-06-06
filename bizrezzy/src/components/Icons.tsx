@@ -47,6 +47,9 @@ export const Icons = {
   WhatsApp: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.3-.9-2.8-1.2-4.5-4-4.7-4.2-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.4.6c-.2.2-.3.4-.1.6.2.4.9 1.4 1.9 2.2 1.2 1.1 2.1 1.4 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.2.5.4.1.2.1.8-.1 1.4z" /></svg>
   ),
+  Sliders: ({ size = 22 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="9" cy="6" r="2.4" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="2.4" fill="currentColor" stroke="none" /><circle cx="7" cy="18" r="2.4" fill="currentColor" stroke="none" /></svg>
+  ),
   Chat: ({ size = 22 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" /><path d="M8 11h8M8 14.5h5" /></svg>
   ),

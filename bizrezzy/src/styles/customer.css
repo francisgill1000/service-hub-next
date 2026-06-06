@@ -304,3 +304,9 @@
 .c-composer input { flex: 1; background: var(--surface-1); border: 1px solid var(--border-2); border-radius: var(--r-md); outline: none; color: var(--text-1); font-size: 16px; padding: 12px 14px; }
 .c-composer input:focus { border-color: var(--border-mint); }
 .c-composer-send { width: 46px; height: 46px; padding: 0; flex: 0 0 auto; display: grid; place-items: center; }
+
+/* Registration success — credentials card */
+.c-cred-card { background: var(--surface-1); border: 1px solid var(--border-mint); border-radius: var(--r-lg); padding: 16px; margin: 4px 0 16px; display: flex; flex-direction: column; gap: 12px; }
+.c-cred-row { display: flex; align-items: center; justify-content: space-between; }
+.c-cred-label { font-size: 11px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.c-cred-value { font-size: 20px; font-weight: 800; color: var(--mint-300); letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }

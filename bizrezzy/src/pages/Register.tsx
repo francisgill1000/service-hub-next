@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerShop, reverseGeocode } from '@/lib/shops';
+import { useShop } from '@/context/ShopContext';
 import { Icons } from '@/components/Icons';
+import type { Shop } from '@/types';
 
 type Form = {
   name: string;
@@ -33,11 +35,13 @@ function fileToDataUrl(file: File): Promise<string> {
 
 export default function Register() {
   const navigate = useNavigate();
+  const { loginShop } = useShop();
   const [form, setForm] = useState<Form>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState('');
-  const [done, setDone] = useState(false);
+  const [created, setCreated] = useState<{ shop: Shop; token?: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const change = <K extends keyof Form>(key: K, value: Form[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -78,8 +82,12 @@ export default function Register() {
     setSubmitting(true);
     setError('');
     try {
-      await registerShop(form as unknown as Record<string, unknown>);
-      setDone(true);
+      const res = await registerShop(form as unknown as Record<string, unknown>);
+      if (res.shop) {
+        setCreated({ shop: res.shop, token: res.token });
+      } else {
+        navigate('/login');
+      }
     } catch (e: unknown) {
       const data = (e as { response?: { data?: { message?: string } } })?.response?.data;
       setError(data?.message || 'Registration failed. Please try again.');
@@ -88,13 +96,52 @@ export default function Register() {
     }
   };
 
-  if (done) {
+  if (created) {
+    const { shop, token } = created;
+    const creds = `Business ID: ${shop.shop_code ?? ''}\nPIN: ${shop.pin ?? ''}`;
+
+    const copyCreds = async () => {
+      try {
+        await navigator.clipboard.writeText(creds);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      } catch { /* clipboard unavailable — values stay visible on screen */ }
+    };
+
+    const continueIn = () => {
+      if (token) {
+        loginShop(shop, token); // already authenticated — go straight in
+        navigate('/');
+      } else {
+        navigate('/login');
+      }
+    };
+
     return (
       <div className="m-screen"><div className="m-scroll">
         <div className="c-auth">
-          <h1 className="c-auth-title">Business Registered</h1>
-          <p className="c-auth-sub">Your business has been created. Log in with your Business ID and PIN.</p>
-          <button className="c-btn c-btn-block" onClick={() => navigate('/login')}>Continue to Login</button>
+          <h1 className="c-auth-title">Business Registered 🎉</h1>
+          <p className="c-auth-sub">
+            Save these login details — you need them every time you log in.
+          </p>
+
+          <div className="c-cred-card">
+            <div className="c-cred-row">
+              <span className="c-cred-label">Business ID</span>
+              <span className="c-cred-value">{String(shop.shop_code ?? '—')}</span>
+            </div>
+            <div className="c-cred-row">
+              <span className="c-cred-label">PIN</span>
+              <span className="c-cred-value">{String(shop.pin ?? '—')}</span>
+            </div>
+            <button className="c-btn-ghost" style={{ width: '100%' }} onClick={() => void copyCreds()}>
+              <Icons.Copy size={15} /> {copied ? 'Copied ✓' : 'Copy details'}
+            </button>
+          </div>
+
+          <button className="c-btn c-btn-block" onClick={continueIn}>
+            {token ? 'Continue to Dashboard' : 'Continue to Login'}
+          </button>
         </div>
       </div></div>
     );

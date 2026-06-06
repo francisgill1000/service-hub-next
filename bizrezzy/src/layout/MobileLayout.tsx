@@ -7,7 +7,8 @@ const tabs: Tab[] = [
   { id: 'home', label: 'Home', href: '/', icon: 'Home' },
   { id: 'bookings', label: 'Bookings', href: '/bookings', icon: 'Calendar' },
   { id: 'chats', label: 'Chats', href: '/chats', icon: 'Chat' },
-  { id: 'reminders', label: 'Reminders', href: '/reminders', icon: 'Bell' },
+  // Reminders tab hidden for now — page still reachable at /reminders and via
+  // the Dashboard quick action.
   { id: 'services', label: 'Services', href: '/services', icon: 'Grid' },
   { id: 'profile', label: 'Profile', href: '/profile', icon: 'Store' },
 ];

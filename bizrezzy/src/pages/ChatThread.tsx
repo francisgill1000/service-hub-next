@@ -113,7 +113,7 @@ export default function ChatThread() {
           <Icons.ChevronLeft size={18} />
         </button>
         <div className="c-staff-avatar" style={{ width: 38, height: 38, fontSize: 15 }}>
-          {title.charAt(0).toUpperCase()}
+          {(Array.from(title)[0] || '?').toUpperCase()}
         </div>
         <div className="c-thread-head-text">
           <span className="c-thread-title">{title}</span>
@@ -137,7 +137,7 @@ export default function ChatThread() {
               <div key={m.id} className={`c-bubble ${m.direction === 'out' ? 'out' : 'in'}`}>
                 {isAudio && <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />}
                 {isImage && <img src={m.media_url!} alt="" className="c-bubble-img" loading="lazy" />}
-                {((!isAudio && !isImage) || !m.body.startsWith('[')) && <span className="c-bubble-text">{m.body}</span>}
+                {!isAudio && !isImage && <span className="c-bubble-text">{m.body}</span>}
                 <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
               </div>
             );

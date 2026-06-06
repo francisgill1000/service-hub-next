@@ -40,7 +40,7 @@ describe('ChatThread', () => {
     expect(read).toHaveBeenCalledWith(5);
   });
 
-  it('renders an audio player for voice notes and transcript text', async () => {
+  it('renders only the audio player for voice notes — no text', async () => {
     vi.spyOn(chatsLib, 'getWaContacts').mockResolvedValue({
       connected: true,
       data: [{ id: 5, wa_number: '971501112222', name: 'Ali', unread_count: 0 }],
@@ -52,10 +52,11 @@ describe('ChatThread', () => {
     vi.spyOn(chatsLib, 'markWaRead').mockResolvedValue();
 
     const { container } = setup();
-    expect(await screen.findByText(/book me for tomorrow/)).toBeInTheDocument();
+    await screen.findByPlaceholderText(/type a reply/i);
     expect(container.querySelectorAll('audio')).toHaveLength(2);
-    // raw placeholder is hidden when we have a player
+    // audio bubbles hide both the raw placeholder and the transcript text
     expect(screen.queryByText('[audio message]')).not.toBeInTheDocument();
+    expect(screen.queryByText(/book me for tomorrow/)).not.toBeInTheDocument();
   });
 
   it('sends a reply', async () => {

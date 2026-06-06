@@ -100,7 +100,8 @@ export default function Chats() {
               const unread = c.unread_count || 0;
               return (
                 <Link key={c.id} to={`/chats/${c.id}`} className="c-chat-row">
-                  <div className="c-staff-avatar">{name.charAt(0).toUpperCase()}</div>
+                  {/* Array.from: emoji-only profile names must not split surrogate pairs */}
+                  <div className="c-staff-avatar">{(Array.from(name)[0] || '?').toUpperCase()}</div>
                   <div className="c-chat-row-body">
                     <div className="c-chat-row-top">
                       <span className="c-chat-row-name">{name}</span>

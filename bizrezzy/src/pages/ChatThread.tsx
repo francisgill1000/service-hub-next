@@ -117,7 +117,10 @@ export default function ChatThread() {
         </div>
         <div className="c-thread-head-text">
           <span className="c-thread-title">{title}</span>
-          {contact?.name && <span className="c-thread-sub">{contact.wa_number}</span>}
+          <span className="c-thread-sub">
+            <span className="c-live-dot" />
+            {contact?.name ? contact.wa_number : 'Live on WhatsApp'}
+          </span>
         </div>
       </div>
 
@@ -153,7 +156,7 @@ export default function ChatThread() {
           onKeyDown={(e) => { if (e.key === 'Enter') void handleSend(); }}
         />
         <button
-          className="c-btn c-composer-send"
+          className="c-composer-send"
           aria-label="Send"
           disabled={sending || !draft.trim()}
           onClick={() => void handleSend()}

@@ -26,7 +26,7 @@ function dateOf(b: Booking): string {
 const QUICK_ACTIONS: { label: string; sub: string; to: string }[] = [
   { label: 'All Bookings', sub: 'View & manage', to: '/bookings' },
   { label: 'Chats', sub: 'WhatsApp conversations', to: '/chats' },
-  { label: 'Reminders', sub: "Tomorrow's WhatsApp nudges", to: '/reminders' },
+  // Reminders hidden for now — page still lives at /reminders.
   { label: 'Staff', sub: 'Add & toggle staff', to: '/staff' },
   { label: 'Services', sub: 'Add or edit', to: '/services' },
   { label: 'Working Hours', sub: 'Set open & close', to: '/working-hours' },

@@ -1,5 +1,5 @@
 import api from './api';
-import type { ServiceCategory, Shop, StaffMember, WorkingHours } from '@/types';
+import type { MasterShop, ServiceCategory, Shop, StaffMember, WorkingHours } from '@/types';
 
 export async function shopLogin(shopCode: string, pin: string): Promise<{ token: string; shop: Shop }> {
   const { data } = await api.post('shops/login', { shop_code: shopCode, pin });
@@ -57,6 +57,12 @@ export async function updateStaff(
 ): Promise<StaffMember> {
   const { data } = await api.put(`/shops/${shopId}/staff/${staffId}`, payload);
   return data?.data ?? data;
+}
+
+/** Master account only: every business with its credentials and stats. */
+export async function getMasterShops(): Promise<MasterShop[]> {
+  const { data } = await api.get('/master/shops');
+  return Array.isArray(data?.data) ? data.data : [];
 }
 
 export async function approveQrLogin(token: string): Promise<unknown> {

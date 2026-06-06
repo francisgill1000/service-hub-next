@@ -16,6 +16,7 @@ import Staff from '@/pages/Staff';
 import WorkingHours from '@/pages/WorkingHours';
 import Profile from '@/pages/Profile';
 import Settings from '@/pages/Settings';
+import MasterShops from '@/pages/MasterShops';
 import CategorySetup from '@/pages/CategorySetup';
 import Chats from '@/pages/Chats';
 import ChatThread from '@/pages/ChatThread';
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/staff" element={<Staff />} />
           <Route path="/working-hours" element={<WorkingHours />} />
           <Route path="/category-setup" element={<CategorySetup />} />
+          <Route path="/master" element={<MasterShops />} />
           <Route path="/chats/setup" element={<WhatsAppSetup />} />
           <Route path="/chats/:id" element={<ChatThread />} />
 

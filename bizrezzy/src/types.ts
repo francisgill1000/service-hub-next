@@ -41,6 +41,7 @@ export type Shop = {
   shop_code?: string;
   category_id?: number;
   category_confirmed_at?: string | null;
+  is_master?: boolean;
   logo?: string;
   hero_image?: string;
   location?: string;
@@ -120,4 +121,21 @@ export type WaMessage = {
   media_url?: string | null;
   media_mime?: string | null;
   created_at?: string;
+};
+
+export type MasterShop = {
+  id: number;
+  name: string;
+  shop_code?: string;
+  pin?: string;
+  phone?: string | null;
+  location?: string | null;
+  category?: string | null;
+  status?: string;
+  is_master?: boolean;
+  bookings_count?: number;
+  wa_connected?: boolean;
+  wa_number?: string | null;
+  last_login_at?: string | null;
+  created_at?: string | null;
 };

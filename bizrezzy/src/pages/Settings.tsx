@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Icons } from '@/components/Icons';
+import { useShop } from '@/context/ShopContext';
 
 type Option = {
   label: string;
@@ -16,6 +17,11 @@ const OPTIONS: Option[] = [
 ];
 
 export default function Settings() {
+  const { shop } = useShop();
+  const options: Option[] = shop?.is_master
+    ? [...OPTIONS, { label: 'All Businesses', sub: 'Master view — codes, PINs & activity', to: '/master', icon: 'Key' }]
+    : OPTIONS;
+
   return (
     <div className="m-screen"><div className="m-scroll">
       <div className="c-page-head">
@@ -23,7 +29,7 @@ export default function Settings() {
         <p className="c-page-sub">Manage how your business runs on Rezzy.</p>
       </div>
 
-      {OPTIONS.map((o) => {
+      {options.map((o) => {
         const Icon = Icons[o.icon];
         return (
           <Link key={o.to} to={o.to} className="c-set-link">

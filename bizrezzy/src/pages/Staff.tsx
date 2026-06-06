@@ -77,45 +77,49 @@ export default function Staff() {
   return (
     <div className="m-screen"><div className="m-scroll">
       <button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={16} /> Back</button>
-      <h1 className="c-auth-title" style={{ textAlign: 'left', margin: '0 16px 16px' }}>Staff</h1>
+      <div className="c-page-head">
+        <h1 className="c-page-title">Staff</h1>
+        <p className="c-page-sub">Add the people who handle bookings.</p>
+      </div>
 
       {error && <div className="c-error-box">{error}</div>}
 
-      <div style={{ display: 'flex', gap: 8, padding: '0 16px 16px' }}>
-        <div className="c-input-row" style={{ flex: 1, margin: 0 }}>
+      <div className="c-staff-add">
+        <div className="c-input-row">
           <input type="text" placeholder="New staff name" value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') void handleAdd(); }} />
         </div>
-        <button className="c-btn" disabled={adding || !newName.trim()} onClick={() => void handleAdd()}>
-          {adding ? 'Adding…' : 'Add'}
+        <button className="c-btn c-btn-block" style={{ width: 'auto', height: 54, padding: '0 18px' }} disabled={adding || !newName.trim()} onClick={() => void handleAdd()}>
+          <Icons.Plus size={16} /> {adding ? 'Adding…' : 'Add'}
         </button>
       </div>
 
       {loading ? (
         <Spinner label="Loading staff…" />
       ) : staff.length > 0 ? (
-        <div className="c-card" style={{ padding: '0 16px' }}>
-          {staff.map((m) => (
-            <div key={m.id} className="c-list-row">
-              <div className="c-avatar" style={{ width: 40, height: 40, fontSize: 16, margin: 0, borderRadius: 12 }}>
-                {(m.name || '?').charAt(0).toUpperCase()}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className="c-row-title">{m.name}</div>
-                <span className={m.is_active !== false ? 'c-chip c-chip-completed' : 'c-chip c-chip-cancelled'}>
-                  {m.is_active !== false ? 'Active' : 'Inactive'}
+        staff.map((m) => {
+          const active = m.is_active !== false;
+          return (
+            <div key={m.id} className="c-staff-card">
+              <div className="c-staff-avatar">{(m.name || '?').charAt(0).toUpperCase()}</div>
+              <div className="c-staff-body">
+                <span className="c-staff-name">{m.name}</span>
+                <span className={active ? 'c-chip c-chip-completed' : 'c-chip c-chip-cancelled'} style={{ alignSelf: 'flex-start' }}>
+                  {active ? 'Active' : 'Inactive'}
                 </span>
               </div>
-              <button className="c-icon-btn" aria-label="Rename" disabled={busyId === m.id} onClick={() => void rename(m)}>
-                <Icons.User size={16} />
-              </button>
-              <button className="c-btn-ghost" style={{ padding: '6px 10px', fontSize: 12 }} disabled={busyId === m.id} onClick={() => void toggleActive(m)}>
-                {m.is_active !== false ? 'Disable' : 'Enable'}
-              </button>
+              <div className="c-staff-actions">
+                <button className="c-icon-btn" aria-label="Rename" disabled={busyId === m.id} onClick={() => void rename(m)}>
+                  <Icons.Edit size={15} />
+                </button>
+                <button className={`c-icon-btn${active ? ' on' : ''}`} aria-label={active ? 'Disable' : 'Enable'} disabled={busyId === m.id} onClick={() => void toggleActive(m)}>
+                  <Icons.Power size={15} />
+                </button>
+              </div>
             </div>
-          ))}
-        </div>
+          );
+        })
       ) : (
         <EmptyState title="No staff yet" subtitle="Add your team members to assign them to bookings." />
       )}

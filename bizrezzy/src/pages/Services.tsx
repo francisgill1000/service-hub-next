@@ -54,20 +54,25 @@ export default function Services() {
           <Spinner label="Loading services…" />
         ) : catalogs.length > 0 ? (
           catalogs.map((c) => (
-            <div key={c.id} className="c-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ flex: 1 }}>
-                  <div className="c-row-title">{c.title || c.name}</div>
-                  <div className="c-row-sub">{c.description || 'No description provided.'}</div>
-                </div>
-                <span className="c-chip c-chip-booked">AED {Number(c.price ?? 0).toFixed(2)}</span>
+            <div key={c.id} className="c-svc-card">
+              <div className="c-svc-media">
+                {c.image ? (
+                  <img src={c.image} alt={c.title || c.name || 'Service'} />
+                ) : (
+                  <div className="c-svc-media-empty"><Icons.Image size={28} /><span>No image</span></div>
+                )}
+                <span className="c-svc-price">AED {Number(c.price ?? 0).toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                <button className="c-btn-ghost" style={{ flex: 1 }} onClick={() => navigate(`/services/${c.id}/edit`)}>
-                  <Icons.Chevron size={14} /> Edit
+              <div className="c-svc-body">
+                <div className="c-row-title">{c.title || c.name}</div>
+                <div className="c-row-sub">{c.description || 'No description provided.'}</div>
+              </div>
+              <div className="c-svc-actions">
+                <button className="c-btn-ghost" onClick={() => navigate(`/services/${c.id}/edit`)}>
+                  <Icons.Edit size={14} /> Edit
                 </button>
-                <button className="c-btn-ghost" style={{ flex: 1, color: 'var(--danger)' }} disabled={deletingId === c.id} onClick={() => void handleDelete(c.id)}>
-                  {deletingId === c.id ? 'Deleting…' : 'Delete'}
+                <button className="c-btn-ghost" style={{ color: 'var(--danger)' }} disabled={deletingId === c.id} onClick={() => void handleDelete(c.id)}>
+                  <Icons.Trash size={14} /> {deletingId === c.id ? 'Deleting…' : 'Delete'}
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
@@ -24,6 +24,7 @@ export default function ServiceEdit() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const imageInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isNew) return;
@@ -72,6 +73,21 @@ export default function ServiceEdit() {
       {error && <div className="c-error-box">{error}</div>}
 
       <div style={{ padding: '0 16px' }}>
+        <label className="c-field-label" htmlFor="image">Image</label>
+        <button type="button" className="c-img-pick" onClick={() => imageInput.current?.click()}>
+          {image ? (
+            <img src={image} alt="Service" />
+          ) : (
+            <span className="c-img-pick-empty">
+              <span className="ic"><Icons.Image size={26} /></span>
+              <span className="t">Upload service image</span>
+              <span className="h">PNG or JPG</span>
+            </span>
+          )}
+        </button>
+        <input id="image" ref={imageInput} type="file" accept="image/*" hidden
+          onChange={async (e) => { const f = e.target.files?.[0]; if (f) setImage(await fileToDataUrl(f)); }} />
+
         <label className="c-field-label" htmlFor="title">Title</label>
         <div className="c-input-row">
           <input id="title" type="text" placeholder="Service title" value={form.title}
@@ -90,10 +106,6 @@ export default function ServiceEdit() {
           <input id="price" type="number" inputMode="decimal" min="0" step="0.01" placeholder="0.00" value={form.price}
             onChange={(e) => { change('price', e.target.value); setError(''); }} />
         </div>
-
-        <label className="c-field-label" htmlFor="image">Image</label>
-        <input id="image" type="file" accept="image/*" style={{ marginBottom: 16 }}
-          onChange={async (e) => { const f = e.target.files?.[0]; if (f) setImage(await fileToDataUrl(f)); }} />
 
         <button className="c-btn c-btn-block" disabled={saving} onClick={() => void handleSave()}>
           {saving ? 'Saving…' : isNew ? 'Create Service' : 'Save Changes'}

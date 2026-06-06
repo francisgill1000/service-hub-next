@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import { AppBar } from '@/layout/AppBar';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
 import { updateShop, reverseGeocode } from '@/lib/shops';
+
+const CUSTOMER_WEB = 'https://rezzy.eloquentservice.com';
 
 type Form = {
   name: string;
@@ -34,6 +37,9 @@ export default function Profile() {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [copied, setCopied] = useState(false);
+  const logoInput = useRef<HTMLInputElement>(null);
+  const heroInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!shop) return;
@@ -50,6 +56,12 @@ export default function Profile() {
   }, [shop]);
 
   const change = <K extends keyof Form>(key: K, value: Form[K]) => setForm((f) => ({ ...f, [key]: value }));
+
+  const shopCode = (shop?.shop_code as string) || '';
+  const pin = (shop?.pin as string) || '';
+  const qrTarget = shop?.id ? `${CUSTOMER_WEB}/shop/${shop.id}` : '';
+  const heroPreview = form.hero_image || (shop?.hero_image as string) || null;
+  const logoPreview = form.logo || (shop?.logo as string) || null;
 
   const useMyLocation = () => {
     if (locating || !navigator.geolocation) { if (!navigator.geolocation) setError('Geolocation unavailable.'); return; }
@@ -94,6 +106,25 @@ export default function Profile() {
     }
   };
 
+  const shareQr = async () => {
+    if (!qrTarget) return;
+    const text = `Book ${shop?.name || 'us'} on Rezzy: ${qrTarget}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: shop?.name || 'Rezzy', text, url: qrTarget }); } catch { /* dismissed */ }
+    } else {
+      void copyLink();
+    }
+  };
+
+  const copyLink = async () => {
+    if (!qrTarget) return;
+    try {
+      await navigator.clipboard.writeText(qrTarget);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch { /* clipboard blocked */ }
+  };
+
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to sign out?')) { logoutShop(); navigate('/login'); }
   };
@@ -106,6 +137,30 @@ export default function Profile() {
         {message && <div className="c-card" style={{ color: 'var(--mint-300)' }}>{message}</div>}
 
         <div style={{ padding: '0 16px' }}>
+          {/* Cover banner */}
+          <button type="button" className="c-hero-pick" onClick={() => heroInput.current?.click()}>
+            {heroPreview ? (
+              <>
+                <img src={heroPreview} alt="Cover banner" />
+                {form.hero_image && <span className="c-media-badge">Preview</span>}
+              </>
+            ) : (
+              <span className="c-hero-empty"><Icons.Grid size={22} /><span>Tap to add cover photo</span></span>
+            )}
+          </button>
+          <input ref={heroInput} type="file" accept="image/*" hidden aria-label="Cover banner"
+            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('hero_image', await fileToDataUrl(f)); }} />
+
+          {/* Logo */}
+          <button type="button" className="c-logo-pick" onClick={() => logoInput.current?.click()}>
+            {logoPreview ? <img src={logoPreview} alt="Logo" /> : <span className="c-logo-empty">Logo</span>}
+            <span className="c-logo-cam"><Icons.Locate size={13} /></span>
+          </button>
+          <input ref={logoInput} type="file" accept="image/*" hidden aria-label="Logo"
+            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('logo', await fileToDataUrl(f)); }} />
+
+          <div style={{ height: 16 }} />
+
           <label className="c-field-label" htmlFor="name">Business Name</label>
           <div className="c-input-row">
             <input id="name" type="text" value={form.name} onChange={(e) => { change('name', e.target.value); setError(''); }} />
@@ -129,18 +184,54 @@ export default function Profile() {
             <input id="email" type="email" value={form.email} onChange={(e) => change('email', e.target.value)} />
           </div>
 
-          <label className="c-field-label" htmlFor="logo">Logo</label>
-          <input id="logo" type="file" accept="image/*" style={{ marginBottom: 12 }}
-            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('logo', await fileToDataUrl(f)); }} />
-
-          <label className="c-field-label" htmlFor="hero">Cover Banner</label>
-          <input id="hero" type="file" accept="image/*" style={{ marginBottom: 16 }}
-            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('hero_image', await fileToDataUrl(f)); }} />
-
           <button className="c-btn c-btn-block" disabled={saving} onClick={() => void handleSave()}>
             {saving ? 'Saving…' : 'Save Profile'}
           </button>
         </div>
+
+        {/* Credentials */}
+        {(shopCode || pin) && (
+          <>
+            <div className="c-section-title">Credentials</div>
+            <div className="c-cred-grid">
+              <div className="c-cred">
+                <div className="c-cred-label">Business Code</div>
+                <div className="c-cred-value-row">
+                  <span className="c-cred-value">{shopCode || '—'}</span>
+                  <span className="c-cred-icon"><Icons.Tag size={16} /></span>
+                </div>
+              </div>
+              <div className="c-cred">
+                <div className="c-cred-label">Access PIN</div>
+                <div className="c-cred-value-row">
+                  <span className="c-cred-value">{pin || '—'}</span>
+                  <span className="c-cred-icon"><Icons.Key size={16} /></span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* QR code */}
+        {qrTarget && (
+          <>
+            <div className="c-section-title">Business QR Code</div>
+            <div className="c-card c-qr-card">
+              <div className="c-qr-frame">
+                <QRCodeSVG value={qrTarget} size={172} level="M" />
+              </div>
+              <p className="c-qr-hint">Customers can scan this to view and book your business.</p>
+              <div className="c-qr-actions">
+                <button className="c-btn-ghost" onClick={() => void shareQr()}>
+                  <Icons.Share size={16} /> Share
+                </button>
+                <button className="c-btn-ghost" onClick={() => void copyLink()}>
+                  <Icons.Copy size={16} /> {copied ? 'Copied!' : 'Copy link'}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="c-section-title">Manage</div>
         <div className="c-card" style={{ padding: 0 }}>

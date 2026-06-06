@@ -65,36 +65,47 @@ export default function WorkingHours() {
   return (
     <div className="m-screen"><div className="m-scroll">
       <button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={16} /> Back</button>
-      <h1 className="c-auth-title" style={{ textAlign: 'left', margin: '0 16px 16px' }}>Working Hours</h1>
+      <div className="c-page-head">
+        <h1 className="c-page-title">Working Hours</h1>
+        <p className="c-page-sub">Set your open and close times for each day.</p>
+      </div>
 
       {error && <div className="c-error-box">{error}</div>}
       {message && <div className="c-card" style={{ color: 'var(--mint-300)' }}>{message}</div>}
 
-      <div className="c-card">
-        {rows.map((r, i) => (
-          <div key={r.day} className="c-day-row">
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, width: 130 }}>
-              <input type="checkbox" checked={r.is_open} onChange={(e) => updateDay(i, 'is_open', e.target.checked)} />
-              <span className="c-day-name" style={{ width: 'auto' }}>{r.day}</span>
+      {rows.map((r, i) => (
+        <div key={r.day} className="c-wh-day">
+          <div className="c-wh-head">
+            <span className={`c-wh-name${r.is_open ? '' : ' closed'}`}>{r.day}</span>
+            <label className="c-wh-toggle">
+              <span className={`c-wh-state ${r.is_open ? 'on' : 'off'}`}>{r.is_open ? 'Open' : 'Closed'}</span>
+              <span className="c-switch">
+                <input type="checkbox" checked={r.is_open} onChange={(e) => updateDay(i, 'is_open', e.target.checked)} aria-label={`${r.day} open`} />
+                <span className="track" />
+              </span>
             </label>
-            {r.is_open ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
-                <select className="c-time-input" value={r.start_time} onChange={(e) => updateDay(i, 'start_time', e.target.value)} aria-label={`${r.day} open`}>
-                  {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <span style={{ color: 'var(--text-3)' }}>–</span>
-                <select className="c-time-input" value={r.end_time} onChange={(e) => updateDay(i, 'end_time', e.target.value)} aria-label={`${r.day} close`}>
+          </div>
+          {r.is_open && (
+            <div className="c-wh-times">
+              <div className="c-wh-field">
+                <label htmlFor={`${r.day}-open`}>Opens</label>
+                <select id={`${r.day}-open`} className="c-wh-select" value={r.start_time} onChange={(e) => updateDay(i, 'start_time', e.target.value)}>
                   {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
-            ) : (
-              <span className="c-row-sub" style={{ marginLeft: 'auto' }}>Closed</span>
-            )}
-          </div>
-        ))}
-      </div>
+              <span className="c-wh-arrow"><Icons.ArrowRight size={18} /></span>
+              <div className="c-wh-field">
+                <label htmlFor={`${r.day}-close`}>Closes</label>
+                <select id={`${r.day}-close`} className="c-wh-select" value={r.end_time} onChange={(e) => updateDay(i, 'end_time', e.target.value)}>
+                  {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
 
-      <div style={{ padding: '0 16px' }}>
+      <div style={{ padding: '8px 16px 24px' }}>
         <button className="c-btn c-btn-block" disabled={saving} onClick={() => void handleSave()}>
           {saving ? 'Saving…' : 'Save Working Hours'}
         </button>

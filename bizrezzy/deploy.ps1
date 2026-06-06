@@ -23,11 +23,15 @@ if (-not (Test-Path $dist)) { throw "Build output not found at $dist" }
 Write-Host "==> Uploading dist -> $server`:$webroot" -ForegroundColor Cyan
 ssh -o BatchMode=yes $server "mkdir -p $webroot && rm -rf $webroot/*"
 if ($LASTEXITCODE -ne 0) { throw "remote prepare failed" }
-scp -q -o BatchMode=yes -r "$dist/*" "$server`:$webroot/"
+# PowerShell does not expand "$dist/*" for native commands, so enumerate the
+# top-level entries and pass them explicitly (scp -r recurses into dirs).
+$files = (Get-ChildItem -LiteralPath $dist).FullName
+if (-not $files) { throw "Build output at $dist is empty" }
+scp -q -o BatchMode=yes -r $files "$server`:$webroot/"
 if ($LASTEXITCODE -ne 0) { throw "scp failed" }
 ssh -o BatchMode=yes $server "chown -R www-data:www-data $webroot"
 
 Write-Host "==> Verifying" -ForegroundColor Cyan
 curl.exe -sI https://bizrezzy.eloquentservice.com/ | Select-Object -First 1
 
-Write-Host "==> Done — https://bizrezzy.eloquentservice.com" -ForegroundColor Green
+Write-Host "==> Done - https://bizrezzy.eloquentservice.com" -ForegroundColor Green

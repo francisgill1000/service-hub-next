@@ -9,8 +9,8 @@ export default function WhatsAppSetup() {
   const [account, setAccount] = useState<WaAccountInfo | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberId, setPhoneNumberId] = useState('');
-  const [wabaId, setWabaId] = useState('');
   const [token, setToken] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -24,7 +24,6 @@ export default function WhatsAppSetup() {
         if (acc.connected) {
           setPhoneNumber(acc.phone_number || '');
           setPhoneNumberId(acc.phone_number_id || '');
-          setWabaId(acc.waba_id || '');
         }
       })
       .catch(() => undefined);
@@ -33,14 +32,12 @@ export default function WhatsAppSetup() {
 
   const handleSave = async () => {
     if (!phoneNumberId.trim()) { setError('Phone Number ID is required.'); return; }
-    if (!account?.connected && !token.trim()) { setError('Access token is required.'); return; }
     setSaving(true);
     setError('');
     try {
       const res = await saveWaAccount({
         phone_number: phoneNumber.trim() || undefined,
         phone_number_id: phoneNumberId.trim(),
-        waba_id: wabaId.trim() || undefined,
         token: token.trim() || undefined,
       });
       setAccount(res);
@@ -73,7 +70,7 @@ export default function WhatsAppSetup() {
       )}
       {account?.connected && !saved && (
         <div className="c-page-sub" style={{ margin: '0 16px 12px', color: 'var(--mint-300)' }}>
-          Connected — token {account.token_preview}. Leave the token empty to keep the current one.
+          Connected{account.token_preview === 'shared' ? '' : ` — own token ${account.token_preview}`}.
         </div>
       )}
 
@@ -90,17 +87,21 @@ export default function WhatsAppSetup() {
             onChange={(e) => { setPhoneNumberId(e.target.value); setError(''); }} />
         </div>
 
-        <label className="c-field-label" htmlFor="wa-waba">WhatsApp Business Account ID</label>
-        <div className="c-input-row">
-          <input id="wa-waba" type="text" placeholder="optional" value={wabaId}
-            onChange={(e) => setWabaId(e.target.value)} />
-        </div>
+        <button className="c-btn-ghost" style={{ width: '100%', marginBottom: 12 }}
+          onClick={() => setShowAdvanced((v) => !v)}>
+          {showAdvanced ? 'Hide advanced' : 'Advanced (own Meta account)'}
+        </button>
 
-        <label className="c-field-label" htmlFor="wa-token">Access token {account?.connected ? '' : '*'}</label>
-        <div className="c-input-row">
-          <input id="wa-token" type="password" placeholder={account?.connected ? 'Leave empty to keep current' : 'EAAxxxxxxxx…'}
-            value={token} onChange={(e) => { setToken(e.target.value); setError(''); }} />
-        </div>
+        {showAdvanced && (
+          <>
+            <label className="c-field-label" htmlFor="wa-token">Access token override</label>
+            <div className="c-input-row">
+              <input id="wa-token" type="password"
+                placeholder="Leave empty to use the Rezzy platform token"
+                value={token} onChange={(e) => setToken(e.target.value)} />
+            </div>
+          </>
+        )}
 
         <button className="c-btn c-btn-block" disabled={saving} onClick={() => void handleSave()}>
           {saving ? 'Saving…' : account?.connected ? 'Update' : 'Connect WhatsApp'}

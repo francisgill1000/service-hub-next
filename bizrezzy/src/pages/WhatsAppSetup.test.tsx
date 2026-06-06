@@ -16,10 +16,10 @@ function setup() {
 describe('WhatsAppSetup', () => {
   beforeEach(() => { localStorage.clear(); vi.restoreAllMocks(); });
 
-  it('saves credentials for a new connection', async () => {
+  it('connects with just number + phone number id (shared token)', async () => {
     vi.spyOn(chatsLib, 'getWaAccount').mockResolvedValue({ connected: false });
     const save = vi.spyOn(chatsLib, 'saveWaAccount').mockResolvedValue({
-      connected: true, phone_number_id: 'pn_1', token_preview: '••••1234',
+      connected: true, phone_number_id: 'pn_1', token_preview: 'shared',
     });
 
     setup();
@@ -28,29 +28,46 @@ describe('WhatsAppSetup', () => {
     const user = userEvent.setup();
     await user.type(screen.getByLabelText(/whatsapp number/i), '+971500000001');
     await user.type(screen.getByLabelText(/phone number id/i), 'pn_1');
-    await user.type(screen.getByLabelText(/access token/i), 'EAAtok1234');
     await user.click(screen.getByRole('button', { name: /connect whatsapp/i }));
 
     expect(save).toHaveBeenCalledWith({
       phone_number: '+971500000001',
       phone_number_id: 'pn_1',
-      waba_id: undefined,
-      token: 'EAAtok1234',
+      token: undefined,
     });
     expect(await screen.findByText(/saved/i)).toBeInTheDocument();
   });
 
-  it('requires token on first connect', async () => {
+  it('requires phone number id', async () => {
     vi.spyOn(chatsLib, 'getWaAccount').mockResolvedValue({ connected: false });
     const save = vi.spyOn(chatsLib, 'saveWaAccount');
 
     setup();
     const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: /connect whatsapp/i }));
+
+    expect(await screen.findByText(/phone number id is required/i)).toBeInTheDocument();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('allows an own-token override under advanced', async () => {
+    vi.spyOn(chatsLib, 'getWaAccount').mockResolvedValue({ connected: false });
+    const save = vi.spyOn(chatsLib, 'saveWaAccount').mockResolvedValue({
+      connected: true, phone_number_id: 'pn_1', token_preview: '••••5678',
+    });
+
+    setup();
+    const user = userEvent.setup();
     await user.type(await screen.findByLabelText(/phone number id/i), 'pn_1');
+    await user.click(screen.getByRole('button', { name: /advanced/i }));
+    await user.type(screen.getByLabelText(/access token override/i), 'EAAown5678');
     await user.click(screen.getByRole('button', { name: /connect whatsapp/i }));
 
-    expect(await screen.findByText(/access token is required/i)).toBeInTheDocument();
-    expect(save).not.toHaveBeenCalled();
+    expect(save).toHaveBeenCalledWith({
+      phone_number: undefined,
+      phone_number_id: 'pn_1',
+      token: 'EAAown5678',
+    });
   });
 
   it('offers skip when not connected', async () => {

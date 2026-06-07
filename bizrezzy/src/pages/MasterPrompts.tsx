@@ -112,7 +112,7 @@ export default function MasterPrompts() {
           </div>
 
           <label className="c-field-label" htmlFor="bp-body">Prompt text</label>
-          <div className="c-input-row" style={{ marginBottom: 14 }}>
+          <div className="c-input-row c-input-area" style={{ marginBottom: 14 }}>
             <textarea id="bp-body" rows={6} placeholder="You are a friendly salon booking assistant…" value={newBody}
               onChange={(e) => { setNewBody(e.target.value); setAddError(''); }} />
           </div>

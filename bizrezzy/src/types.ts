@@ -123,6 +123,14 @@ export type WaMessage = {
   created_at?: string;
 };
 
+export type BotPrompt = {
+  id: number;
+  name: string;
+  body: string | null;
+  is_default: boolean;
+  is_active: boolean;
+};
+
 export type MasterShop = {
   id: number;
   name: string;

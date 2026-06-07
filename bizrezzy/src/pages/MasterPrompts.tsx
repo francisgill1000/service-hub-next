@@ -7,6 +7,7 @@ import { useShop } from '@/context/ShopContext';
 import {
   getBotPrompts,
   createBotPrompt,
+  updateBotPrompt,
   activateBotPrompt,
   deleteBotPrompt,
 } from '@/lib/botPrompts';
@@ -26,6 +27,13 @@ export default function MasterPrompts() {
   const [newBody, setNewBody] = useState('');
   const [saving, setSaving] = useState(false);
   const [addError, setAddError] = useState('');
+
+  // inline edit
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editBody, setEditBody] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState('');
 
   const refresh = async () => {
     const list = await getBotPrompts();
@@ -63,6 +71,30 @@ export default function MasterPrompts() {
       setError('Could not delete that prompt.');
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const handleStartEdit = (p: BotPrompt) => {
+    setEditingId(p.id);
+    setEditName(p.name);
+    setEditBody(p.body || '');
+    setEditError('');
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingId == null) return;
+    if (!editName.trim()) { setEditError('A name is required.'); return; }
+    if (!editBody.trim()) { setEditError('The prompt text is required.'); return; }
+    setSavingEdit(true);
+    setEditError('');
+    try {
+      await updateBotPrompt(editingId, { name: editName.trim(), body: editBody.trim() });
+      setEditingId(null);
+      await refresh();
+    } catch {
+      setEditError('Could not save the changes.');
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -146,19 +178,52 @@ export default function MasterPrompts() {
                 )}
             </div>
 
-            {p.body && (
-              <div className="c-master-meta" style={{ display: 'block', whiteSpace: 'pre-wrap', opacity: 0.8 }}>
-                {p.body.length > 160 ? p.body.slice(0, 160) + '…' : p.body}
-              </div>
-            )}
+            {editingId === p.id ? (
+              <div style={{ marginTop: 12 }}>
+                {editError && <div className="c-error-box" style={{ margin: '0 0 12px' }}>{editError}</div>}
 
-            {!p.is_default && (
-              <div className="c-master-meta">
-                <button className="c-icon-btn" aria-label={`Delete ${p.name}`} disabled={busyId === p.id}
-                  onClick={() => void handleDelete(p)}>
-                  <Icons.Trash size={14} />
-                </button>
+                <label className="c-field-label" htmlFor={`edit-name-${p.id}`}>Prompt name</label>
+                <div className="c-input-row" style={{ marginBottom: 12 }}>
+                  <input id={`edit-name-${p.id}`} type="text" value={editName}
+                    onChange={(e) => { setEditName(e.target.value); setEditError(''); }} />
+                </div>
+
+                <label className="c-field-label" htmlFor={`edit-body-${p.id}`}>Prompt text</label>
+                <div className="c-input-row c-input-area" style={{ marginBottom: 12 }}>
+                  <textarea id={`edit-body-${p.id}`} rows={6} value={editBody}
+                    onChange={(e) => { setEditBody(e.target.value); setEditError(''); }} />
+                </div>
+
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="c-btn" style={{ flex: 1 }} disabled={savingEdit} onClick={() => void handleSaveEdit()}>
+                    {savingEdit ? 'Saving…' : 'Save changes'}
+                  </button>
+                  <button className="c-btn-ghost" style={{ padding: '0 16px' }} onClick={() => setEditingId(null)}>
+                    Cancel
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                {p.body && (
+                  <div className="c-master-meta" style={{ display: 'block', whiteSpace: 'pre-wrap', opacity: 0.8 }}>
+                    {p.body.length > 160 ? p.body.slice(0, 160) + '…' : p.body}
+                  </div>
+                )}
+
+                {!p.is_default && (
+                  <div className="c-master-meta" style={{ gap: 8 }}>
+                    <button className="c-icon-btn" aria-label={`Edit ${p.name}`} disabled={busyId === p.id}
+                      onClick={() => handleStartEdit(p)}>
+                      <Icons.Edit size={14} />
+                    </button>
+                    <button className="c-icon-btn" aria-label={`Delete ${p.name}`} disabled={busyId === p.id}
+                      onClick={() => void handleDelete(p)}>
+                      <Icons.Trash size={14} />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         ))

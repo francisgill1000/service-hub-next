@@ -42,6 +42,26 @@ describe('MasterPrompts', () => {
     expect(activate).toHaveBeenCalledWith(2);
   });
 
+  it('edits a prompt and saves the changes', async () => {
+    vi.spyOn(lib, 'getBotPrompts').mockResolvedValue([
+      { id: 1, name: 'Sales Bot', body: null, is_default: true, is_active: true },
+      { id: 2, name: 'Salon', body: 'Salon assistant.', is_default: false, is_active: false },
+    ]);
+    const update = vi.spyOn(lib, 'updateBotPrompt').mockResolvedValue(
+      { id: 2, name: 'Salon', body: 'Updated assistant prompt.', is_default: false, is_active: false },
+    );
+
+    setup();
+    const user = (await import('@testing-library/user-event')).default.setup();
+    await user.click(await screen.findByRole('button', { name: /edit salon/i }));
+    const body = screen.getByLabelText(/prompt text/i);
+    await user.clear(body);
+    await user.type(body, 'Updated assistant prompt.');
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(update).toHaveBeenCalledWith(2, { name: 'Salon', body: 'Updated assistant prompt.' });
+  });
+
   it('creates a new prompt', async () => {
     vi.spyOn(lib, 'getBotPrompts').mockResolvedValue([
       { id: 1, name: 'Sales Bot', body: null, is_default: true, is_active: true },

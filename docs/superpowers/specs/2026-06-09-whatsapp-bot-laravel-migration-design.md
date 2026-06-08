@@ -23,6 +23,10 @@ as a passive mirror for bizrezzy chats. It must absorb the full reply brain.
   send/template testers, model-switch UI, and runtime credential editing are all
   dropped. bizrezzy already shows chat threads; notifications are a later,
   separate effort.
+- **Voice replies (TTS):** dropped for now. Inbound voice notes are still
+  transcribed (Whisper) and answered, but every reply goes out as **text** —
+  there is no voice-out. (This matches the Node app's behaviour when TTS is
+  disabled.) Can be added back later.
 - Cleanup/removal of the now-unused relay endpoints (`persona`, `shop-context`,
   `sales-prompt`, `relay-out`, `relay-transcript`) — they stay in place during
   the migration (harmless) and are removed in a later pass.
@@ -50,12 +54,11 @@ Meta ──POST──▶ /wa/webhook  (Laravel — FAST synchronous path)
                  route (sales vs tenant) → resolve credentials →
                  skip reactions/stickers/emoji-only →
                  bare-greeting shortcut (no LLM) →
-                 [voice: download + Whisper transcribe] →
+                 [voice: download + Whisper transcribe → treat as text] →
                  persona + prompt selection →
                  build history from stored wa_messages →
                  Claude reply (+ onboarding tool for leads) →
-                 [voice-in → TTS voice-out] →
-                 send via Cloud API → record outbound message
+                 send text via Cloud API → record outbound message
 ```
 
 The webhook handler does only fast work (verify, store, dispatch). All slow
@@ -73,8 +76,7 @@ port is a faithful 1:1 of proven behaviour.
 | `Jobs/ProcessWhatsAppMessage` | new | the full reply pipeline (orchestrator) | server.js POST handler |
 | `Services/ClaudeClient` | new | Anthropic Messages API: `reply()` and `agentReply()` (tool use), system-prompt caching | lib/claude.js |
 | `Services/Transcriber` | new | OpenAI Whisper transcription; `available()` gate on key | lib/transcribe.js |
-| `Services/SpeechSynthesizer` | new | OpenAI TTS → ogg/opus; `available()` gate on key | lib/tts.js |
-| `Services/WhatsAppCloud` | extend | add `uploadMedia()` + `sendAudio()` (voice notes) | lib/whatsapp.js |
+| `Services/WhatsAppCloud` | reuse | existing `sendText()` + `downloadMedia()` — no change needed (text-only replies) | lib/whatsapp.js |
 | `Services/PersonaResolver` | new | known customer → provider persona; else lead. Extract from existing `persona()`. | lib/personas.js |
 | `Services/PromptResolver` | new | active override / provider / default sales prompt + whether onboarding tool is offered | lib/salesPrompt.js |
 | `Services/Onboarder` | new | create (or recover) a shop and build the deterministic credentials message | lib/onboard.js |
@@ -121,10 +123,9 @@ restarts and is the single source of truth. Window size keeps the Node value
 - Inbound `audio`/`voice`: job downloads via `WhatsAppCloud::downloadMedia`,
   transcribes with `Transcriber`; the stored inbound message body is updated to
   the transcript (so chats show the words). Then it is answered like text.
-- If the inbound was voice, the reply is **not** an onboarding credentials
-  message, and TTS is available: synthesize with `SpeechSynthesizer`, upload via
-  `uploadMedia`, send via `sendAudio`. Any TTS failure falls back to text.
-- Credential/onboarding messages always go as **text** (so they can be copied).
+- **All replies go out as text** (`sendText`). No voice-out / TTS in this phase.
+- If transcription is unavailable or fails, the polite "please type your
+  message" fallback is sent (as today).
 
 ### Onboarding tool
 
@@ -148,17 +149,15 @@ uses, but in-process instead of over HTTP.
     'model' => env('CLAUDE_MODEL', 'claude-haiku-4-5'),
 ],
 'openai' => [
-    'key'              => env('OPENAI_API_KEY'),
-    'tts_model'        => env('TTS_MODEL', 'gpt-4o-mini-tts'),
-    'tts_voice'        => env('TTS_VOICE', 'nova'),
-    'tts_instructions' => env('TTS_INSTRUCTIONS'),  // default in code
-    'whisper_model'    => env('WHISPER_MODEL', 'whisper-1'),
+    'key'           => env('OPENAI_API_KEY'),     // Whisper transcription only
+    'whisper_model' => env('WHISPER_MODEL', 'whisper-1'),
 ],
 ```
 
 Reuse the same values already in the Node `.env`. When `anthropic.key` is unset
 the bot cannot reply (hard requirement); when `openai.key` is unset, voice
-transcription and TTS are simply skipped (graceful, as today).
+transcription is skipped and voice notes get the "please type your message"
+fallback (graceful, as today). No TTS config — voice-out is dropped this phase.
 
 ## Queue infrastructure
 
@@ -210,9 +209,8 @@ for the webhook path, and the Node process manager (pm2 vs systemd).
 - **Unknown `phone_number_id`** → store for chats, no reply (unchanged).
 - **Claude/Graph/OpenAI failure** → job retries (`tries=3`); exhausted →
   `failed_jobs`; webhook already 200'd so Meta never retry-storms.
-- **Transcription failure** → polite "please type your message" fallback
-  (as today).
-- **TTS failure** → silent fallback to text reply.
+- **Transcription failure / unavailable** → polite "please type your message"
+  fallback (as today).
 - **Relay/mirror semantics** → no longer needed; Laravel records both sides
   directly when it sends.
 
@@ -224,19 +222,18 @@ for the webhook path, and the Node process manager (pm2 vs systemd).
 - **Feature:** `receive` rejects bad signatures, stores + dispatches on good
   ones; `ProcessWhatsAppMessage` produces the correct reply for: lead (sales
   prompt + tool offered), known customer (provider prompt), tenant number, bare
-  greeting (no Claude call), voice note (transcribe → reply), active override
-  (everyone gets it, no tool). Use `Http::fake` (Graph + Anthropic + OpenAI),
-  `Queue::fake`/`Bus::fake`, and `Storage::fake` for media.
+  greeting (no Claude call), voice note (transcribe → **text** reply), active
+  override (everyone gets it, no tool). Use `Http::fake` (Graph + Anthropic +
+  OpenAI Whisper), `Queue::fake`/`Bus::fake`, and `Storage::fake` for media.
 - Existing `BotPromptTest`, `WaChatTest`, `WaWebhook`-related tests stay green.
 
 ## Migration order (informs the implementation plan)
 
 1. Config + env wiring; `BotPrompts` support (base prompts).
-2. `WhatsAppCloud` extensions (`uploadMedia`, `sendAudio`).
-3. Leaf services: `ClaudeClient`, `Transcriber`, `SpeechSynthesizer`,
-   `Greetings`, `ConversationHistory`, `PersonaResolver`, `PromptResolver`,
-   `Onboarder` — each with unit tests.
-4. `ProcessWhatsAppMessage` job wiring the above + feature tests.
-5. `receive` changes: signature verify, referral capture, dispatch; queue infra
+2. Leaf services: `ClaudeClient`, `Transcriber`, `Greetings`,
+   `ConversationHistory`, `PersonaResolver`, `PromptResolver`, `Onboarder` —
+   each with unit tests.
+3. `ProcessWhatsAppMessage` job wiring the above + feature tests.
+4. `receive` changes: signature verify, referral capture, dispatch; queue infra
    (migrations + systemd worker).
-6. Cutover (nginx repoint) + observation + Node decommission.
+5. Cutover (nginx repoint) + observation + Node decommission.

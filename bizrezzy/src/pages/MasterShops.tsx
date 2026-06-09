@@ -5,14 +5,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
 import { getMasterShops, getServiceCategories, registerShop } from '@/lib/shops';
+import { MasterShopCard } from '@/components/MasterShopCard';
 import type { MasterShop, ServiceCategory } from '@/types';
-
-function shortDate(iso?: string | null): string {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
-}
 
 export default function MasterShops() {
   const navigate = useNavigate();
@@ -21,7 +15,6 @@ export default function MasterShops() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
-  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   // create-business form
   const [showCreate, setShowCreate] = useState(false);
@@ -74,14 +67,6 @@ export default function MasterShops() {
     } finally {
       setCreating(false);
     }
-  };
-
-  const copyCreds = async (s: MasterShop) => {
-    try {
-      await navigator.clipboard.writeText(`Business ID: ${s.shop_code}\nPIN: ${s.pin}`);
-      setCopiedId(s.id);
-      setTimeout(() => setCopiedId(null), 1200);
-    } catch { /* values stay visible */ }
   };
 
   const q = query.trim().toLowerCase();
@@ -176,33 +161,11 @@ export default function MasterShops() {
         <EmptyState title={q ? 'No matches' : 'No businesses yet'} />
       ) : (
         filtered.map((s) => (
-          <div key={s.id} className="c-master-card">
-            <div className="c-master-top">
-              <span className="c-master-name">
-                {s.name}
-                {s.is_master && <em> · master</em>}
-              </span>
-              <span className={`c-master-wa${s.wa_connected ? ' on' : ''}`}>
-                <Icons.WhatsApp size={13} /> {s.wa_connected ? 'Connected' : 'Not set up'}
-              </span>
-            </div>
-
-            <div className="c-master-creds">
-              <span><b>ID</b> {s.shop_code || '—'}</span>
-              <span><b>PIN</b> {s.pin || '—'}</span>
-              <button className="c-icon-btn" aria-label="Copy credentials" onClick={() => void copyCreds(s)}>
-                {copiedId === s.id ? <Icons.Check size={14} /> : <Icons.Copy size={14} />}
-              </button>
-            </div>
-
-            <div className="c-master-meta">
-              <span>{s.category || 'No category'}</span>
-              <span>{s.phone || 'No phone'}</span>
-              <span>{s.bookings_count ?? 0} bookings</span>
-              <span>Joined {shortDate(s.created_at)}</span>
-              <span>Last login {shortDate(s.last_login_at)}</span>
-            </div>
-          </div>
+          <MasterShopCard
+            key={s.id}
+            shop={s}
+            onOpen={(id) => navigate(`/master/${id}`, { state: { shop: s } })}
+          />
         ))
       )}
     </div></div>

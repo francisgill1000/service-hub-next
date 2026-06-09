@@ -3,17 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
 import { getCatalog, createCatalog, updateCatalog } from '@/lib/catalogs';
+import { fileToCompressedDataUrl } from '@/lib/image';
 
 type Form = { title: string; description: string; price: string };
-
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 export default function ServiceEdit() {
   const { id } = useParams<{ id: string }>();
@@ -86,7 +78,7 @@ export default function ServiceEdit() {
           )}
         </button>
         <input id="image" ref={imageInput} type="file" accept="image/*" hidden
-          onChange={async (e) => { const f = e.target.files?.[0]; if (f) setImage(await fileToDataUrl(f)); }} />
+          onChange={async (e) => { const f = e.target.files?.[0]; if (f) setImage(await fileToCompressedDataUrl(f, { maxDim: 1280 })); }} />
 
         <label className="c-field-label" htmlFor="title">Title</label>
         <div className="c-input-row">

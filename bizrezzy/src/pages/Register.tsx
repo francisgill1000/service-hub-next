@@ -73,8 +73,14 @@ export default function Register() {
     };
 
     return (
-      <div className="m-screen"><div className="m-scroll">
+      <div className="m-screen c-auth-screen"><div className="m-scroll c-auth-scroll">
         <div className="c-auth">
+          <div className="c-auth-brand">
+            <div className="c-auth-orb"><img src="/favicon.svg" alt="" /></div>
+            <div className="c-auth-wordmark">Bizrezzy</div>
+          </div>
+
+          <div className="c-auth-card">
           <h1 className="c-auth-title">Business Registered 🎉</h1>
           <p className="c-auth-sub">
             Save these login details — you need them every time you log in.
@@ -97,19 +103,23 @@ export default function Register() {
           <button className="c-btn c-btn-block" onClick={continueIn}>
             {token ? 'Continue to Dashboard' : 'Continue to Login'}
           </button>
+          </div>
         </div>
       </div></div>
     );
   }
 
   return (
-    <div className="m-screen"><div className="m-scroll">
+    <div className="m-screen c-auth-screen"><div className="m-scroll c-auth-scroll">
       <div className="c-auth">
-        <button className="c-back" onClick={() => navigate('/login')}>
-          <Icons.ChevronLeft size={16} /> Back to Login
-        </button>
-        <h1 className="c-auth-title">Register Your Business</h1>
-        <p className="c-auth-sub">Just two details — you can add the rest later in your profile.</p>
+        <div className="c-auth-brand">
+          <div className="c-auth-orb"><img src="/favicon.svg" alt="" /></div>
+          <div className="c-auth-wordmark">Bizrezzy</div>
+        </div>
+
+        <div className="c-auth-card">
+        <h1 className="c-auth-title">Register your business</h1>
+        <p className="c-auth-sub">Just a few details — you can add the rest later in your profile.</p>
 
         {error && <div className="c-error-box">{error}</div>}
 
@@ -143,6 +153,7 @@ export default function Register() {
         <button className="c-btn c-btn-block" disabled={submitting} onClick={() => void handleSubmit()}>
           {submitting ? 'Registering…' : 'Register Business'}
         </button>
+        </div>
 
         <p className="c-muted-center">
           Already have a business? <Link className="c-link" to="/login">Log In</Link>

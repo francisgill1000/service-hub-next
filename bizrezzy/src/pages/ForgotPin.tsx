@@ -43,8 +43,14 @@ export default function ForgotPin() {
   };
 
   return (
-    <div className="m-screen"><div className="m-scroll">
+    <div className="m-screen c-auth-screen"><div className="m-scroll c-auth-scroll">
       <div className="c-auth">
+        <div className="c-auth-brand">
+          <div className="c-auth-orb"><img src="/favicon.svg" alt="" /></div>
+          <div className="c-auth-wordmark">Bizrezzy</div>
+        </div>
+
+        <div className="c-auth-card">
         <button className="c-back" onClick={() => navigate(-1)}>
           <Icons.ChevronLeft size={16} /> Back
         </button>
@@ -84,6 +90,7 @@ export default function ForgotPin() {
             <button className="c-btn c-btn-block" onClick={goToLogin}>Continue to Login</button>
           </>
         )}
+        </div>
 
         <p className="c-muted-center">
           Remembered it? <Link className="c-link" to="/login">Back to Login</Link>

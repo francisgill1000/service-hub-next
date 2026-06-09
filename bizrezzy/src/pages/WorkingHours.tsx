@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
-import { updateShop } from '@/lib/shops';
+import { getShop, updateShop } from '@/lib/shops';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// Backend stores day_of_week as PHP date('w') / Carbon dayOfWeek: Sun=0..Sat=6.
+// DAYS is Monday-first, so map index 0(Mon)->1 … 5(Sat)->6 … 6(Sun)->0.
+const dowFor = (i: number): number => (i + 1) % 7;
 
 const TIME_OPTIONS: string[] = [];
 for (let h = 0; h < 24; h++) {
@@ -17,7 +21,7 @@ type Row = { day: string; day_of_week: number; is_open: boolean; start_time: str
 
 function buildRows(workingHours: Array<{ day_of_week?: number; day?: string; start_time?: string; end_time?: string }>): Row[] {
   return DAYS.map((day, i) => {
-    const dayNum = i + 1;
+    const dayNum = dowFor(i);
     const found = workingHours.find((d) => d.day_of_week === dayNum || d.day?.toLowerCase() === day.toLowerCase());
     return found
       ? { day, day_of_week: dayNum, is_open: true, start_time: found.start_time || '09:00', end_time: found.end_time || '18:00' }
@@ -34,9 +38,21 @@ export default function WorkingHours() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const data = (shop?.working_hours as Array<{ day_of_week?: number; day?: string; start_time?: string; end_time?: string }>) || [];
-    if (data.length > 0) setRows(buildRows(data));
-  }, [shop]);
+    // Seed from the cached shop if it happens to carry hours…
+    const seed = (shop?.working_hours as Array<{ day_of_week?: number; day?: string; start_time?: string; end_time?: string }>) || [];
+    if (seed.length > 0) setRows(buildRows(seed));
+    // …but the login payload omits working_hours, so always fetch the full shop.
+    if (!shop?.id) return;
+    let alive = true;
+    getShop(shop.id)
+      .then((full) => {
+        if (!alive) return;
+        const data = (full?.working_hours as Array<{ day_of_week?: number; day?: string; start_time?: string; end_time?: string }>) || [];
+        setRows(buildRows(data));
+      })
+      .catch(() => undefined);
+    return () => { alive = false; };
+  }, [shop?.id]);
 
   const updateDay = (index: number, key: keyof Row, value: Row[keyof Row]) => {
     setRows((prev) => prev.map((r, i) => (i === index ? { ...r, [key]: value } : r)));

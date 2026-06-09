@@ -21,15 +21,19 @@ $dist = Join-Path $root "dist"
 if (-not (Test-Path $dist)) { throw "Build output not found at $dist" }
 
 Write-Host "==> Uploading dist -> $server`:$webroot" -ForegroundColor Cyan
-ssh -o BatchMode=yes $server "mkdir -p $webroot && rm -rf $webroot/*"
-if ($LASTEXITCODE -ne 0) { throw "remote prepare failed" }
-# PowerShell does not expand "$dist/*" for native commands, so enumerate the
-# top-level entries and pass them explicitly (scp -r recurses into dirs).
-$files = (Get-ChildItem -LiteralPath $dist).FullName
-if (-not $files) { throw "Build output at $dist is empty" }
-scp -q -o BatchMode=yes -r $files "$server`:$webroot/"
+# Upload as a single tarball, not per-file scp. Per-file `scp -r` has been seen
+# to hang mid-transfer; because the remote `rm -rf` runs first, a hung upload
+# would leave the webroot empty and nginx looping on try_files -> HTTP 500.
+# A one-shot tarball avoids that failure window: clear + extract happen together.
+$tar = Join-Path $env:TEMP "bizrezzy-dist.tar.gz"
+if (Test-Path $tar) { Remove-Item $tar -Force }
+tar -czf $tar -C $dist .
+if ($LASTEXITCODE -ne 0) { throw "tar failed (exit $LASTEXITCODE)" }
+scp -o BatchMode=yes -o ConnectTimeout=15 $tar "$server`:/tmp/bizrezzy-dist.tar.gz"
 if ($LASTEXITCODE -ne 0) { throw "scp failed" }
-ssh -o BatchMode=yes $server "chown -R www-data:www-data $webroot"
+ssh -o BatchMode=yes $server "mkdir -p $webroot && rm -rf $webroot/* && tar -xzf /tmp/bizrezzy-dist.tar.gz -C $webroot && chown -R www-data:www-data $webroot && rm -f /tmp/bizrezzy-dist.tar.gz"
+if ($LASTEXITCODE -ne 0) { throw "remote extract failed" }
+Remove-Item $tar -Force
 
 Write-Host "==> Verifying" -ForegroundColor Cyan
 curl.exe -sI https://bizrezzy.eloquentservice.com/ | Select-Object -First 1

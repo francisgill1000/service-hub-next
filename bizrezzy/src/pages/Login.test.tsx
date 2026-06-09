@@ -19,12 +19,11 @@ function setup() {
 describe('Login', () => {
   beforeEach(() => { localStorage.clear(); vi.restoreAllMocks(); nav.mockReset(); });
 
-  it('logs in through the two-step flow', async () => {
+  it('logs in with Business ID and PIN on one page', async () => {
     vi.spyOn(shops, 'shopLogin').mockResolvedValue({ token: 't', shop: { id: 1, name: 'Acme' } });
     setup();
     const user = userEvent.setup();
     await user.type(screen.getByLabelText(/business id/i), 'ACME01');
-    await user.click(screen.getByRole('button', { name: /continue/i }));
     await user.type(screen.getByLabelText('PIN'), '1234');
     await user.click(screen.getByRole('button', { name: /log in/i }));
     expect(shops.shopLogin).toHaveBeenCalledWith('ACME01', '1234');
@@ -36,7 +35,6 @@ describe('Login', () => {
     setup();
     const user = userEvent.setup();
     await user.type(screen.getByLabelText(/business id/i), 'X');
-    await user.click(screen.getByRole('button', { name: /continue/i }));
     await user.type(screen.getByLabelText('PIN'), '0000');
     await user.click(screen.getByRole('button', { name: /log in/i }));
     expect(await screen.findByText(/failed|invalid|incorrect/i)).toBeInTheDocument();

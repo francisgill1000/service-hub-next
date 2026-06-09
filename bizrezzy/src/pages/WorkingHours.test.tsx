@@ -20,6 +20,10 @@ describe('WorkingHours', () => {
   beforeEach(() => { localStorage.clear(); vi.restoreAllMocks(); });
 
   it('saves only the open days as working_hours', async () => {
+    vi.spyOn(shopsLib, 'getShop').mockResolvedValue({
+      id: 7, name: 'Acme',
+      working_hours: [{ day_of_week: 1, start_time: '09:00', end_time: '17:00' }],
+    });
     const update = vi.spyOn(shopsLib, 'updateShop').mockResolvedValue({ id: 7, name: 'Acme' });
     setup();
     const user = userEvent.setup();

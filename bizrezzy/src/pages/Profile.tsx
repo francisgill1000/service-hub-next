@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { AppBar } from '@/layout/AppBar';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
 import { updateShop, reverseGeocode } from '@/lib/shops';
+import { fileToCompressedDataUrl } from '@/lib/image';
 
 const CUSTOMER_WEB = 'https://rezzy.eloquentservice.com';
 
@@ -19,15 +20,6 @@ type Form = {
   logo: string | null;
   hero_image: string | null;
 };
-
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -149,7 +141,7 @@ export default function Profile() {
             )}
           </button>
           <input ref={heroInput} type="file" accept="image/*" hidden aria-label="Cover banner"
-            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('hero_image', await fileToDataUrl(f)); }} />
+            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('hero_image', await fileToCompressedDataUrl(f, { maxDim: 1600 })); }} />
 
           {/* Logo */}
           <button type="button" className="c-logo-pick" onClick={() => logoInput.current?.click()}>
@@ -157,7 +149,7 @@ export default function Profile() {
             <span className="c-logo-cam"><Icons.Locate size={13} /></span>
           </button>
           <input ref={logoInput} type="file" accept="image/*" hidden aria-label="Logo"
-            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('logo', await fileToDataUrl(f)); }} />
+            onChange={async (e) => { const f = e.target.files?.[0]; if (f) change('logo', await fileToCompressedDataUrl(f, { maxDim: 512 })); }} />
 
           <div style={{ height: 16 }} />
 
@@ -232,16 +224,6 @@ export default function Profile() {
             </div>
           </>
         )}
-
-        <div className="c-section-title">Manage</div>
-        <div className="c-card" style={{ padding: 0 }}>
-          <Link to="/staff" className="c-row-link" style={{ borderBottom: '1px solid var(--border-1)' }}>
-            <span className="c-row-title">Staff</span><Icons.Chevron size={18} />
-          </Link>
-          <Link to="/working-hours" className="c-row-link">
-            <span className="c-row-title">Working Hours</span><Icons.Chevron size={18} />
-          </Link>
-        </div>
 
         <div style={{ padding: '8px 16px 24px' }}>
           <button className="c-btn-ghost" style={{ width: '100%', color: 'var(--danger)' }} onClick={handleLogout}>

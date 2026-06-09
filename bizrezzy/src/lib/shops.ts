@@ -37,6 +37,13 @@ export async function updateShop(
   payload: Partial<Shop> | { working_hours: WorkingHours[] },
 ): Promise<Shop> {
   const { data } = await api.put(`/shops/${id}`, payload);
+  // update() responds { message, shop }; older shapes used { data }. Unwrap to the shop.
+  return data?.shop ?? data?.data ?? data;
+}
+
+/** Full shop incl. the working_hours relation (the login payload omits it). */
+export async function getShop(id: number): Promise<Shop> {
+  const { data } = await api.get(`/shops/${id}`);
   return data?.data ?? data;
 }
 
@@ -63,6 +70,15 @@ export async function updateStaff(
 export async function getMasterShops(): Promise<MasterShop[]> {
   const { data } = await api.get('/master/shops');
   return Array.isArray(data?.data) ? data.data : [];
+}
+
+/** Master account only: update a business's visibility and/or WhatsApp persona. */
+export async function updateMasterShop(
+  id: number,
+  payload: { status?: 'active' | 'inactive'; persona?: string | null },
+): Promise<MasterShop> {
+  const { data } = await api.patch(`/master/shops/${id}`, payload);
+  return data?.data ?? data;
 }
 
 export async function approveQrLogin(token: string): Promise<unknown> {

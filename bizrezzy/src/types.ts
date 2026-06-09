@@ -1,7 +1,9 @@
 export type WorkingHours = {
+  day_of_week?: number; // PHP date('w'): Sun=0 … Sat=6
   day?: string;
   start_time?: string;
   end_time?: string;
+  slot_duration?: number;
   is_closed?: boolean;
 };
 
@@ -140,6 +142,7 @@ export type MasterShop = {
   location?: string | null;
   category?: string | null;
   status?: string;
+  persona?: string | null;
   is_master?: boolean;
   bookings_count?: number;
   wa_connected?: boolean;

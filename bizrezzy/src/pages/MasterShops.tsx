@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
 import { getMasterShops, getServiceCategories, registerShop } from '@/lib/shops';
+import { pushSupported, pushEnabled, enablePush, disablePush } from '@/lib/push';
 import { MasterShopCard } from '@/components/MasterShopCard';
 import type { MasterShop, ServiceCategory } from '@/types';
 
@@ -25,6 +26,31 @@ export default function MasterShops() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const [createdShop, setCreatedShop] = useState<{ name: string; code: string; pin: string } | null>(null);
+
+  // browser push notifications (master only — gets every incoming WA message)
+  const [pushOn, setPushOn] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+
+  useEffect(() => {
+    if (pushSupported()) void pushEnabled().then(setPushOn).catch(() => undefined);
+  }, []);
+
+  const togglePush = async () => {
+    setPushBusy(true);
+    try {
+      if (pushOn) {
+        await disablePush();
+        setPushOn(false);
+      } else {
+        await enablePush();
+        setPushOn(true);
+      }
+    } catch (e) {
+      alert((e as Error)?.message || 'Could not update notifications.');
+    } finally {
+      setPushBusy(false);
+    }
+  };
 
   useEffect(() => {
     // server enforces this too — the redirect is just UX
@@ -84,6 +110,15 @@ export default function MasterShops() {
           <h1 className="c-page-title">All Businesses</h1>
           <p className="c-page-sub">Master view — credentials and activity for every account.</p>
         </div>
+        {pushSupported() && (
+          <button className="c-icon-btn" disabled={pushBusy}
+            aria-label={pushOn ? 'Disable notifications' : 'Enable notifications'}
+            title={pushOn ? 'Notifications on — tap to disable' : 'Get notified of new WhatsApp messages'}
+            style={pushOn ? { color: '#22c55e' } : undefined}
+            onClick={() => void togglePush()}>
+            <Icons.Bell size={18} />
+          </button>
+        )}
         <button className="c-icon-btn" aria-label="Bot prompts" onClick={() => navigate('/master/prompts')}>
           <Icons.Chat size={18} />
         </button>

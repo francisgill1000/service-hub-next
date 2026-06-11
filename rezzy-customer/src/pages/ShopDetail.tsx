@@ -87,6 +87,25 @@ export default function ShopDetail() {
         <h2 style={{ margin: '0 16px', fontSize: 22 }}>{shop.name}</h2>
         {shop.location && <p style={{ margin: '4px 16px 16px', color: 'var(--text-3)', fontSize: 13 }}>{shop.location}</p>}
 
+        <div className="c-chat-row">
+          <button
+            className="c-chat-btn"
+            onClick={() => navigate(`/shop/${shop.id}/chat`, { state: { shopName: shop.name } })}
+          >
+            <Icons.Chat size={17} /> Live Chat
+          </button>
+          {shop.phone && (
+            <a
+              className="c-chat-btn wa"
+              href={`https://wa.me/${String(shop.phone).replace(/\D+/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icons.WhatsApp size={17} /> WhatsApp
+            </a>
+          )}
+        </div>
+
         <div className="m-section-title" style={{ padding: '0 16px' }}><h3>Select date</h3></div>
         <div className="c-date-strip">
           {dates.map((d) => {
@@ -113,14 +132,31 @@ export default function ShopDetail() {
 
         {(shop.catalogs?.length ?? 0) > 0 && (
           <>
-            <div className="m-section-title" style={{ padding: '16px 16px 0' }}><h3>Services</h3></div>
-            <div style={{ margin: '8px 16px', border: '1px solid var(--border-1)', borderRadius: 'var(--r-lg)', overflow: 'hidden' }}>
-              {shop.catalogs!.map((s) => (
-                <div key={s.id} className={`c-service ${selectedServices.includes(s.id) ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
-                  <span>{s.title || s.name}</span>
-                  <span className="price">AED {parseFloat(String(s.price ?? 0)).toFixed(2)}</span>
-                </div>
-              ))}
+            <div className="m-section-title" style={{ padding: '16px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3>Services</h3>
+              {selectedServices.length > 0 && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--mint-300)' }}>{selectedServices.length} selected</span>}
+            </div>
+            <div className="c-service-list">
+              {shop.catalogs!.map((s) => {
+                const on = selectedServices.includes(s.id);
+                return (
+                  <div key={s.id} className={`c-service-card ${on ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
+                    <div className="thumb">
+                      {s.image
+                        ? <img src={s.image} alt="" />
+                        : <span className="ph"><Icons.Image size={22} /></span>}
+                    </div>
+                    <div className="info">
+                      <h4>{s.title || s.name}</h4>
+                      {s.description && <p>{s.description}</p>}
+                      <span className="price">AED {parseFloat(String(s.price ?? 0)).toFixed(2)}</span>
+                    </div>
+                    <button className={`add ${on ? 'on' : ''}`} aria-label={on ? 'Remove service' : 'Add service'} onClick={(e) => { e.stopPropagation(); toggleService(s.id); }}>
+                      {on ? <Icons.Check size={20} /> : <Icons.Plus size={20} />}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </>
         )}

@@ -53,6 +53,47 @@
   --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
+/* Light theme — overrides applied when <html data-theme="light"> */
+:root[data-theme='light'] {
+  --bg-0: #f1f4f3;
+  --bg-1: #ffffff;
+  --bg-2: #eaeeec;
+  --surface-1: #ffffff;
+  --surface-2: #f3f6f5;
+  --surface-3: #e6ebe9;
+
+  --border-1: rgba(0, 0, 0, 0.08);
+  --border-2: rgba(0, 0, 0, 0.12);
+  --border-3: rgba(0, 0, 0, 0.18);
+  --border-mint: rgba(0, 160, 132, 0.32);
+
+  --text-1: #0e1714;
+  --text-2: #36413d;
+  --text-3: #69736e;
+  --text-4: #99a19c;
+  --text-5: #c4c9c6;
+
+  /* Brand mint stays usable as a button fill (mint-500 + dark text),
+     but text/icon usages are darkened so they stay legible on white. */
+  --mint-300: #00735c;
+  --mint-400: #009a7c;
+
+  --mint-glow: rgba(0, 160, 132, 0.20);
+  --mint-soft: rgba(0, 160, 132, 0.10);
+
+  --warn: #b9750c;
+  --warn-soft: rgba(244, 184, 96, 0.18);
+  --danger: #dc2626;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --info: #2563eb;
+  --info-soft: rgba(96, 165, 250, 0.16);
+  --neutral-soft: rgba(0, 0, 0, 0.05);
+
+  --shadow-1: 0 1px 2px rgba(16, 24, 20, 0.08);
+  --shadow-2: 0 8px 24px -8px rgba(16, 24, 20, 0.18);
+  --shadow-glow: 0 0 0 1px rgba(0, 160, 132, 0.35), 0 12px 40px -10px rgba(0, 160, 132, 0.25);
+}
+
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 body {
@@ -61,6 +102,7 @@ body {
   color: var(--text-1);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }

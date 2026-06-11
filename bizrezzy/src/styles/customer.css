@@ -453,3 +453,11 @@
 .c-msd-action.off { color: var(--mint-300); border-color: var(--border-mint); background: var(--mint-soft); }
 .c-msd-help { margin: 8px 2px 0; font-size: 11.5px; color: var(--text-4); }
 .c-msd-section .c-master-meta { margin-top: 0; }
+
+/* Channel badge: in-app Live Chat threads in the mixed inbox */
+.c-chan-badge {
+  display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 99px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--mint-soft); border: 1px solid var(--border-mint); color: var(--mint-300);
+  vertical-align: 1px;
+}

@@ -8,6 +8,7 @@ import { ShopCard } from '@/components/ShopCard';
 import { Spinner } from '@/components/Spinner';
 import { EmptyState } from '@/components/EmptyState';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Icons } from '@/components/Icons';
 
 export default function Home() {
@@ -46,7 +47,7 @@ export default function Home() {
 
   return (
     <div className="m-screen">
-      <AppBar title="Rezzy" actions={<WhatsAppButton />} />
+      <AppBar title="Rezzy" actions={<><ThemeToggle /><WhatsAppButton /></>} />
       <div className="c-search">
         <Icons.Search size={18} />
         <input placeholder="Search businesses…" value={search} onChange={(e) => setSearch(e.target.value)} />

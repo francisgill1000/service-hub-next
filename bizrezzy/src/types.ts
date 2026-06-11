@@ -106,7 +106,9 @@ export type WaAccountInfo = {
 
 export type WaContact = {
   id: number;
-  wa_number: string;
+  /** 'wa' = WhatsApp thread; 'app' = in-app Live Chat (no WA number). */
+  channel?: 'wa' | 'app';
+  wa_number?: string | null;
   name?: string | null;
   last_message_preview?: string | null;
   last_message_direction?: 'in' | 'out' | null;

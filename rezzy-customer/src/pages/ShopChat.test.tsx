@@ -1,0 +1,67 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import * as chatLib from '@/lib/chat';
+import ShopChat from './ShopChat';
+
+function setup() {
+  return render(
+    <MemoryRouter initialEntries={[{ pathname: '/shop/5/chat', state: { shopName: 'Glow Salon' } }]}>
+      <Routes><Route path="/shop/:id/chat" element={<ShopChat />} /></Routes>
+    </MemoryRouter>,
+  );
+}
+
+describe('ShopChat', () => {
+  beforeEach(() => { vi.restoreAllMocks(); });
+
+  it('renders the thread with my messages on the out side', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([
+      { id: 1, direction: 'in', body: 'Do you have slots today?', created_at: '2026-06-12T10:00:00Z' },
+      { id: 2, direction: 'out', body: 'Yes! 3pm is free 😊', created_at: '2026-06-12T10:00:05Z' },
+    ]);
+
+    setup();
+    expect(await screen.findByText('Do you have slots today?')).toBeInTheDocument();
+    expect(screen.getByText('Yes! 3pm is free 😊')).toBeInTheDocument();
+    expect(screen.getByText('Glow Salon')).toBeInTheDocument();
+    // direction 'in' = sent by me → rendered as an outgoing bubble
+    expect(screen.getByText('Do you have slots today?').closest('.c-bubble')).toHaveClass('out');
+    expect(screen.getByText('Yes! 3pm is free 😊').closest('.c-bubble')).toHaveClass('in');
+  });
+
+  it('shows the empty hint when there is no history', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
+
+    setup();
+    expect(await screen.findByText(/say hi/i)).toBeInTheDocument();
+  });
+
+  it('sends a message', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
+    const send = vi.spyOn(chatLib, 'sendChatMessage').mockResolvedValue({
+      id: 9, direction: 'in', body: 'How much is a haircut?', created_at: '2026-06-12T10:02:00Z',
+    });
+
+    setup();
+    const user = userEvent.setup();
+    await user.type(await screen.findByPlaceholderText(/type a message/i), 'How much is a haircut?');
+    await user.click(screen.getByRole('button', { name: /send/i }));
+
+    expect(send).toHaveBeenCalledWith(5, 'How much is a haircut?');
+    expect(await screen.findByText('How much is a haircut?')).toBeInTheDocument();
+  });
+
+  it('shows an error when sending fails', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
+    vi.spyOn(chatLib, 'sendChatMessage').mockRejectedValue(new Error('network'));
+
+    setup();
+    const user = userEvent.setup();
+    await user.type(await screen.findByPlaceholderText(/type a message/i), 'x');
+    await user.click(screen.getByRole('button', { name: /send/i }));
+
+    expect(await screen.findByText(/could not send/i)).toBeInTheDocument();
+  });
+});

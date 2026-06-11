@@ -40,6 +40,32 @@ describe('Chats', () => {
     expect(await screen.findByText(/whatsapp not connected/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /set up whatsapp/i })).toBeInTheDocument();
   });
+
+  it('marks Live Chat threads with a badge and shows them without WhatsApp', async () => {
+    vi.spyOn(chatsLib, 'getWaContacts').mockResolvedValue({
+      connected: false,
+      data: [
+        { id: 3, channel: 'app', wa_number: null, name: 'Aisha', last_message_preview: 'Any slots?', last_message_direction: 'in', unread_count: 1 },
+      ],
+    });
+
+    setup();
+    expect(await screen.findByText('Aisha')).toBeInTheDocument();
+    expect(screen.getByText('Live')).toBeInTheDocument();
+    expect(screen.queryByText(/whatsapp not connected/i)).not.toBeInTheDocument();
+  });
+
+  it('falls back to a label for unnamed Live Chat threads', async () => {
+    vi.spyOn(chatsLib, 'getWaContacts').mockResolvedValue({
+      connected: true,
+      data: [
+        { id: 4, channel: 'app', wa_number: null, name: null, last_message_preview: 'hi', last_message_direction: 'in', unread_count: 0 },
+      ],
+    });
+
+    setup();
+    expect(await screen.findByText('Live chat customer')).toBeInTheDocument();
+  });
 });
 
 describe('chatTime', () => {

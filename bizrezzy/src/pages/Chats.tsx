@@ -52,21 +52,21 @@ export default function Chats() {
 
   const q = query.trim().toLowerCase();
   const filtered = q
-    ? contacts.filter((c) => (c.name || '').toLowerCase().includes(q) || c.wa_number.includes(q))
+    ? contacts.filter((c) => (c.name || '').toLowerCase().includes(q) || (c.wa_number || '').includes(q))
     : contacts;
 
   return (
     <div className="m-screen"><div className="m-scroll">
       <div className="c-page-head">
         <h1 className="c-page-title">Chats</h1>
-        <p className="c-page-sub">WhatsApp conversations with your customers.</p>
+        <p className="c-page-sub">WhatsApp and Live Chat conversations with your customers.</p>
       </div>
 
       {error && <div className="c-error-box">{error}</div>}
 
       {loading ? (
         <Spinner label="Loading chats…" />
-      ) : !connected ? (
+      ) : !connected && contacts.length === 0 ? (
         <EmptyState
           icon={<Icons.WhatsApp size={28} />}
           title="WhatsApp not connected"
@@ -96,7 +96,7 @@ export default function Chats() {
             />
           ) : (
             filtered.map((c) => {
-              const name = c.name || c.wa_number;
+              const name = c.name || c.wa_number || 'Live chat customer';
               const unread = c.unread_count || 0;
               return (
                 <Link key={c.id} to={`/chats/${c.id}`} className="c-chat-row">
@@ -104,7 +104,10 @@ export default function Chats() {
                   <div className="c-staff-avatar">{(Array.from(name)[0] || '?').toUpperCase()}</div>
                   <div className="c-chat-row-body">
                     <div className="c-chat-row-top">
-                      <span className="c-chat-row-name">{name}</span>
+                      <span className="c-chat-row-name">
+                        {name}
+                        {c.channel === 'app' && <span className="c-chan-badge">Live</span>}
+                      </span>
                       <span className="c-chat-row-time">{chatTime(c.last_message_at)}</span>
                     </div>
                     <div className="c-chat-row-bottom">

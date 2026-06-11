@@ -4,6 +4,7 @@ export type Service = {
   id: number;
   title?: string;
   name?: string;
+  description?: string;
   price?: number | string;
   image?: string;
 };
@@ -14,6 +15,7 @@ export type Shop = {
   logo?: string;
   hero_image?: string;
   location?: string;
+  phone?: string;
   shop_code?: string;
   rating?: number | string;
   distance?: string;
@@ -37,6 +39,15 @@ export type Booking = {
   customer?: { name?: string };
   shop?: { name?: string; location?: string };
   services?: Service[];
+};
+
+/** Live Chat message. Direction is from the shop's side: 'in' = sent by me (the customer). */
+export type ChatMessage = {
+  id: number;
+  direction: 'in' | 'out';
+  type?: string;
+  body: string;
+  created_at?: string;
 };
 
 export type Paginated<T> = {

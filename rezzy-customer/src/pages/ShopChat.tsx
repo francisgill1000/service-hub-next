@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Spinner } from '@/components/Spinner';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import api from '@/lib/api';
+import { getChatMessages, sendChatMessage } from '@/lib/chat';
 import { Icons } from '@/components/Icons';
-import { getWaContacts, getWaMessages, markWaRead, sendWaMessage } from '@/lib/chats';
-import type { WaContact, WaMessage } from '@/types';
+import { Spinner } from '@/components/Spinner';
+import type { ChatMessage } from '@/types';
 
 const POLL_MS = 4000;
 
@@ -14,13 +15,14 @@ function bubbleTime(iso?: string): string {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-export default function ChatThread() {
+export default function ShopChat() {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const contactId = Number(id);
+  const { id } = useParams<{ id: string }>();
+  const shopId = Number(id);
+  const stateShopName = (useLocation().state as { shopName?: string } | null)?.shopName;
 
-  const [contact, setContact] = useState<WaContact | null>(null);
-  const [messages, setMessages] = useState<WaMessage[]>([]);
+  const [shopName, setShopName] = useState(stateShopName ?? '');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [draft, setDraft] = useState('');
@@ -29,7 +31,7 @@ export default function ChatThread() {
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const appendMessages = useCallback((incoming: WaMessage[]) => {
+  const appendMessages = useCallback((incoming: ChatMessage[]) => {
     if (incoming.length === 0) return;
     setMessages((prev) => {
       const seen = new Set(prev.map((m) => m.id));
@@ -41,45 +43,42 @@ export default function ChatThread() {
     if (maxId > lastIdRef.current) lastIdRef.current = maxId;
   }, []);
 
-  // initial load: contact info + history, mark read
+  // initial load: history (+ shop name when not passed via navigation state)
   useEffect(() => {
-    if (!contactId) return;
+    if (!shopId) return;
     let alive = true;
     (async () => {
       try {
-        const [contactsRes, history] = await Promise.all([
-          getWaContacts(),
-          getWaMessages(contactId),
-        ]);
+        const history = await getChatMessages(shopId);
         if (!alive) return;
-        setContact(contactsRes.data.find((c) => c.id === contactId) ?? null);
         appendMessages(history);
-        void markWaRead(contactId).catch(() => undefined);
       } catch {
         if (alive) setError('Could not load this chat.');
       } finally {
         if (alive) setLoading(false);
       }
     })();
+    if (!stateShopName) {
+      void api.get(`/shops/${shopId}`)
+        .then((res) => { if (alive) setShopName((res.data?.data ?? res.data)?.name ?? ''); })
+        .catch(() => undefined);
+    }
     return () => { alive = false; };
-  }, [contactId, appendMessages]);
+  }, [shopId, stateShopName, appendMessages]);
 
-  // poll for new messages
+  // poll for replies
   useEffect(() => {
-    if (!contactId) return;
+    if (!shopId) return;
     const timer = setInterval(async () => {
       try {
-        const fresh = await getWaMessages(contactId, lastIdRef.current);
-        if (fresh.length > 0) {
-          appendMessages(fresh);
-          void markWaRead(contactId).catch(() => undefined);
-        }
+        const fresh = await getChatMessages(shopId, lastIdRef.current);
+        appendMessages(fresh);
       } catch {
         /* transient poll error — next tick retries */
       }
     }, POLL_MS);
     return () => clearInterval(timer);
-  }, [contactId, appendMessages]);
+  }, [shopId, appendMessages]);
 
   // auto-scroll on new messages
   useEffect(() => {
@@ -93,59 +92,47 @@ export default function ChatThread() {
     setSending(true);
     setError('');
     try {
-      const sent = await sendWaMessage(contactId, text);
+      const sent = await sendChatMessage(shopId, text);
       appendMessages([sent]);
       setDraft('');
-    } catch (e) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg || (contact?.channel === 'app'
-        ? 'Could not send. Please try again.'
-        : 'Could not send. WhatsApp only allows free replies within 24h of the customer’s last message.'));
+    } catch {
+      setError('Could not send. Please try again.');
     } finally {
       setSending(false);
     }
   };
 
-  const title = contact?.name || contact?.wa_number || (contact?.channel === 'app' ? 'Live chat customer' : 'Chat');
+  const title = shopName || 'Chat';
 
   return (
     <div className="m-screen c-thread-screen">
       <div className="c-thread-head">
-        <button className="c-icon-btn" aria-label="Back" onClick={() => navigate('/chats')}>
+        <button className="c-icon-btn" aria-label="Back" onClick={() => navigate(`/shop/${shopId}`)}>
           <Icons.ChevronLeft size={18} />
         </button>
-        <div className="c-staff-avatar" style={{ width: 38, height: 38, fontSize: 15 }}>
-          {(Array.from(title)[0] || '?').toUpperCase()}
-        </div>
+        <div className="c-thread-avatar">{(Array.from(title)[0] || '?').toUpperCase()}</div>
         <div className="c-thread-head-text">
           <span className="c-thread-title">{title}</span>
           <span className="c-thread-sub">
             <span className="c-live-dot" />
-            {contact?.channel === 'app'
-              ? 'Live Chat — in the Rezzy app'
-              : contact?.name ? contact.wa_number : 'Live on WhatsApp'}
+            AI assistant · replies in seconds
           </span>
         </div>
       </div>
 
       <div className="c-thread-scroll" ref={scrollRef}>
         {loading ? (
-          <Spinner label="Loading messages…" />
+          <Spinner />
         ) : messages.length === 0 ? (
-          <p className="c-thread-empty">No messages yet.</p>
+          <p className="c-thread-empty">Say hi! Ask about prices, timings or availability.</p>
         ) : (
-          messages.map((m) => {
-            const isAudio = !!m.media_url && (m.type === 'audio' || m.type === 'voice');
-            const isImage = !!m.media_url && m.type === 'image';
-            return (
-              <div key={m.id} className={`c-bubble ${m.direction === 'out' ? 'out' : 'in'}`}>
-                {isAudio && <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />}
-                {isImage && <img src={m.media_url!} alt="" className="c-bubble-img" loading="lazy" />}
-                {!isAudio && !isImage && <span className="c-bubble-text">{m.body}</span>}
-                <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
-              </div>
-            );
-          })
+          messages.map((m) => (
+            // direction is from the shop's side: 'in' = sent by me
+            <div key={m.id} className={`c-bubble ${m.direction === 'in' ? 'out' : 'in'}`}>
+              <span className="c-bubble-text">{m.body}</span>
+              <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
+            </div>
+          ))
         )}
       </div>
 
@@ -154,7 +141,7 @@ export default function ChatThread() {
       <div className="c-composer">
         <input
           type="text"
-          placeholder="Type a reply…"
+          placeholder="Type a message…"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') void handleSend(); }}

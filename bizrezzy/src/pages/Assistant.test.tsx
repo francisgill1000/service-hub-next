@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -14,13 +14,14 @@ function setup() {
 }
 
 const DEFAULT_PROMPT = 'You are the warm, professional WhatsApp assistant for Acme, a salon business.';
+const FACTS = 'FACTS ABOUT THE BUSINESS:\nServices and prices (complete list):\n- Haircut — AED 50.00';
 
 describe('Assistant', () => {
   beforeEach(() => { localStorage.clear(); vi.restoreAllMocks(); });
 
   it('shows the standard prompt when no custom persona is set', async () => {
     vi.spyOn(personaLib, 'getPersona').mockResolvedValue({
-      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false,
+      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false, business_facts: FACTS,
     });
 
     setup();
@@ -31,10 +32,10 @@ describe('Assistant', () => {
 
   it('saves a custom prompt', async () => {
     vi.spyOn(personaLib, 'getPersona').mockResolvedValue({
-      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false,
+      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false, business_facts: FACTS,
     });
     const save = vi.spyOn(personaLib, 'savePersona').mockResolvedValue({
-      persona: 'You are Bella.', default_prompt: DEFAULT_PROMPT, effective_prompt: 'You are Bella.', using_custom: true,
+      persona: 'You are Bella.', default_prompt: DEFAULT_PROMPT, effective_prompt: 'You are Bella.', using_custom: true, business_facts: FACTS,
     });
 
     setup();
@@ -52,10 +53,10 @@ describe('Assistant', () => {
 
   it('resets to the standard prompt', async () => {
     vi.spyOn(personaLib, 'getPersona').mockResolvedValue({
-      persona: 'You are Bella.', default_prompt: DEFAULT_PROMPT, effective_prompt: 'You are Bella.', using_custom: true,
+      persona: 'You are Bella.', default_prompt: DEFAULT_PROMPT, effective_prompt: 'You are Bella.', using_custom: true, business_facts: FACTS,
     });
     const save = vi.spyOn(personaLib, 'savePersona').mockResolvedValue({
-      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false,
+      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false, business_facts: FACTS,
     });
 
     setup();
@@ -67,9 +68,23 @@ describe('Assistant', () => {
     expect(screen.getByLabelText('System prompt')).toHaveValue(DEFAULT_PROMPT);
   });
 
+  it('toggles the read-only business facts block', async () => {
+    vi.spyOn(personaLib, 'getPersona').mockResolvedValue({
+      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false, business_facts: FACTS,
+    });
+
+    setup();
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: /view business facts/i }));
+    expect(screen.getByText(/AED 50\.00/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /hide business facts/i }));
+    expect(screen.queryByText(/AED 50\.00/)).not.toBeInTheDocument();
+  });
+
   it('shows an error when saving fails', async () => {
     vi.spyOn(personaLib, 'getPersona').mockResolvedValue({
-      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false,
+      persona: null, default_prompt: DEFAULT_PROMPT, effective_prompt: DEFAULT_PROMPT, using_custom: false, business_facts: FACTS,
     });
     vi.spyOn(personaLib, 'savePersona').mockRejectedValue(new Error('network'));
 

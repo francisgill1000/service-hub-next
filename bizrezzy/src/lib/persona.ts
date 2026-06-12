@@ -5,6 +5,8 @@ export type PersonaInfo = {
   default_prompt: string;
   effective_prompt: string;
   using_custom: boolean;
+  /** Live services/prices/hours — appended automatically to every reply. */
+  business_facts: string;
 };
 
 /** The shop's AI assistant system prompt (drives WhatsApp + Live Chat replies). */

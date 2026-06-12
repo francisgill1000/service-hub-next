@@ -17,6 +17,8 @@ export default function Assistant() {
   const [draft, setDraft] = useState('');
   const [usingCustom, setUsingCustom] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [facts, setFacts] = useState('');
+  const [showFacts, setShowFacts] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -25,6 +27,7 @@ export default function Assistant() {
         if (!alive) return;
         setDraft(info.persona ?? info.default_prompt);
         setUsingCustom(info.using_custom);
+        setFacts(info.business_facts ?? '');
       })
       .catch(() => { if (alive) setError('Could not load your assistant settings.'); })
       .finally(() => { if (alive) setLoading(false); });
@@ -39,6 +42,7 @@ export default function Assistant() {
       .then((info) => {
         setDraft(info.persona ?? info.default_prompt);
         setUsingCustom(info.using_custom);
+        setFacts(info.business_facts ?? '');
         setNotice(info.using_custom ? 'Saved — your assistant now uses this prompt.' : 'Back to the standard assistant.');
       })
       .catch(() => setError('Could not save. Please try again.'))
@@ -87,6 +91,22 @@ export default function Assistant() {
               style={{ flex: 1, height: '100%', background: 'none', border: 'none', outline: 'none', color: 'var(--text-1)', font: 'inherit', fontSize: 13.5, lineHeight: 1.5, resize: 'none', overflowY: 'auto' }}
             />
           </div>
+
+          {facts && (
+            <button
+              style={{ flex: '0 0 auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mint-300)', fontSize: 12, fontWeight: 700, textAlign: 'left', padding: '0 4px', marginBottom: 10 }}
+              onClick={() => setShowFacts((v) => !v)}
+            >
+              {showFacts ? 'Hide business facts' : 'View business facts (added automatically)'}
+            </button>
+          )}
+
+          {showFacts && (
+            /* Live data the assistant always receives — read-only, never part of the saved prompt. */
+            <div aria-label="Business facts" style={{ flex: 1, minHeight: 0, overflowY: 'auto', whiteSpace: 'pre-wrap', background: 'var(--mint-soft)', border: '1px solid var(--border-mint)', borderRadius: 'var(--r-md)', padding: 12, marginBottom: 12, color: 'var(--text-2)', fontSize: 12.5, lineHeight: 1.5 }}>
+              {facts}
+            </div>
+          )}
 
           <button className="c-btn c-btn-block" style={{ flex: '0 0 auto' }} disabled={saving || !draft.trim()} onClick={() => void apply(draft)}>
             {saving ? 'Saving…' : 'Save prompt'}

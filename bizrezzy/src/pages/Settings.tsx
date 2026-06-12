@@ -14,6 +14,7 @@ const OPTIONS: Option[] = [
   { label: 'Services', sub: 'Add or edit what you offer', to: '/services', icon: 'Grid' },
   { label: 'Staff', sub: 'Add & manage your team', to: '/staff', icon: 'Users' },
   { label: 'WhatsApp', sub: 'Chat connection settings', to: '/chats/setup', icon: 'WhatsApp' },
+  { label: 'AI Assistant', sub: 'What your auto-reply assistant says', to: '/assistant', icon: 'Chat' },
 ];
 
 export default function Settings() {

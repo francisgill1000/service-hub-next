@@ -18,7 +18,6 @@ import Profile from '@/pages/Profile';
 import Settings from '@/pages/Settings';
 import MasterShops from '@/pages/MasterShops';
 import MasterShopDetail from '@/pages/MasterShopDetail';
-import MasterPrompts from '@/pages/MasterPrompts';
 import CategorySetup from '@/pages/CategorySetup';
 import Chats from '@/pages/Chats';
 import ChatThread from '@/pages/ChatThread';
@@ -44,7 +43,6 @@ export default function App() {
           <Route path="/category-setup" element={<CategorySetup />} />
           <Route path="/master" element={<MasterShops />} />
           <Route path="/master/:id" element={<MasterShopDetail />} />
-          <Route path="/master/prompts" element={<MasterPrompts />} />
           <Route path="/chats/setup" element={<WhatsAppSetup />} />
           <Route path="/chats/:id" element={<ChatThread />} />
 

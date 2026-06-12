@@ -119,9 +119,6 @@ export default function MasterShops() {
             <Icons.Bell size={18} />
           </button>
         )}
-        <button className="c-icon-btn" aria-label="Bot prompts" onClick={() => navigate('/master/prompts')}>
-          <Icons.Chat size={18} />
-        </button>
         <button className="c-icon-btn" aria-label="Log out" onClick={() => { logoutShop(); navigate('/login'); }}>
           <Icons.Logout size={18} />
         </button>

@@ -46,8 +46,8 @@ export default function Assistant() {
   };
 
   return (
-    <div className="m-screen"><div className="m-scroll">
-      <div className="c-page-head" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingTop: 18 }}>
+    <div className="m-screen" style={{ height: '100dvh' }}>
+      <div className="c-page-head" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingTop: 18, flex: '0 0 auto' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1 className="c-page-title">AI Assistant</h1>
           <p className="c-page-sub">
@@ -70,41 +70,36 @@ export default function Assistant() {
       {loading ? (
         <Spinner label="Loading assistant…" />
       ) : (
-        <div style={{ padding: '0 16px' }}>
-          <div className="c-field-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 4px 8px' }}>
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', padding: '0 16px calc(16px + env(safe-area-inset-bottom, 0px))' }}>
+          <div className="c-field-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 4px 8px', flex: '0 0 auto' }}>
             <span>System prompt</span>
             <span style={{ color: usingCustom ? 'var(--mint-300)' : 'var(--text-4)', textTransform: 'none', letterSpacing: 0 }}>
               {usingCustom ? 'Custom' : 'Standard (based on your category)'}
             </span>
           </div>
 
-          <div className="c-input-row c-input-area" style={{ marginBottom: 14 }}>
+          {/* Editor fills all remaining height; long prompts scroll inside it. */}
+          <div className="c-input-row c-input-area" style={{ flex: 1, minHeight: 0, marginBottom: 12 }}>
             <textarea
               aria-label="System prompt"
-              rows={14}
               value={draft}
               onChange={(e) => { setDraft(e.target.value); setNotice(''); }}
-              style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'var(--text-1)', font: 'inherit', fontSize: 13.5, lineHeight: 1.5, resize: 'vertical' }}
+              style={{ flex: 1, height: '100%', background: 'none', border: 'none', outline: 'none', color: 'var(--text-1)', font: 'inherit', fontSize: 13.5, lineHeight: 1.5, resize: 'none', overflowY: 'auto' }}
             />
           </div>
 
-          <button className="c-btn c-btn-block" disabled={saving || !draft.trim()} onClick={() => void apply(draft)}>
+          <button className="c-btn c-btn-block" style={{ flex: '0 0 auto' }} disabled={saving || !draft.trim()} onClick={() => void apply(draft)}>
             {saving ? 'Saving…' : 'Save prompt'}
           </button>
 
           {usingCustom && (
-            <button className="c-btn-ghost" style={{ width: '100%', marginTop: 10 }} disabled={saving}
+            <button className="c-btn-ghost" style={{ width: '100%', marginTop: 10, flex: '0 0 auto' }} disabled={saving}
               onClick={() => void apply(null)}>
               Reset to standard
             </button>
           )}
-
-          <p style={{ color: 'var(--text-4)', fontSize: 12, lineHeight: 1.5, margin: '14px 4px 24px' }}>
-            Tip: keep it short and concrete — your services, prices, tone, and anything the
-            assistant should never promise. Changes apply to the next customer message.
-          </p>
         </div>
       )}
-    </div></div>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '@/lib/api';
-import { getChatMessages, sendChatMessage } from '@/lib/chat';
+import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
 import type { ChatMessage } from '@/types';
@@ -13,6 +13,15 @@ function bubbleTime(iso?: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+/** The recorder MIME this browser supports (Chrome: webm, Safari: mp4). */
+function pickAudioMime(): string {
+  const cands = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
+  for (const c of cands) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported?.(c)) return c;
+  }
+  return '';
 }
 
 export default function ShopChat() {
@@ -27,9 +36,13 @@ export default function ShopChat() {
   const [error, setError] = useState('');
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   const appendMessages = useCallback((incoming: ChatMessage[]) => {
     if (incoming.length === 0) return;
@@ -102,6 +115,48 @@ export default function ShopChat() {
     }
   };
 
+  const startRecording = async () => {
+    if (recording || uploading) return;
+    setError('');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mime = pickAudioMime();
+      const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || 'audio/webm' });
+        void uploadVoice(blob);
+      };
+      recorderRef.current = rec;
+      rec.start();
+      setRecording(true);
+    } catch {
+      setError('Microphone access is needed to record. Please allow it and try again.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (!recording) return;
+    setRecording(false);
+    recorderRef.current?.stop();
+  };
+
+  const uploadVoice = async (blob: Blob) => {
+    if (blob.size === 0) return;
+    setUploading(true);
+    setError('');
+    try {
+      const sent = await sendChatVoice(shopId, blob);
+      appendMessages([sent]);
+    } catch {
+      setError('Could not send your voice note. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const title = shopName || 'Chat';
 
   return (
@@ -126,34 +181,55 @@ export default function ShopChat() {
         ) : messages.length === 0 ? (
           <p className="c-thread-empty">Say hi! Ask about prices, timings or availability.</p>
         ) : (
-          messages.map((m) => (
+          messages.map((m) => {
             // direction is from the shop's side: 'in' = sent by me
-            <div key={m.id} className={`c-bubble ${m.direction === 'in' ? 'out' : 'in'}`}>
-              <span className="c-bubble-text">{m.body}</span>
-              <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
-            </div>
-          ))
+            const isAudio = !!m.media_url && (m.type === 'audio' || m.type === 'voice');
+            const caption = m.body.replace(/^(🎤|🔊)\s*/u, '').trim();
+            return (
+              <div key={m.id} className={`c-bubble ${m.direction === 'in' ? 'out' : 'in'}`}>
+                {isAudio && <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />}
+                {(!isAudio || (caption && caption !== '…')) && (
+                  <span className="c-bubble-text">{isAudio ? caption : m.body}</span>
+                )}
+                <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
+              </div>
+            );
+          })
         )}
       </div>
 
       {error && <div className="c-error-box" style={{ margin: '0 16px 8px' }}>{error}</div>}
 
       <div className="c-composer">
-        <input
-          type="text"
-          placeholder="Type a message…"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') void handleSend(); }}
-        />
-        <button
-          className="c-composer-send"
-          aria-label="Send"
-          disabled={sending || !draft.trim()}
-          onClick={() => void handleSend()}
-        >
-          <Icons.Send size={18} />
-        </button>
+        {recording ? (
+          <>
+            <span className="c-rec-dot" />
+            <span className="c-rec-label">Recording… tap to send</span>
+            <button className="c-composer-send" aria-label="Stop and send" onClick={() => stopRecording()}>
+              <Icons.Send size={18} />
+            </button>
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              placeholder={uploading ? 'Sending voice…' : 'Type a message…'}
+              value={draft}
+              disabled={uploading}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') void handleSend(); }}
+            />
+            {draft.trim() ? (
+              <button className="c-composer-send" aria-label="Send" disabled={sending} onClick={() => void handleSend()}>
+                <Icons.Send size={18} />
+              </button>
+            ) : (
+              <button className="c-composer-send" aria-label="Record voice" disabled={uploading} onClick={() => void startRecording()}>
+                {uploading ? <span className="c-mini-spin" /> : <Icons.Mic size={18} />}
+              </button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

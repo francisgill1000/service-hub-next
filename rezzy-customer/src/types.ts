@@ -47,6 +47,7 @@ export type ChatMessage = {
   direction: 'in' | 'out';
   type?: string;
   body: string;
+  media_url?: string | null;
   created_at?: string;
 };
 

@@ -234,3 +234,12 @@
   background: var(--mint-soft); border: 1px solid var(--border-mint); color: var(--mint-300);
 }
 .c-chat-btn.wa { background: var(--surface-1); border: 1px solid var(--border-1); color: var(--text-2); }
+
+/* Live Chat voice */
+.c-bubble-audio { width: min(240px, 60vw); height: 38px; }
+.c-bubble.out .c-bubble-audio { filter: hue-rotate(0deg); }
+.c-rec-dot { width: 10px; height: 10px; border-radius: 99px; background: var(--danger); box-shadow: 0 0 10px var(--danger); animation: c-pulse 1s ease-in-out infinite; flex: 0 0 auto; margin-left: 4px; }
+.c-rec-label { flex: 1; color: var(--text-2); font-size: 14px; }
+@keyframes c-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+.c-mini-spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(4,20,15,0.3); border-top-color: #04140f; animation: c-spin 0.7s linear infinite; display: inline-block; }
+@keyframes c-spin { to { transform: rotate(360deg); } }

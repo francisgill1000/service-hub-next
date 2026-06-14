@@ -8,6 +8,27 @@ import type { WaContact } from '@/types';
 
 const POLL_MS = 10000;
 
+/** Short in-app chime (Web Audio — no asset needed) when a new lead arrives. */
+function chime(): void {
+  try {
+    const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1175, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.36);
+    osc.onended = () => void ctx.close();
+  } catch { /* audio blocked until first interaction — ignore */ }
+}
+
 export function chatTime(iso?: string | null): string {
   if (!iso) return '';
   const d = new Date(iso);
@@ -29,6 +50,7 @@ export default function Chats() {
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevUnread = useRef<number | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -39,6 +61,13 @@ export default function Chats() {
         setConnected(res.connected);
         setContacts(res.data);
         setError('');
+
+        // Alert on a new unread message even when web-push doesn't show:
+        // chime + a tab-title badge that's visible from other tabs.
+        const unread = res.data.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+        if (prevUnread.current !== null && unread > prevUnread.current) chime();
+        prevUnread.current = unread;
+        document.title = unread > 0 ? `(${unread}) Bizrezzy` : 'Bizrezzy';
       } catch {
         if (alive && first) setError('Could not load chats.');
       } finally {
@@ -47,7 +76,11 @@ export default function Chats() {
     };
     void load(true);
     timer.current = setInterval(() => void load(), POLL_MS);
-    return () => { alive = false; if (timer.current) clearInterval(timer.current); };
+    return () => {
+      alive = false;
+      if (timer.current) clearInterval(timer.current);
+      document.title = 'Bizrezzy';
+    };
   }, []);
 
   const q = query.trim().toLowerCase();

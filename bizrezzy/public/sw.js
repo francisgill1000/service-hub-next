@@ -12,6 +12,9 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(data.title || 'New message', {
       body: data.body || '',
       tag: data.tag || undefined, // one notification per contact, newest wins
+      renotify: Boolean(data.tag), // re-alert (sound/buzz) on repeat messages from the same contact
+      vibrate: [80, 40, 80],
+      requireInteraction: true,    // stay on screen until dismissed — a lead is easy to miss
       icon: '/icons/icon-192.png',
       badge: '/icons/icon-192.png',
     })

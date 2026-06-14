@@ -33,7 +33,7 @@ export default function Settings() {
       </div>
 
       {push.supported && (
-        <button className="c-set-link" disabled={push.busy} onClick={() => void push.toggle()} style={{ width: '100%', textAlign: 'left' }}>
+        <button type="button" className="c-set-link c-set-btn" disabled={push.busy} onClick={() => void push.toggle()}>
           <span className="c-set-ic" style={push.on ? { color: '#22c55e' } : undefined}><Icons.Bell size={18} /></span>
           <span className="c-set-body">
             <span className="c-set-label">Notifications</span>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Icons } from '@/components/Icons';
 import { useShop } from '@/context/ShopContext';
+import { usePush } from '@/lib/usePush';
 
 type Option = {
   label: string;
@@ -19,6 +20,7 @@ const OPTIONS: Option[] = [
 
 export default function Settings() {
   const { shop } = useShop();
+  const push = usePush();
   const options: Option[] = shop?.is_master
     ? [...OPTIONS, { label: 'All Businesses', sub: 'Master view — codes, PINs & activity', to: '/master', icon: 'Key' }]
     : OPTIONS;
@@ -29,6 +31,17 @@ export default function Settings() {
         <h1 className="c-page-title">Settings</h1>
         <p className="c-page-sub">Manage how your business runs on Rezzy.</p>
       </div>
+
+      {push.supported && (
+        <button className="c-set-link" disabled={push.busy} onClick={() => void push.toggle()} style={{ width: '100%', textAlign: 'left' }}>
+          <span className="c-set-ic" style={push.on ? { color: '#22c55e' } : undefined}><Icons.Bell size={18} /></span>
+          <span className="c-set-body">
+            <span className="c-set-label">Notifications</span>
+            <span className="c-set-sub">{push.busy ? 'Updating…' : push.on ? 'On — you’ll be alerted to new chats' : 'Off — tap to get alerts for new leads'}</span>
+          </span>
+          <span className={`c-toggle ${push.on ? 'on' : ''}`}><span className="c-toggle-knob" /></span>
+        </button>
+      )}
 
       {options.map((o) => {
         const Icon = Icons[o.icon];

@@ -4,6 +4,7 @@ import { Spinner } from '@/components/Spinner';
 import { EmptyState } from '@/components/EmptyState';
 import { Icons } from '@/components/Icons';
 import { getWaContacts } from '@/lib/chats';
+import { usePush } from '@/lib/usePush';
 import type { WaContact } from '@/types';
 
 const POLL_MS = 10000;
@@ -51,6 +52,7 @@ export default function Chats() {
   const [query, setQuery] = useState('');
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevUnread = useRef<number | null>(null);
+  const push = usePush();
 
   useEffect(() => {
     let alive = true;
@@ -96,6 +98,19 @@ export default function Chats() {
       </div>
 
       {error && <div className="c-error-box">{error}</div>}
+
+      {push.supported && !push.on && (
+        <div className="c-notif-banner">
+          <Icons.Bell size={20} />
+          <div className="txt">
+            <div className="t1">Turn on notifications</div>
+            <div className="t2">Get alerted the moment a new lead messages you.</div>
+          </div>
+          <button disabled={push.busy} onClick={() => void push.toggle()}>
+            {push.busy ? '…' : 'Enable'}
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <Spinner label="Loading chats…" />

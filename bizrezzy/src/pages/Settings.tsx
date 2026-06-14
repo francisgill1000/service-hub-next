@@ -33,14 +33,22 @@ export default function Settings() {
       </div>
 
       {push.supported && (
-        <button type="button" className="c-set-link c-set-btn" disabled={push.busy} onClick={() => void push.toggle()}>
+        <div
+          className="c-set-link"
+          role="button"
+          tabIndex={0}
+          aria-pressed={push.on}
+          style={{ cursor: push.busy ? 'default' : 'pointer', opacity: push.busy ? 0.7 : 1 }}
+          onClick={() => { if (!push.busy) void push.toggle(); }}
+          onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !push.busy) { e.preventDefault(); void push.toggle(); } }}
+        >
           <span className="c-set-ic" style={push.on ? { color: '#22c55e' } : undefined}><Icons.Bell size={18} /></span>
           <span className="c-set-body">
             <span className="c-set-label">Notifications</span>
             <span className="c-set-sub">{push.busy ? 'Updating…' : push.on ? 'On — you’ll be alerted to new chats' : 'Off — tap to get alerts for new leads'}</span>
           </span>
           <span className={`c-toggle ${push.on ? 'on' : ''}`}><span className="c-toggle-knob" /></span>
-        </button>
+        </div>
       )}
 
       {options.map((o) => {

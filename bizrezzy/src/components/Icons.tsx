@@ -59,6 +59,9 @@ export const Icons = {
   Store: ({ size = 28 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M3 9l1.5-5h15L21 9" /><path d="M4 9v11h16V9" /><path d="M9 20v-6h6v6" /></svg>
   ),
+  Sparkle: ({ size = 18 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M12 3l1.8 4.9L18.5 9l-4.7 1.8L12 15l-1.8-4.2L5.5 9l4.7-1.1L12 3z" /><path d="M18 15l.7 1.9 1.8.6-1.8.7L18 20l-.7-1.8-1.8-.7 1.8-.6L18 15z" /></svg>
+  ),
   Bell: ({ size = 22 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
   ),

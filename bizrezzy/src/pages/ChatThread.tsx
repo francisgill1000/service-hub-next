@@ -147,29 +147,41 @@ export default function ChatThread() {
               : contact?.name ? contact.wa_number : 'Live on WhatsApp'}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={() => void handleToggleAi()}
-          disabled={togglingAi || !contact}
-          title={aiOn
-            ? 'AI concierge is replying — tap to take over'
-            : 'You’re handling this chat — tap to hand back to the AI'}
-          style={{
-            marginLeft: 'auto',
-            border: 'none',
-            borderRadius: 999,
-            padding: '6px 12px',
-            fontSize: 12,
-            fontWeight: 600,
-            whiteSpace: 'nowrap',
-            cursor: togglingAi || !contact ? 'default' : 'pointer',
-            color: '#fff',
-            background: aiOn ? '#10b981' : '#f59e0b',
-            opacity: togglingAi ? 0.6 : 1,
-          }}
-        >
-          {aiOn ? '🤖 AI' : '🧑 Human'}
-        </button>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {contact?.wa_number && (
+            <a
+              className="c-icon-btn"
+              href={`tel:+${contact.wa_number}`}
+              aria-label={`Call +${contact.wa_number}`}
+              title={`Call +${contact.wa_number}`}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+            >
+              <Icons.Phone size={18} />
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={() => void handleToggleAi()}
+            disabled={togglingAi || !contact}
+            title={aiOn
+              ? 'AI concierge is replying — tap to take over'
+              : 'You’re handling this chat — tap to hand back to the AI'}
+            style={{
+              border: 'none',
+              borderRadius: 999,
+              padding: '6px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              cursor: togglingAi || !contact ? 'default' : 'pointer',
+              color: '#fff',
+              background: aiOn ? '#10b981' : '#f59e0b',
+              opacity: togglingAi ? 0.6 : 1,
+            }}
+          >
+            {aiOn ? '🤖 AI' : '🧑 Human'}
+          </button>
+        </div>
       </div>
 
       <div className="c-thread-scroll" ref={scrollRef}>

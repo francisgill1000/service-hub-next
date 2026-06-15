@@ -291,6 +291,11 @@
 
 /* ─── WhatsApp chats (glass design) ─── */
 @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+/* Horizontal pill strips (chat filters, lead-status chips) — scroll on overflow
+   but hide the ugly native scrollbar across browsers. */
+.c-pill-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.c-pill-scroll::-webkit-scrollbar { display: none; height: 0; }
+
 .c-chat-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: var(--r-lg); padding: 12px 14px; margin: 0 16px 10px; text-decoration: none; color: inherit; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .c-chat-row:active { background: rgba(255,255,255,0.10); }
 .c-chat-row .c-staff-avatar { border: none; border-radius: 38%; background: radial-gradient(circle at 30% 25%, var(--mint-200), var(--mint-300) 55%, var(--mint-700)); color: #001016; box-shadow: 0 0 20px -6px var(--mint-glow), inset 0 0 10px rgba(255,255,255,0.35); }

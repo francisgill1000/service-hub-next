@@ -51,7 +51,8 @@ export default function Chats() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  // Open on Hot leads by default; tap "All" to see every chat (incl. new/untagged).
+  const [statusFilter, setStatusFilter] = useState<string | null>('hot');
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevUnread = useRef<number | null>(null);
   const push = usePush();
@@ -140,7 +141,7 @@ export default function Chats() {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: 6, padding: '0 16px 12px', overflowX: 'auto' }}>
+          <div className="c-pill-scroll" style={{ padding: '0 16px 12px' }}>
             {[{ value: null, label: 'All', dot: '', color: '#10b981' }, ...LEAD_STATUSES].map((s) => {
               const active = statusFilter === s.value;
               return (

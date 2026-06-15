@@ -201,11 +201,9 @@ export default function ChatThread() {
       </div>
 
       <div
+        className="c-pill-scroll"
         style={{
-          display: 'flex',
-          gap: 6,
           padding: '8px 16px',
-          overflowX: 'auto',
           borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >

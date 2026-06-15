@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
-import { getWaContacts, getWaMessages, markWaRead, sendWaMessage } from '@/lib/chats';
+import { getWaContacts, getWaMessages, markWaRead, sendWaMessage, setWaAiEnabled } from '@/lib/chats';
 import type { WaContact, WaMessage } from '@/types';
 
 const POLL_MS = 4000;
@@ -25,6 +25,10 @@ export default function ChatThread() {
   const [error, setError] = useState('');
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
+  const [togglingAi, setTogglingAi] = useState(false);
+
+  // Default on: a thread with no flag yet (older row) is still AI-handled.
+  const aiOn = contact ? contact.ai_enabled !== false : true;
 
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -96,6 +100,9 @@ export default function ChatThread() {
       const sent = await sendWaMessage(contactId, text);
       appendMessages([sent]);
       setDraft('');
+      // Sending as a human takes over the thread: the backend auto-pauses the
+      // AI, so reflect that immediately rather than waiting for a reload.
+      setContact((c) => (c && c.ai_enabled !== false ? { ...c, ai_enabled: false } : c));
     } catch (e) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setError(msg || (contact?.channel === 'app'
@@ -103,6 +110,20 @@ export default function ChatThread() {
         : 'Could not send. WhatsApp only allows free replies within 24h of the customer’s last message.'));
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleToggleAi = async () => {
+    if (!contact || togglingAi) return;
+    setTogglingAi(true);
+    setError('');
+    try {
+      const updated = await setWaAiEnabled(contactId, !aiOn);
+      setContact(updated);
+    } catch {
+      setError('Could not update AI mode. Please try again.');
+    } finally {
+      setTogglingAi(false);
     }
   };
 
@@ -126,6 +147,29 @@ export default function ChatThread() {
               : contact?.name ? contact.wa_number : 'Live on WhatsApp'}
           </span>
         </div>
+        <button
+          type="button"
+          onClick={() => void handleToggleAi()}
+          disabled={togglingAi || !contact}
+          title={aiOn
+            ? 'AI concierge is replying — tap to take over'
+            : 'You’re handling this chat — tap to hand back to the AI'}
+          style={{
+            marginLeft: 'auto',
+            border: 'none',
+            borderRadius: 999,
+            padding: '6px 12px',
+            fontSize: 12,
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            cursor: togglingAi || !contact ? 'default' : 'pointer',
+            color: '#fff',
+            background: aiOn ? '#10b981' : '#f59e0b',
+            opacity: togglingAi ? 0.6 : 1,
+          }}
+        >
+          {aiOn ? '🤖 AI' : '🧑 Human'}
+        </button>
       </div>
 
       <div className="c-thread-scroll" ref={scrollRef}>

@@ -36,3 +36,9 @@ export async function sendWaMessage(contactId: number, text: string): Promise<Wa
 export async function markWaRead(contactId: number): Promise<void> {
   await api.post(`/shop/wa/contacts/${contactId}/read`);
 }
+
+/** Agent takeover toggle: pause (false) or resume (true) the AI for one thread. */
+export async function setWaAiEnabled(contactId: number, enabled: boolean): Promise<WaContact> {
+  const { data } = await api.post(`/shop/wa/contacts/${contactId}/ai`, { enabled });
+  return data?.data ?? data;
+}

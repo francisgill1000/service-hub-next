@@ -114,11 +114,14 @@ export type WaContact = {
   last_message_direction?: 'in' | 'out' | null;
   last_message_at?: string | null;
   unread_count?: number;
+  /** false = a human took over; the AI concierge is paused for this thread. */
+  ai_enabled?: boolean;
 };
 
 export type WaMessage = {
   id: number;
   direction: 'in' | 'out';
+  sender_type?: 'customer' | 'ai' | 'staff';
   type?: string;
   body: string;
   status?: string | null;

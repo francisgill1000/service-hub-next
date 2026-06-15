@@ -116,6 +116,8 @@ export type WaContact = {
   unread_count?: number;
   /** false = a human took over; the AI concierge is paused for this thread. */
   ai_enabled?: boolean;
+  /** Lead triage tag: hot|warm|cold|follow_up|not_interested. null = New/unset. */
+  lead_status?: string | null;
 };
 
 export type WaMessage = {

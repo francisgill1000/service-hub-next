@@ -4,6 +4,7 @@ import { Spinner } from '@/components/Spinner';
 import { EmptyState } from '@/components/EmptyState';
 import { Icons } from '@/components/Icons';
 import { getWaContacts } from '@/lib/chats';
+import { LEAD_STATUSES, leadStatusDef } from '@/lib/leadStatus';
 import { usePush } from '@/lib/usePush';
 import type { WaContact } from '@/types';
 
@@ -50,6 +51,7 @@ export default function Chats() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevUnread = useRef<number | null>(null);
   const push = usePush();
@@ -86,9 +88,11 @@ export default function Chats() {
   }, []);
 
   const q = query.trim().toLowerCase();
-  const filtered = q
-    ? contacts.filter((c) => (c.name || '').toLowerCase().includes(q) || (c.wa_number || '').includes(q))
-    : contacts;
+  const filtered = contacts.filter((c) => {
+    if (statusFilter && c.lead_status !== statusFilter) return false;
+    if (q && !((c.name || '').toLowerCase().includes(q) || (c.wa_number || '').includes(q))) return false;
+    return true;
+  });
 
   return (
     <div className="m-screen"><div className="m-scroll">
@@ -127,7 +131,7 @@ export default function Chats() {
         />
       ) : (
         <>
-          <div className="c-input-row" style={{ margin: '0 16px 12px' }}>
+          <div className="c-input-row" style={{ margin: '0 16px 10px' }}>
             <input
               type="search"
               placeholder="Search name or number"
@@ -136,16 +140,44 @@ export default function Chats() {
             />
           </div>
 
+          <div style={{ display: 'flex', gap: 6, padding: '0 16px 12px', overflowX: 'auto' }}>
+            {[{ value: null, label: 'All', dot: '', color: '#10b981' }, ...LEAD_STATUSES].map((s) => {
+              const active = statusFilter === s.value;
+              return (
+                <button
+                  key={s.value ?? 'all'}
+                  type="button"
+                  onClick={() => setStatusFilter(s.value)}
+                  style={{
+                    flex: '0 0 auto',
+                    border: active ? `1px solid ${s.color}` : '1px solid rgba(255,255,255,0.14)',
+                    background: active ? s.color : 'transparent',
+                    color: active ? '#fff' : 'rgba(255,255,255,0.7)',
+                    borderRadius: 999,
+                    padding: '5px 11px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {s.dot ? `${s.dot} ` : ''}{s.label}
+                </button>
+              );
+            })}
+          </div>
+
           {filtered.length === 0 ? (
             <EmptyState
               icon={<Icons.Chat size={28} />}
-              title={q ? 'No matches' : 'No chats yet'}
-              subtitle={q ? 'Try a different search.' : 'When customers message your WhatsApp number, chats appear here.'}
+              title={q || statusFilter ? 'No matches' : 'No chats yet'}
+              subtitle={q || statusFilter ? 'Try a different search or filter.' : 'When customers message your WhatsApp number, chats appear here.'}
             />
           ) : (
             filtered.map((c) => {
               const name = c.name || c.wa_number || 'Live chat customer';
               const unread = c.unread_count || 0;
+              const status = leadStatusDef(c.lead_status);
               return (
                 <Link key={c.id} to={`/chats/${c.id}`} className="c-chat-row">
                   {/* Array.from: emoji-only profile names must not split surrogate pairs */}
@@ -153,6 +185,7 @@ export default function Chats() {
                   <div className="c-chat-row-body">
                     <div className="c-chat-row-top">
                       <span className="c-chat-row-name">
+                        {status && <span title={status.label} style={{ marginRight: 5 }}>{status.dot}</span>}
                         {name}
                         {c.channel === 'app' && <span className="c-chan-badge">Live</span>}
                       </span>

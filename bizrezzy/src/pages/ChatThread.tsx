@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
-import { getWaContacts, getWaMessages, markWaRead, sendWaMessage, setWaAiEnabled } from '@/lib/chats';
+import { getWaContacts, getWaMessages, markWaRead, sendWaMessage, setWaAiEnabled, setWaLeadStatus } from '@/lib/chats';
+import { LEAD_STATUSES } from '@/lib/leadStatus';
 import type { WaContact, WaMessage } from '@/types';
 
 const POLL_MS = 4000;
@@ -26,6 +27,7 @@ export default function ChatThread() {
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [togglingAi, setTogglingAi] = useState(false);
+  const [settingStatus, setSettingStatus] = useState(false);
 
   // Default on: a thread with no flag yet (older row) is still AI-handled.
   const aiOn = contact ? contact.ai_enabled !== false : true;
@@ -127,6 +129,20 @@ export default function ChatThread() {
     }
   };
 
+  const handleSetStatus = async (status: string | null) => {
+    if (!contact || settingStatus) return;
+    setSettingStatus(true);
+    setError('');
+    try {
+      const updated = await setWaLeadStatus(contactId, status);
+      setContact(updated);
+    } catch {
+      setError('Could not update lead status. Please try again.');
+    } finally {
+      setSettingStatus(false);
+    }
+  };
+
   const title = contact?.name || contact?.wa_number || (contact?.channel === 'app' ? 'Live chat customer' : 'Chat');
 
   return (
@@ -182,6 +198,44 @@ export default function ChatThread() {
             {aiOn ? '🤖 AI' : '🧑 Human'}
           </button>
         </div>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: 6,
+          padding: '8px 16px',
+          overflowX: 'auto',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        {LEAD_STATUSES.map((s) => {
+          const active = contact?.lead_status === s.value;
+          return (
+            <button
+              key={s.value}
+              type="button"
+              onClick={() => void handleSetStatus(active ? null : s.value)}
+              disabled={!contact || settingStatus}
+              title={active ? `Clear "${s.label}"` : `Mark as ${s.label}`}
+              style={{
+                flex: '0 0 auto',
+                border: active ? `1px solid ${s.color}` : '1px solid rgba(255,255,255,0.14)',
+                background: active ? s.color : 'transparent',
+                color: active ? '#fff' : 'rgba(255,255,255,0.75)',
+                borderRadius: 999,
+                padding: '5px 11px',
+                fontSize: 12,
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                cursor: !contact || settingStatus ? 'default' : 'pointer',
+                opacity: settingStatus ? 0.6 : 1,
+              }}
+            >
+              {s.dot} {s.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="c-thread-scroll" ref={scrollRef}>

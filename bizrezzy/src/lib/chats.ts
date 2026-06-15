@@ -42,3 +42,9 @@ export async function setWaAiEnabled(contactId: number, enabled: boolean): Promi
   const { data } = await api.post(`/shop/wa/contacts/${contactId}/ai`, { enabled });
   return data?.data ?? data;
 }
+
+/** Lead triage: set a contact's status (or null to clear back to "New"). */
+export async function setWaLeadStatus(contactId: number, status: string | null): Promise<WaContact> {
+  const { data } = await api.post(`/shop/wa/contacts/${contactId}/status`, { status });
+  return data?.data ?? data;
+}

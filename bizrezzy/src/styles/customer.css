@@ -224,8 +224,16 @@
 .c-cred-icon { width: 32px; height: 32px; border-radius: 10px; background: var(--mint-soft); color: var(--mint-300); display: grid; place-items: center; flex: 0 0 auto; }
 
 /* QR code section */
-.c-qr-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.c-qr-frame { background: #fff; border-radius: var(--r-lg); padding: 14px; line-height: 0; margin-bottom: 12px; }
+.c-qr-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: linear-gradient(160deg, var(--mint-soft), transparent 55%), var(--surface-1);
+  border: 1px solid var(--border-mint);
+}
+.c-qr-frame {
+  background: #fff; border-radius: var(--r-lg); padding: 16px; line-height: 0; margin-bottom: 12px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 12px 30px -12px var(--mint-glow);
+}
+.c-qr-name { font-size: 16px; font-weight: 800; color: var(--text-1); margin-bottom: 2px; }
 .c-qr-hint { color: var(--text-3); font-size: 12px; margin-bottom: 14px; }
 .c-qr-actions { display: flex; gap: 10px; width: 100%; }
 .c-qr-actions .c-btn-ghost { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; font-size: 13px; }

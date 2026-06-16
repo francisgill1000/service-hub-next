@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { AppBar } from '@/layout/AppBar';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { Icons } from '@/components/Icons';
@@ -32,6 +32,7 @@ export default function Profile() {
   const [copied, setCopied] = useState(false);
   const logoInput = useRef<HTMLInputElement>(null);
   const heroInput = useRef<HTMLInputElement>(null);
+  const qrCanvasWrap = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!shop) return;
@@ -106,6 +107,37 @@ export default function Profile() {
     } else {
       void copyLink();
     }
+  };
+
+  // Compose a clean, printable PNG poster: white card, the QR, the shop
+  // name and a call-to-action. Uses an offscreen logo-less canvas so the
+  // export never taints (a cross-origin logo would block toDataURL).
+  const downloadQr = () => {
+    const src = qrCanvasWrap.current?.querySelector('canvas');
+    if (!src) return;
+    const qr = src.width;
+    const pad = Math.round(qr * 0.08);
+    const footer = Math.round(qr * 0.22);
+    const W = qr + pad * 2;
+    const H = qr + pad * 2 + footer;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(src, pad, pad, qr, qr);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#0e1714';
+    ctx.font = `700 ${Math.round(qr * 0.07)}px Geist, system-ui, -apple-system, sans-serif`;
+    ctx.fillText(shop?.name || 'Rezzy', W / 2, qr + pad * 2 + Math.round(footer * 0.42));
+    ctx.fillStyle = '#00735c';
+    ctx.font = `600 ${Math.round(qr * 0.045)}px Geist, system-ui, -apple-system, sans-serif`;
+    ctx.fillText('Scan to book on Rezzy', W / 2, qr + pad * 2 + Math.round(footer * 0.78));
+    const link = document.createElement('a');
+    link.href = c.toDataURL('image/png');
+    link.download = `${shopCode || shop?.name || 'rezzy'}-qr.png`.replace(/\s+/g, '-').toLowerCase();
+    link.click();
   };
 
   const copyLink = async () => {
@@ -210,9 +242,20 @@ export default function Profile() {
             <div className="c-section-title">Business QR Code</div>
             <div className="c-card c-qr-card">
               <div className="c-qr-frame">
-                <QRCodeSVG value={qrTarget} size={172} level="M" />
+                <QRCodeSVG
+                  value={qrTarget}
+                  size={188}
+                  level={logoPreview ? 'H' : 'M'}
+                  bgColor="#ffffff"
+                  fgColor="#0a0e0c"
+                  imageSettings={logoPreview ? { src: logoPreview, height: 42, width: 42, excavate: true } : undefined}
+                />
               </div>
-              <p className="c-qr-hint">Customers can scan this to view and book your business.</p>
+              <div className="c-qr-name">{shop?.name}</div>
+              <p className="c-qr-hint">Customers scan to view and book your business.</p>
+              <button className="c-btn c-btn-block" style={{ marginBottom: 10 }} onClick={downloadQr}>
+                <Icons.Download size={16} /> Download QR
+              </button>
               <div className="c-qr-actions">
                 <button className="c-btn-ghost" onClick={() => void shareQr()}>
                   <Icons.Share size={16} /> Share
@@ -221,6 +264,10 @@ export default function Profile() {
                   <Icons.Copy size={16} /> {copied ? 'Copied!' : 'Copy link'}
                 </button>
               </div>
+            </div>
+            {/* Offscreen high-res canvas (no logo) used only for PNG export. */}
+            <div ref={qrCanvasWrap} aria-hidden style={{ position: 'absolute', left: -99999, top: 0, pointerEvents: 'none' }}>
+              <QRCodeCanvas value={qrTarget} size={1024} level="M" marginSize={2} bgColor="#ffffff" fgColor="#0a0e0c" />
             </div>
           </>
         )}

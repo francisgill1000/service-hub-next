@@ -74,6 +74,9 @@ export const Icons = {
   Copy: ({ size = 18 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>
   ),
+  Download: ({ size = 18 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M12 3v12" /><path d="M7 11l5 5 5-5" /><path d="M5 21h14" /></svg>
+  ),
   Tag: ({ size = 18 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0l-7-7A2 2 0 0 1 3 12.2V5a2 2 0 0 1 2-2h7.2a2 2 0 0 1 1.4.6l7 7a2 2 0 0 1 0 2.8z" /><circle cx="7.5" cy="7.5" r="1.3" /></svg>
   ),

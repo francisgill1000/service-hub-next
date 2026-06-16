@@ -154,20 +154,20 @@ export default function ShopDetail() {
               {selectedServices.length > 0 && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--mint-300)' }}>{selectedServices.length} selected</span>}
             </div>
             {groupByParentCategory(shop.catalogs!).map((group) => (
-              <div key={group.name}>
+              <div className="c-cat-card" key={group.name}>
                 {group.image ? (
-                  <div style={{ position: 'relative', margin: '8px 16px 4px', borderRadius: 'var(--r-lg)', overflow: 'hidden' }}>
-                    <img src={group.image} alt={group.name} style={{ width: '100%', height: 96, objectFit: 'cover', display: 'block' }} />
-                    <h4 style={{ position: 'absolute', left: 12, bottom: 8, margin: 0, color: '#fff', fontSize: 15, fontWeight: 800, textShadow: '0 1px 4px rgba(0,0,0,.6)' }}>{group.name}</h4>
+                  <div className="c-cat-head">
+                    <img src={group.image} alt={group.name} />
+                    <span className="c-cat-name">{group.name}</span>
                   </div>
                 ) : (
-                  <div className="m-section-title" style={{ padding: '8px 16px 0' }}><h4 style={{ margin: 0, color: 'var(--text-3)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em' }}>{group.name}</h4></div>
+                  <div className="c-cat-head-plain"><span className="c-cat-name">{group.name}</span></div>
                 )}
-                <div className="c-service-list">
+                <div className="c-cat-items">
                   {group.items.map((s) => {
                     const on = selectedServices.includes(s.id);
                     return (
-                      <div key={s.id} className={`c-service-card ${on ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
+                      <div key={s.id} className={`c-cat-item ${on ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
                         {s.image && (
                           <div className="thumb"><img src={s.image} alt="" /></div>
                         )}

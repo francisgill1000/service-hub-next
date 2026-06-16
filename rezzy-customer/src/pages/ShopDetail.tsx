@@ -7,6 +7,7 @@ import { generateDates, formatLocalDate, dow } from '@/lib/date';
 import type { Shop, Service } from '@/types';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const DEFAULT_SECTION = 'Services';
 
@@ -83,7 +84,7 @@ export default function ShopDetail() {
   if (loading) return <div className="m-screen"><Spinner /></div>;
   if (!shop) return (
     <div className="m-screen">
-      <div className="m-appbar"><button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={18} /> Back</button></div>
+      <div className="m-appbar"><button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={18} /> Back</button><ThemeToggle /></div>
       <div className="m-scroll"><p style={{ textAlign: 'center', color: 'var(--text-3)' }}>Business not found.</p></div>
     </div>
   );
@@ -92,9 +93,12 @@ export default function ShopDetail() {
     <div className="m-screen">
       <div className="m-appbar">
         <button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={18} /> Back</button>
-        <span className="c-fav on" role="button" aria-label="Toggle favourite" onClick={() => void toggleFavourite(shop.id)}>
-          <Icons.HeartFilled size={22} />
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <ThemeToggle />
+          <span className="c-fav on" role="button" aria-label="Toggle favourite" onClick={() => void toggleFavourite(shop.id)}>
+            <Icons.HeartFilled size={22} />
+          </span>
+        </div>
       </div>
 
       <div className="m-scroll">

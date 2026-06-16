@@ -168,11 +168,9 @@ export default function ShopDetail() {
                     const on = selectedServices.includes(s.id);
                     return (
                       <div key={s.id} className={`c-service-card ${on ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
-                        <div className="thumb">
-                          {s.image
-                            ? <img src={s.image} alt="" />
-                            : <span className="ph"><Icons.Image size={22} /></span>}
-                        </div>
+                        {s.image && (
+                          <div className="thumb"><img src={s.image} alt="" /></div>
+                        )}
                         <div className="info">
                           <h4>{s.title || s.name}</h4>
                           {s.description && <p>{s.description}</p>}

@@ -61,7 +61,12 @@ export default function Services() {
     <div className="m-screen">
       <AppBar
         title="Services"
-        actions={<button className="c-btn" style={{ padding: '8px 12px', fontSize: 13 }} onClick={() => navigate('/services/new')}>+ Add</button>}
+        actions={
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="c-btn-ghost" style={{ padding: '8px 10px', fontSize: 13 }} onClick={() => navigate('/categories')}>Categories</button>
+            <button className="c-btn" style={{ padding: '8px 12px', fontSize: 13 }} onClick={() => navigate('/services/new')}>+ Add</button>
+          </div>
+        }
       />
       <div className="m-scroll">
         {error && <div className="c-error-box">{error}</div>}

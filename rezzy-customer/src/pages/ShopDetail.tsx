@@ -10,17 +10,18 @@ import { Icons } from '@/components/Icons';
 
 const DEFAULT_SECTION = 'Services';
 
-// Group services by parent category name; categorised sections come first
+type ServiceGroup = { name: string; image?: string | null; items: Service[] };
+
+// Group services by parent category; categorised sections come first
 // (in first-seen order), with uncategorised services last under "Services".
-function groupByParentCategory(items: Service[]): { name: string; items: Service[] }[] {
-  const groups = new Map<string, Service[]>();
+function groupByParentCategory(items: Service[]): ServiceGroup[] {
+  const groups = new Map<string, ServiceGroup>();
   for (const item of items) {
     const name = item.parent_category?.name ?? DEFAULT_SECTION;
-    if (!groups.has(name)) groups.set(name, []);
-    groups.get(name)!.push(item);
+    if (!groups.has(name)) groups.set(name, { name, image: item.parent_category?.image ?? null, items: [] });
+    groups.get(name)!.items.push(item);
   }
-  return [...groups.entries()]
-    .map(([name, groupItems]) => ({ name, items: groupItems }))
+  return [...groups.values()]
     .sort((a, b) => (a.name === DEFAULT_SECTION ? 1 : b.name === DEFAULT_SECTION ? -1 : 0));
 }
 
@@ -154,7 +155,14 @@ export default function ShopDetail() {
             </div>
             {groupByParentCategory(shop.catalogs!).map((group) => (
               <div key={group.name}>
-                <div className="m-section-title" style={{ padding: '8px 16px 0' }}><h4 style={{ margin: 0, color: 'var(--text-3)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em' }}>{group.name}</h4></div>
+                {group.image ? (
+                  <div style={{ position: 'relative', margin: '8px 16px 4px', borderRadius: 'var(--r-lg)', overflow: 'hidden' }}>
+                    <img src={group.image} alt={group.name} style={{ width: '100%', height: 96, objectFit: 'cover', display: 'block' }} />
+                    <h4 style={{ position: 'absolute', left: 12, bottom: 8, margin: 0, color: '#fff', fontSize: 15, fontWeight: 800, textShadow: '0 1px 4px rgba(0,0,0,.6)' }}>{group.name}</h4>
+                  </div>
+                ) : (
+                  <div className="m-section-title" style={{ padding: '8px 16px 0' }}><h4 style={{ margin: 0, color: 'var(--text-3)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em' }}>{group.name}</h4></div>
+                )}
                 <div className="c-service-list">
                   {group.items.map((s) => {
                     const on = selectedServices.includes(s.id);

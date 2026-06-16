@@ -22,6 +22,7 @@ export type Service = {
 export type ParentCategory = {
   id: number;
   name: string;
+  image?: string | null;
 };
 
 export type StaffMember = {

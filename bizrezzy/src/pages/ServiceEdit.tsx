@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
 import { getCatalog, createCatalog, updateCatalog } from '@/lib/catalogs';
 import { listParentCategories, createParentCategory } from '@/lib/parentCategories';
-import { fileToCompressedDataUrl } from '@/lib/image';
 import type { ParentCategory } from '@/types';
 
 type Form = { title: string; description: string; price: string };
@@ -14,11 +13,9 @@ export default function ServiceEdit() {
   const isNew = !id;
   const navigate = useNavigate();
   const [form, setForm] = useState<Form>({ title: '', description: '', price: '' });
-  const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const imageInput = useRef<HTMLInputElement>(null);
 
   const [cats, setCats] = useState<ParentCategory[]>([]);
   const [parentCategoryId, setParentCategoryId] = useState<number | null>(null);
@@ -35,7 +32,6 @@ export default function ServiceEdit() {
     getCatalog(Number(id))
       .then((d) => {
         setForm({ title: d.title || d.name || '', description: d.description || '', price: String(d.price ?? '') });
-        if (d.image) setImage(d.image);
         if (d.parent_category_id != null) setParentCategoryId(Number(d.parent_category_id));
       })
       .catch(() => setError('Failed to load service.'))
@@ -65,7 +61,6 @@ export default function ServiceEdit() {
 
   const handleSave = async () => {
     if (!form.title.trim()) { setError('Please enter a service title.'); return; }
-    if (!form.description.trim()) { setError('Please enter a service description.'); return; }
     if (!form.price || parseFloat(form.price) <= 0) { setError('Please enter a valid price.'); return; }
     setSaving(true);
     setError('');
@@ -76,7 +71,6 @@ export default function ServiceEdit() {
         price: form.price,
         parent_category_id: parentCategoryId,
       };
-      if (image && image.startsWith('data:')) payload.image = image;
       if (isNew) await createCatalog(payload);
       else await updateCatalog(Number(id), payload);
       navigate('/services');
@@ -98,21 +92,6 @@ export default function ServiceEdit() {
       {error && <div className="c-error-box">{error}</div>}
 
       <div style={{ padding: '0 16px' }}>
-        <label className="c-field-label" htmlFor="image">Image</label>
-        <button type="button" className="c-img-pick" onClick={() => imageInput.current?.click()}>
-          {image ? (
-            <img src={image} alt="Service" />
-          ) : (
-            <span className="c-img-pick-empty">
-              <span className="ic"><Icons.Image size={26} /></span>
-              <span className="t">Upload service image</span>
-              <span className="h">PNG or JPG</span>
-            </span>
-          )}
-        </button>
-        <input id="image" ref={imageInput} type="file" accept="image/*" hidden
-          onChange={async (e) => { const f = e.target.files?.[0]; if (f) setImage(await fileToCompressedDataUrl(f, { maxDim: 1280 })); }} />
-
         <label className="c-field-label" htmlFor="parentCategory">Parent category (optional)</label>
         {addingCat ? (
           <div className="c-input-row" style={{ gap: 8 }}>
@@ -158,7 +137,7 @@ export default function ServiceEdit() {
             onChange={(e) => { change('title', e.target.value); setError(''); }} />
         </div>
 
-        <label className="c-field-label" htmlFor="description">Description</label>
+        <label className="c-field-label" htmlFor="description">Description (optional)</label>
         <div className="c-input-row" style={{ alignItems: 'flex-start' }}>
           <textarea id="description" rows={3} placeholder="Describe this service" value={form.description}
             onChange={(e) => { change('description', e.target.value); setError(''); }}

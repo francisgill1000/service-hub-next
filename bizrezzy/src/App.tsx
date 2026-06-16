@@ -12,6 +12,8 @@ import BookingAction from '@/pages/BookingAction';
 import Reminders from '@/pages/Reminders';
 import Services from '@/pages/Services';
 import ServiceEdit from '@/pages/ServiceEdit';
+import Categories from '@/pages/Categories';
+import CategoryEdit from '@/pages/CategoryEdit';
 import Staff from '@/pages/Staff';
 import WorkingHours from '@/pages/WorkingHours';
 import Profile from '@/pages/Profile';
@@ -39,6 +41,9 @@ export default function App() {
           <Route path="/booking/:id" element={<BookingAction />} />
           <Route path="/services/new" element={<ServiceEdit />} />
           <Route path="/services/:id/edit" element={<ServiceEdit />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/categories/new" element={<CategoryEdit />} />
+          <Route path="/categories/:id/edit" element={<CategoryEdit />} />
           <Route path="/staff" element={<Staff />} />
           <Route path="/working-hours" element={<WorkingHours />} />
           <Route path="/category-setup" element={<CategorySetup />} />

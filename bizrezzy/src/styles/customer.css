@@ -245,7 +245,9 @@
 .c-svc-media-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 100%; color: var(--text-4); }
 .c-svc-media-empty span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
 .c-svc-price { position: absolute; bottom: 8px; left: 8px; background: rgba(5,7,10,0.78); border: 1px solid var(--border-mint); color: var(--mint-300); font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: var(--r-md); }
-.c-svc-body { padding: 12px 14px 0; }
+.c-svc-body { padding: 14px 14px 2px; }
+.c-svc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.c-svc-price-inline { color: var(--mint-300); font-size: 14px; font-weight: 800; white-space: nowrap; }
 .c-svc-actions { display: flex; gap: 8px; padding: 12px 14px; }
 .c-svc-actions .c-btn-ghost { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-size: 12px; }
 

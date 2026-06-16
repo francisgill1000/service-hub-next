@@ -79,17 +79,12 @@ export default function Services() {
               <div className="m-section-title" style={{ padding: '12px 16px 4px' }}><h3>{group.name}</h3></div>
               {group.items.map((c) => (
             <div key={c.id} className="c-svc-card">
-              <div className="c-svc-media">
-                {c.image ? (
-                  <img src={c.image} alt={c.title || c.name || 'Service'} />
-                ) : (
-                  <div className="c-svc-media-empty"><Icons.Image size={28} /><span>No image</span></div>
-                )}
-                <span className="c-svc-price">AED {Number(c.price ?? 0).toFixed(2)}</span>
-              </div>
               <div className="c-svc-body">
-                <div className="c-row-title">{c.title || c.name}</div>
-                <div className="c-row-sub">{c.description || 'No description provided.'}</div>
+                <div className="c-svc-head">
+                  <span className="c-row-title">{c.title || c.name}</span>
+                  <span className="c-svc-price-inline">AED {Number(c.price ?? 0).toFixed(2)}</span>
+                </div>
+                {c.description && <div className="c-row-sub">{c.description}</div>}
               </div>
               <div className="c-svc-actions">
                 <button className="c-btn-ghost" onClick={() => navigate(`/services/${c.id}/edit`)}>

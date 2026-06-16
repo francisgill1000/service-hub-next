@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
-    <meta name="theme-color" content="#0a0e0c" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />
@@ -15,14 +15,14 @@
     <title>Rezzy</title>
     <script>
       // Apply saved theme before first paint to avoid a flash of the wrong theme.
+      // Defaults to light when nothing is saved.
       (function () {
         try {
           var t = localStorage.getItem('rezzy-theme');
-          if (t === 'light' || t === 'dark') {
-            document.documentElement.setAttribute('data-theme', t);
-            var m = document.querySelector('meta[name="theme-color"]');
-            if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#0a0e0c');
-          }
+          var theme = (t === 'light' || t === 'dark') ? t : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', theme === 'light' ? '#ffffff' : '#0a0e0c');
         } catch (e) {}
       })();
     </script>

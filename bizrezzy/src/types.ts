@@ -15,6 +15,13 @@ export type Service = {
   duration?: number | string;
   description?: string;
   image?: string;
+  parent_category_id?: number | null;
+  parent_category?: ParentCategory | null;
+};
+
+export type ParentCategory = {
+  id: number;
+  name: string;
 };
 
 export type StaffMember = {

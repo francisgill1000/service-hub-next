@@ -7,6 +7,22 @@ import { Icons } from '@/components/Icons';
 import { listCatalogs, deleteCatalog } from '@/lib/catalogs';
 import type { Service } from '@/types';
 
+const UNCATEGORISED = 'Uncategorised';
+
+// Group services by parent category name; categorised sections come first
+// (in first-seen order), with uncategorised services last.
+function groupByParentCategory(items: Service[]): { name: string; items: Service[] }[] {
+  const groups = new Map<string, Service[]>();
+  for (const item of items) {
+    const name = item.parent_category?.name ?? UNCATEGORISED;
+    if (!groups.has(name)) groups.set(name, []);
+    groups.get(name)!.push(item);
+  }
+  return [...groups.entries()]
+    .map(([name, groupItems]) => ({ name, items: groupItems }))
+    .sort((a, b) => (a.name === UNCATEGORISED ? 1 : b.name === UNCATEGORISED ? -1 : 0));
+}
+
 export default function Services() {
   const navigate = useNavigate();
   const [catalogs, setCatalogs] = useState<Service[]>([]);
@@ -53,7 +69,10 @@ export default function Services() {
         {loading ? (
           <Spinner label="Loading services…" />
         ) : catalogs.length > 0 ? (
-          catalogs.map((c) => (
+          groupByParentCategory(catalogs).map((group) => (
+            <div key={group.name}>
+              <div className="m-section-title" style={{ padding: '12px 16px 4px' }}><h3>{group.name}</h3></div>
+              {group.items.map((c) => (
             <div key={c.id} className="c-svc-card">
               <div className="c-svc-media">
                 {c.image ? (
@@ -75,6 +94,8 @@ export default function Services() {
                   <Icons.Trash size={14} /> {deletingId === c.id ? 'Deleting…' : 'Delete'}
                 </button>
               </div>
+            </div>
+              ))}
             </div>
           ))
         ) : (

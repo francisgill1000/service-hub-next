@@ -4,9 +4,25 @@ import api from '@/lib/api';
 import { toggleFavourite } from '@/lib/shops';
 import { buildBookingPayload } from '@/lib/booking';
 import { generateDates, formatLocalDate, dow } from '@/lib/date';
-import type { Shop } from '@/types';
+import type { Shop, Service } from '@/types';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
+
+const DEFAULT_SECTION = 'Services';
+
+// Group services by parent category name; categorised sections come first
+// (in first-seen order), with uncategorised services last under "Services".
+function groupByParentCategory(items: Service[]): { name: string; items: Service[] }[] {
+  const groups = new Map<string, Service[]>();
+  for (const item of items) {
+    const name = item.parent_category?.name ?? DEFAULT_SECTION;
+    if (!groups.has(name)) groups.set(name, []);
+    groups.get(name)!.push(item);
+  }
+  return [...groups.entries()]
+    .map(([name, groupItems]) => ({ name, items: groupItems }))
+    .sort((a, b) => (a.name === DEFAULT_SECTION ? 1 : b.name === DEFAULT_SECTION ? -1 : 0));
+}
 
 export default function ShopDetail() {
   const { id } = useParams<{ id: string }>();
@@ -136,28 +152,33 @@ export default function ShopDetail() {
               <h3>Services</h3>
               {selectedServices.length > 0 && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--mint-300)' }}>{selectedServices.length} selected</span>}
             </div>
-            <div className="c-service-list">
-              {shop.catalogs!.map((s) => {
-                const on = selectedServices.includes(s.id);
-                return (
-                  <div key={s.id} className={`c-service-card ${on ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
-                    <div className="thumb">
-                      {s.image
-                        ? <img src={s.image} alt="" />
-                        : <span className="ph"><Icons.Image size={22} /></span>}
-                    </div>
-                    <div className="info">
-                      <h4>{s.title || s.name}</h4>
-                      {s.description && <p>{s.description}</p>}
-                      <span className="price">AED {parseFloat(String(s.price ?? 0)).toFixed(2)}</span>
-                    </div>
-                    <button className={`add ${on ? 'on' : ''}`} aria-label={on ? 'Remove service' : 'Add service'} onClick={(e) => { e.stopPropagation(); toggleService(s.id); }}>
-                      {on ? <Icons.Check size={20} /> : <Icons.Plus size={20} />}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+            {groupByParentCategory(shop.catalogs!).map((group) => (
+              <div key={group.name}>
+                <div className="m-section-title" style={{ padding: '8px 16px 0' }}><h4 style={{ margin: 0, color: 'var(--text-3)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em' }}>{group.name}</h4></div>
+                <div className="c-service-list">
+                  {group.items.map((s) => {
+                    const on = selectedServices.includes(s.id);
+                    return (
+                      <div key={s.id} className={`c-service-card ${on ? 'on' : ''}`} onClick={() => toggleService(s.id)}>
+                        <div className="thumb">
+                          {s.image
+                            ? <img src={s.image} alt="" />
+                            : <span className="ph"><Icons.Image size={22} /></span>}
+                        </div>
+                        <div className="info">
+                          <h4>{s.title || s.name}</h4>
+                          {s.description && <p>{s.description}</p>}
+                          <span className="price">AED {parseFloat(String(s.price ?? 0)).toFixed(2)}</span>
+                        </div>
+                        <button className={`add ${on ? 'on' : ''}`} aria-label={on ? 'Remove service' : 'Add service'} onClick={(e) => { e.stopPropagation(); toggleService(s.id); }}>
+                          {on ? <Icons.Check size={20} /> : <Icons.Plus size={20} />}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </>
         )}
 

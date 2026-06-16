@@ -7,6 +7,7 @@ export type Service = {
   description?: string;
   price?: number | string;
   image?: string;
+  parent_category?: { id: number; name: string } | null;
 };
 
 export type Shop = {

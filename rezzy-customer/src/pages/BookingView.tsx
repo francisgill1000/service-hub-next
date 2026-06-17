@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import api from '@/lib/api';
 import type { Booking } from '@/types';
 import { Spinner } from '@/components/Spinner';
@@ -15,8 +15,12 @@ function statusClass(status: string): string {
 export default function BookingView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const payResult = searchParams.get('pay'); // success | cancel | failed (set by Ziina return)
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
 
   useEffect(() => {
     api.get(`/booking/${id}`)
@@ -24,6 +28,24 @@ export default function BookingView() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function handlePay() {
+    setPaying(true);
+    setPayError(null);
+    try {
+      const res = await api.post(`/booking/${id}/invoice/pay`);
+      const url = res.data?.data?.redirect_url;
+      if (url) {
+        window.location.href = url; // hand off to Ziina's hosted payment page
+      } else {
+        setPayError('Could not start payment. Please try again.');
+        setPaying(false);
+      }
+    } catch (e: any) {
+      setPayError(e?.response?.data?.message ?? 'Could not start payment. Please try again.');
+      setPaying(false);
+    }
+  }
 
   if (loading) return <div className="m-screen"><Spinner /></div>;
   if (!booking) return (
@@ -42,6 +64,21 @@ export default function BookingView() {
     <div className="m-screen">
       <div className="m-appbar"><button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={18} /> Back</button></div>
       <div className="m-scroll">
+        {payResult === 'success' && (
+          <div className="c-card" style={{ background: 'var(--mint-soft)', color: 'var(--mint-300)', textAlign: 'center' }}>
+            Payment received — thank you!
+          </div>
+        )}
+        {payResult === 'cancel' && (
+          <div className="c-card" style={{ textAlign: 'center', color: 'var(--text-3)' }}>
+            Payment cancelled. You can try again below.
+          </div>
+        )}
+        {payResult === 'failed' && (
+          <div className="c-card" style={{ textAlign: 'center', color: '#c0392b' }}>
+            Payment failed. Please try again.
+          </div>
+        )}
         <div style={{ textAlign: 'center', padding: '24px 0' }}>
           <div style={{ width: 80, height: 80, borderRadius: 24, margin: '0 auto 12px', display: 'grid', placeItems: 'center', background: 'var(--mint-soft)', color: 'var(--mint-300)' }}>
             <Icons.Check size={40} />
@@ -76,7 +113,31 @@ export default function BookingView() {
           </div>
         )}
 
-        <button className="c-btn c-btn-block" style={{ margin: '8px 16px 24px', width: 'calc(100% - 32px)' }} onClick={() => navigate('/')}>
+        {booking.invoice?.status === 'paid' && (
+          <div className="c-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--mint-300)', fontWeight: 600 }}>
+            <Icons.Check size={18} /> Paid
+          </div>
+        )}
+
+        {booking.invoice?.status === 'issued' && (
+          <div style={{ margin: '8px 16px 0' }}>
+            {payError && <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px', textAlign: 'center' }}>{payError}</p>}
+            <button
+              className="c-btn c-btn-block"
+              style={{ width: '100%' }}
+              onClick={handlePay}
+              disabled={paying}
+            >
+              {paying ? 'Starting payment…' : `Pay now — AED ${Number(booking.invoice.total ?? booking.charges ?? 0).toFixed(2)}`}
+            </button>
+          </div>
+        )}
+
+        <button
+          className="c-btn c-btn-block"
+          style={{ margin: '8px 16px 24px', width: 'calc(100% - 32px)', background: booking.invoice?.status === 'issued' ? 'transparent' : undefined, border: booking.invoice?.status === 'issued' ? '1px solid var(--border-3)' : undefined, color: booking.invoice?.status === 'issued' ? 'var(--text-2)' : undefined }}
+          onClick={() => navigate('/')}
+        >
           Back to Home
         </button>
       </div>

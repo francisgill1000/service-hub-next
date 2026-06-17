@@ -40,6 +40,15 @@ export type Booking = {
   customer?: { name?: string };
   shop?: { name?: string; location?: string };
   services?: Service[];
+  invoice?: BookingInvoice | null;
+};
+
+export type BookingInvoice = {
+  id: number;
+  invoice_number?: string;
+  total?: number | string;
+  status?: 'issued' | 'paid' | 'cancelled' | string;
+  paid_at?: string | null;
 };
 
 /** Live Chat message. Direction is from the shop's side: 'in' = sent by me (the customer). */

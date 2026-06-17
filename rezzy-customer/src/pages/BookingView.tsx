@@ -60,6 +60,12 @@ export default function BookingView() {
   const ref = booking.booking_reference || `BK${String(booking.id).padStart(5, '0')}`;
   const services = booking.services ?? [];
 
+  // Payment-aware: a booking is only "confirmed" once its invoice is paid.
+  const isPaid = booking.invoice?.status === 'paid';
+  const isCancelled = cls === 'cancelled';
+  const canPay = !isPaid && !isCancelled; // unpaid + active → offer payment
+  const amount = Number(booking.invoice?.total ?? booking.charges ?? 0).toFixed(2);
+
   return (
     <div className="m-screen">
       <div className="m-appbar"><button className="c-back" onClick={() => navigate(-1)}><Icons.ChevronLeft size={18} /> Back</button></div>
@@ -80,12 +86,14 @@ export default function BookingView() {
           </div>
         )}
         <div style={{ textAlign: 'center', padding: '24px 0' }}>
-          <div style={{ width: 80, height: 80, borderRadius: 24, margin: '0 auto 12px', display: 'grid', placeItems: 'center', background: 'var(--mint-soft)', color: 'var(--mint-300)' }}>
-            <Icons.Check size={40} />
+          <div style={{ width: 80, height: 80, borderRadius: 24, margin: '0 auto 12px', display: 'grid', placeItems: 'center', background: canPay ? 'var(--surface-2)' : 'var(--mint-soft)', color: canPay ? 'var(--text-3)' : 'var(--mint-300)' }}>
+            {canPay ? <Icons.Clock size={40} /> : <Icons.Check size={40} />}
           </div>
-          <h2 style={{ margin: 0 }}>{cls === 'booked' ? 'Booking Confirmed!' : status}</h2>
+          <h2 style={{ margin: 0 }}>
+            {isCancelled ? status : isPaid ? 'Booking Confirmed!' : 'Almost there'}
+          </h2>
           <p style={{ color: 'var(--text-3)', margin: '4px 0' }}>#{ref}</p>
-          <span className={`c-status ${cls}`}>{status}</span>
+          <span className={`c-status ${cls}`}>{canPay ? 'Awaiting payment' : status}</span>
         </div>
 
         <div className="c-card">
@@ -113,14 +121,17 @@ export default function BookingView() {
           </div>
         )}
 
-        {booking.invoice?.status === 'paid' && (
+        {isPaid && (
           <div className="c-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--mint-300)', fontWeight: 600 }}>
             <Icons.Check size={18} /> Paid
           </div>
         )}
 
-        {booking.invoice?.status === 'issued' && (
+        {canPay && (
           <div style={{ margin: '8px 16px 0' }}>
+            <p style={{ color: 'var(--text-3)', fontSize: 13, margin: '0 0 8px', textAlign: 'center' }}>
+              Complete payment to confirm your booking.
+            </p>
             {payError && <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px', textAlign: 'center' }}>{payError}</p>}
             <button
               className="c-btn c-btn-block"
@@ -128,14 +139,14 @@ export default function BookingView() {
               onClick={handlePay}
               disabled={paying}
             >
-              {paying ? 'Starting payment…' : `Pay now — AED ${Number(booking.invoice.total ?? booking.charges ?? 0).toFixed(2)}`}
+              {paying ? 'Starting payment…' : `Pay now — AED ${amount}`}
             </button>
           </div>
         )}
 
         <button
           className="c-btn c-btn-block"
-          style={{ margin: '8px 16px 24px', width: 'calc(100% - 32px)', background: booking.invoice?.status === 'issued' ? 'transparent' : undefined, border: booking.invoice?.status === 'issued' ? '1px solid var(--border-3)' : undefined, color: booking.invoice?.status === 'issued' ? 'var(--text-2)' : undefined }}
+          style={{ margin: '8px 16px 24px', width: 'calc(100% - 32px)', background: canPay ? 'transparent' : undefined, border: canPay ? '1px solid var(--border-3)' : undefined, color: canPay ? 'var(--text-2)' : undefined }}
           onClick={() => navigate('/')}
         >
           Back to Home

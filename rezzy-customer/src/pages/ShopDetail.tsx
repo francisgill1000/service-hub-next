@@ -72,6 +72,19 @@ export default function ShopDetail() {
       const payload = buildBookingPayload(formatLocalDate(selectedDate), selectedTime, shop.catalogs ?? [], selectedServices);
       const res = await api.post(`/shops/${shop.id}/book`, payload);
       const bookingId = res.data?.data?.id ?? res.data?.id;
+
+      // Pay-first: the booking exists but is unpaid. Send the customer to Ziina;
+      // it's confirmed once payment settles. If we can't start payment, the
+      // booking still stands (admin can collect via bizrezzy) — land on its page.
+      try {
+        const pay = await api.post(`/booking/${bookingId}/invoice/pay`);
+        const url = pay.data?.data?.redirect_url;
+        if (url) {
+          window.location.href = url;
+          return;
+        }
+      } catch { /* fall through to the booking page */ }
+
       navigate(`/booking/${bookingId}`);
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -198,7 +211,7 @@ export default function ShopDetail() {
       <div className="c-book-bar">
         <span className="total">AED {total.toFixed(2)}</span>
         <button className="c-btn c-btn-block" style={{ flex: 1 }} disabled={booking || !selectedTime} onClick={() => void handleBook()}>
-          {booking ? 'Booking…' : 'Book Now'}
+          {booking ? 'Starting payment…' : 'Pay & Confirm'}
         </button>
       </div>
     </div>

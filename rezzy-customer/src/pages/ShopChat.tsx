@@ -15,6 +15,16 @@ function bubbleTime(iso?: string): string {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+/** Render message text with URLs (e.g. a Ziina pay link) as tappable links. */
+function linkify(text: string) {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return parts.map((part, i) =>
+    /^https?:\/\//.test(part)
+      ? <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+      : part,
+  );
+}
+
 /** The recorder MIME this browser supports (Chrome: webm, Safari: mp4). */
 function pickAudioMime(): string {
   const cands = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
@@ -189,7 +199,7 @@ export default function ShopChat() {
               <div key={m.id} className={`c-bubble ${m.direction === 'in' ? 'out' : 'in'}`}>
                 {isAudio && <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />}
                 {(!isAudio || (caption && caption !== '…')) && (
-                  <span className="c-bubble-text">{isAudio ? caption : m.body}</span>
+                  <span className="c-bubble-text">{isAudio ? caption : linkify(m.body)}</span>
                 )}
                 <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
               </div>

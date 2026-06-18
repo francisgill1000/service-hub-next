@@ -65,6 +65,12 @@ export const Icons = {
   Stop: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
   ),
+  Play: ({ size = 20 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5v13l11-6.5z" /></svg>
+  ),
+  Pause: ({ size = 20 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6.5" y="5" width="4" height="14" rx="1.5" /><rect x="13.5" y="5" width="4" height="14" rx="1.5" /></svg>
+  ),
   Store: ({ size = 28 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M3 9l1.5-5h15L21 9" /><path d="M4 9v11h16V9" /><path d="M9 20v-6h6v6" /></svg>
   ),

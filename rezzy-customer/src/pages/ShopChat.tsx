@@ -4,6 +4,7 @@ import api from '@/lib/api';
 import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
+import { VoiceOrb } from '@/components/VoiceOrb';
 import type { ChatMessage } from '@/types';
 
 const POLL_MS = 4000;
@@ -192,12 +193,17 @@ export default function ShopChat() {
           <p className="c-thread-empty">Say hi! Ask about prices, timings or availability.</p>
         ) : (
           messages.map((m) => {
-            // direction is from the shop's side: 'in' = sent by me
+            // direction is from the shop's side: 'in' = sent by me (customer),
+            // 'out' = the AI/salon. Voice replies from the AI get the speaking orb.
             const isAudio = !!m.media_url && (m.type === 'audio' || m.type === 'voice');
+            const isBot = m.direction === 'out';
             const caption = m.body.replace(/^(🎤|🔊)\s*/u, '').trim();
             return (
-              <div key={m.id} className={`c-bubble ${m.direction === 'in' ? 'out' : 'in'}`}>
-                {isAudio && <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />}
+              <div key={m.id} className={`c-bubble ${isBot ? 'in' : 'out'}`}>
+                {isAudio && (isBot
+                  ? <VoiceOrb src={m.media_url!} letter={(Array.from(title)[0] || '?').toUpperCase()} />
+                  : <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />
+                )}
                 {(!isAudio || (caption && caption !== '…')) && (
                   <span className="c-bubble-text">{linkify(isAudio ? caption : m.body)}</span>
                 )}

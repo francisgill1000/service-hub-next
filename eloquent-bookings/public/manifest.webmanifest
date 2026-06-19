@@ -1,7 +1,7 @@
 {
-  "name": "Rezzy",
-  "short_name": "Rezzy",
-  "description": "Discover businesses and book appointments.",
+  "name": "Eloquent Bookings",
+  "short_name": "Bookings",
+  "description": "Book salon and service appointments with Eloquent Bookings.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0e0c",

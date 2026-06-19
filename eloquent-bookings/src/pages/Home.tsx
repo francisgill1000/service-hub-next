@@ -47,7 +47,7 @@ export default function Home() {
 
   return (
     <div className="m-screen">
-      <AppBar title="Rezzy" actions={<><ThemeToggle /><WhatsAppButton /></>} />
+      <AppBar title="Eloquent Bookings" actions={<><ThemeToggle /><WhatsAppButton /></>} />
       <div className="c-search">
         <Icons.Search size={18} />
         <input placeholder="Search businesses…" value={search} onChange={(e) => setSearch(e.target.value)} />

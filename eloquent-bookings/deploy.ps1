@@ -1,12 +1,12 @@
 #!/usr/bin/env pwsh
-# Build rezzy-customer and deploy the static SPA to rezzy.eloquentservice.com.
+# Build eloquent-bookings and deploy the static SPA to bookings.eloquentservice.com.
 # Static-SPA serving model on the shared Eloquent droplet (no git repo on server).
 # Usage: ./deploy.ps1
 
 $ErrorActionPreference = "Stop"
 $root   = $PSScriptRoot
 $server = "root@64.227.153.90"
-$webroot = "/var/www/rezzy-customer"
+$webroot = "/var/www/eloquent-bookings"
 
 Write-Host "==> Building" -ForegroundColor Cyan
 Push-Location $root
@@ -25,17 +25,17 @@ Write-Host "==> Uploading dist -> $server`:$webroot" -ForegroundColor Cyan
 # to hang mid-transfer; because the remote `rm -rf` runs first, a hung upload
 # would leave the webroot empty and nginx looping on try_files -> HTTP 500.
 # A one-shot tarball avoids that failure window: clear + extract happen together.
-$tar = Join-Path $env:TEMP "rezzy-customer-dist.tar.gz"
+$tar = Join-Path $env:TEMP "eloquent-bookings-dist.tar.gz"
 if (Test-Path $tar) { Remove-Item $tar -Force }
 tar -czf $tar -C $dist .
 if ($LASTEXITCODE -ne 0) { throw "tar failed (exit $LASTEXITCODE)" }
-scp -o BatchMode=yes -o ConnectTimeout=15 $tar "$server`:/tmp/rezzy-customer-dist.tar.gz"
+scp -o BatchMode=yes -o ConnectTimeout=15 $tar "$server`:/tmp/eloquent-bookings-dist.tar.gz"
 if ($LASTEXITCODE -ne 0) { throw "scp failed" }
-ssh -o BatchMode=yes $server "mkdir -p $webroot && rm -rf $webroot/* && tar -xzf /tmp/rezzy-customer-dist.tar.gz -C $webroot && chown -R www-data:www-data $webroot && rm -f /tmp/rezzy-customer-dist.tar.gz"
+ssh -o BatchMode=yes $server "mkdir -p $webroot && rm -rf $webroot/* && tar -xzf /tmp/eloquent-bookings-dist.tar.gz -C $webroot && chown -R www-data:www-data $webroot && rm -f /tmp/eloquent-bookings-dist.tar.gz"
 if ($LASTEXITCODE -ne 0) { throw "remote extract failed" }
 Remove-Item $tar -Force
 
 Write-Host "==> Verifying" -ForegroundColor Cyan
-curl.exe -sI https://rezzy.eloquentservice.com/ | Select-Object -First 1
+curl.exe -sI https://bookings.eloquentservice.com/ | Select-Object -First 1
 
-Write-Host "==> Done - https://rezzy.eloquentservice.com" -ForegroundColor Green
+Write-Host "==> Done - https://bookings.eloquentservice.com" -ForegroundColor Green

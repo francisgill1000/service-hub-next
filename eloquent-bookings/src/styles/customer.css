@@ -344,10 +344,3 @@
 .c-bubble.out .c-vm-wave span{background:rgba(4,20,15,0.3)}
 .c-bubble.out .c-vm-wave span.on{background:#04140f;opacity:1}
 .c-bubble.out .c-vm-time{color:rgba(4,20,15,0.6)}
-
-/* AI voice reply transcript toggle */
-.c-vm-tr{display:flex;flex-direction:column;gap:3px;margin-top:5px}
-.c-vm-transcript{appearance:none;background:none;border:none;cursor:pointer;font-family:var(--font-mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-4);padding:0;align-self:flex-start}
-.c-vm-transcript:hover{color:var(--mint-400)}
-.c-vm-caption{font-size:13px;line-height:1.45;color:var(--text-2);white-space:pre-wrap;word-break:break-word}
-.c-vm-caption a{color:var(--mint-400)}

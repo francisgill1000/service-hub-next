@@ -77,17 +77,15 @@ describe('ShopChat', () => {
     expect(screen.getByText('Glow Salon')).toBeInTheDocument();
   });
 
-  it('renders an AI voice reply as a player with a collapsible transcript', async () => {
+  it('renders an AI voice reply as a player with no transcript', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([
       { id: 3, direction: 'out', type: 'audio', media_url: 'https://x/r.mp3', body: '🔊 Sure, 3pm works!', created_at: '2026-06-12T10:00:00Z' },
     ]);
 
     setup();
-    const user = userEvent.setup();
     expect(await screen.findByRole('button', { name: /play voice message/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /transcript/i })).toBeNull();
     expect(screen.queryByText(/sure, 3pm works/i)).toBeNull();
-    await user.click(screen.getByRole('button', { name: /transcript/i }));
-    expect(await screen.findByText(/sure, 3pm works/i)).toBeInTheDocument();
   });
 
   it('renders a customer voice note as a player with no transcript', async () => {

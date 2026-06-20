@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { Icons } from './Icons';
-import { linkify } from '@/lib/linkify';
 
 // A fixed, voice-note-ish waveform (bar heights in %). Decorative — the audio is
 // cross-origin so it can't be analysed — but progress is accurate: bars left of
@@ -73,24 +72,6 @@ export function VoiceMessage(
           setElapsed(a.currentTime);
         }}
       />
-    </div>
-  );
-}
-
-/** A small toggle that reveals the AI voice reply's text (transcript) on demand. */
-export function VoiceTranscript({ text }: { text: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="c-vm-tr">
-      <button
-        type="button"
-        className="c-vm-transcript"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-      >
-        {open ? 'Hide transcript' : 'Transcript'}
-      </button>
-      {open && <div className="c-vm-caption">{linkify(text)}</div>}
     </div>
   );
 }

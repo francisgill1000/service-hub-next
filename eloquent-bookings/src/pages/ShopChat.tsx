@@ -5,6 +5,7 @@ import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
 import { VoiceOrb } from '@/components/VoiceOrb';
+import { AiCoreOrb, type OrbState } from '@/components/AiCoreOrb';
 import type { ChatMessage } from '@/types';
 
 const POLL_MS = 4000;
@@ -49,11 +50,14 @@ export default function ShopChat() {
   const [sending, setSending] = useState(false);
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [awaitingReply, setAwaitingReply] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
 
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const outCountRef = useRef(0);
 
   const appendMessages = useCallback((incoming: ChatMessage[]) => {
     if (incoming.length === 0) return;
@@ -110,6 +114,13 @@ export default function ShopChat() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages.length]);
 
+  // The orb is "thinking" from when I send until the AI's next reply lands.
+  useEffect(() => {
+    const outCount = messages.reduce((n, m) => (m.direction === 'out' ? n + 1 : n), 0);
+    if (outCount > outCountRef.current) setAwaitingReply(false);
+    outCountRef.current = outCount;
+  }, [messages]);
+
   const handleSend = async () => {
     const text = draft.trim();
     if (!text || sending) return;
@@ -119,6 +130,7 @@ export default function ShopChat() {
       const sent = await sendChatMessage(shopId, text);
       appendMessages([sent]);
       setDraft('');
+      setAwaitingReply(true);
     } catch {
       setError('Could not send. Please try again.');
     } finally {
@@ -161,6 +173,7 @@ export default function ShopChat() {
     try {
       const sent = await sendChatVoice(shopId, blob);
       appendMessages([sent]);
+      setAwaitingReply(true);
     } catch {
       setError('Could not send your voice note. Please try again.');
     } finally {
@@ -169,6 +182,17 @@ export default function ShopChat() {
   };
 
   const title = shopName || 'Chat';
+  const monogram = (Array.from(title)[0] || '?').toUpperCase();
+  const orbState: OrbState =
+    recording ? 'listening'
+      : speaking ? 'talking'
+        : (awaitingReply || uploading) ? 'thinking'
+          : 'idle';
+  const statusText =
+    orbState === 'listening' ? 'listening…'
+      : orbState === 'thinking' ? 'thinking…'
+        : orbState === 'talking' ? 'replying…'
+          : 'AI assistant · online';
 
   return (
     <div className="m-screen c-thread-screen">
@@ -176,14 +200,19 @@ export default function ShopChat() {
         <button className="c-icon-btn" aria-label="Back" onClick={() => navigate(`/shop/${shopId}`)}>
           <Icons.ChevronLeft size={18} />
         </button>
-        <div className="c-thread-avatar">{(Array.from(title)[0] || '?').toUpperCase()}</div>
+        <div className="c-thread-avatar">{monogram}</div>
         <div className="c-thread-head-text">
           <span className="c-thread-title">{title}</span>
           <span className="c-thread-sub">
             <span className="c-live-dot" />
-            AI assistant · replies in seconds
+            {statusText}
           </span>
         </div>
+      </div>
+
+      <div className="c-core-hero">
+        <AiCoreOrb state={orbState} letter={monogram} />
+        <span className="c-core-sub">Ask about prices, timings or availability</span>
       </div>
 
       <div className="c-thread-scroll" ref={scrollRef}>
@@ -201,7 +230,7 @@ export default function ShopChat() {
             return (
               <div key={m.id} className={`c-bubble ${isBot ? 'in' : 'out'}`}>
                 {isAudio && (isBot
-                  ? <VoiceOrb src={m.media_url!} letter={(Array.from(title)[0] || '?').toUpperCase()} />
+                  ? <VoiceOrb src={m.media_url!} letter={monogram} onSpeakingChange={setSpeaking} />
                   : <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />
                 )}
                 {(!isAudio || (caption && caption !== '…')) && (

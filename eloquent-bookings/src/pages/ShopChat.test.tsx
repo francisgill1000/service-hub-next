@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import * as chatLib from '@/lib/chat';
@@ -63,5 +63,30 @@ describe('ShopChat', () => {
     await user.click(screen.getByRole('button', { name: /send/i }));
 
     expect(await screen.findByText(/could not send/i)).toBeInTheDocument();
+  });
+
+  it('shows the AI core orb with the shop monogram, idle on load', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
+
+    setup();
+    await screen.findByText(/say hi/i);
+    const orb = screen.getByTestId('ai-core');
+    expect(within(orb).getByText('G')).toBeInTheDocument(); // Glow Salon
+    expect(orb).toHaveClass('state-idle');
+  });
+
+  it('moves the orb to thinking after sending a message', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
+    vi.spyOn(chatLib, 'sendChatMessage').mockResolvedValue({
+      id: 9, direction: 'in', body: 'How much is a haircut?', created_at: '2026-06-12T10:02:00Z',
+    });
+
+    setup();
+    const user = userEvent.setup();
+    await user.type(await screen.findByPlaceholderText(/type a message/i), 'How much is a haircut?');
+    await user.click(screen.getByRole('button', { name: /send/i }));
+
+    expect(await screen.findByText('How much is a haircut?')).toBeInTheDocument();
+    expect(screen.getByTestId('ai-core')).toHaveClass('state-thinking');
   });
 });

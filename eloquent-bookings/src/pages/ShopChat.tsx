@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '@/lib/api';
 import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
+import { linkify } from '@/lib/linkify';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
 import { VoiceOrb } from '@/components/VoiceOrb';
@@ -15,16 +16,6 @@ function bubbleTime(iso?: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-/** Render message text with URLs (e.g. a Ziina pay link) as tappable links. */
-function linkify(text: string) {
-  const parts = text.split(/(https?:\/\/[^\s]+)/g);
-  return parts.map((part, i) =>
-    /^https?:\/\//.test(part)
-      ? <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
-      : part,
-  );
 }
 
 /** The recorder MIME this browser supports (Chrome: webm, Safari: mp4). */

@@ -5,7 +5,7 @@ import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
 import { linkify } from '@/lib/linkify';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
-import { VoiceOrb } from '@/components/VoiceOrb';
+import { VoiceMessage, VoiceTranscript } from '@/components/VoiceMessage';
 import { AiCoreOrb, type OrbState } from '@/components/AiCoreOrb';
 import type { ChatMessage } from '@/types';
 
@@ -214,18 +214,20 @@ export default function ShopChat() {
         ) : (
           messages.map((m) => {
             // direction is from the shop's side: 'in' = sent by me (customer),
-            // 'out' = the AI/salon. Voice replies from the AI get the speaking orb.
+            // 'out' = the AI/salon. Audio messages render the voice player; the
+            // AI's voice reply also gets a collapsible transcript.
             const isAudio = !!m.media_url && (m.type === 'audio' || m.type === 'voice');
             const isBot = m.direction === 'out';
             const caption = m.body.replace(/^(🎤|🔊)\s*/u, '').trim();
             return (
               <div key={m.id} className={`c-bubble ${isBot ? 'in' : 'out'}`}>
-                {isAudio && (isBot
-                  ? <VoiceOrb src={m.media_url!} letter={monogram} onSpeakingChange={setSpeaking} />
-                  : <audio controls preload="none" src={m.media_url!} className="c-bubble-audio" />
-                )}
-                {(!isAudio || (caption && caption !== '…')) && (
-                  <span className="c-bubble-text">{linkify(isAudio ? caption : m.body)}</span>
+                {isAudio ? (
+                  <>
+                    <VoiceMessage src={m.media_url!} onSpeakingChange={isBot ? setSpeaking : undefined} />
+                    {isBot && caption && caption !== '…' && <VoiceTranscript text={caption} />}
+                  </>
+                ) : (
+                  <span className="c-bubble-text">{linkify(m.body)}</span>
                 )}
                 <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
               </div>

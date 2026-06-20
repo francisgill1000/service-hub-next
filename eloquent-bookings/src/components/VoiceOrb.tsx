@@ -9,7 +9,10 @@ const BAR_COUNT = 9;
  * dances beside it. The animation is CSS-driven (the audio is cross-origin,
  * so the Web Audio analyser can't read it) but reads as voice-reactive.
  */
-export function VoiceOrb({ src, letter }: { src: string; letter: string }) {
+export function VoiceOrb(
+  { src, letter, onSpeakingChange }:
+  { src: string; letter: string; onSpeakingChange?: (playing: boolean) => void },
+) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -44,9 +47,9 @@ export function VoiceOrb({ src, letter }: { src: string; letter: string }) {
         ref={audioRef}
         src={src}
         preload="none"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
+        onPlay={() => { setPlaying(true); onSpeakingChange?.(true); }}
+        onPause={() => { setPlaying(false); onSpeakingChange?.(false); }}
+        onEnded={() => { setPlaying(false); onSpeakingChange?.(false); }}
       />
     </div>
   );

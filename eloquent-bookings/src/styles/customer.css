@@ -335,6 +335,8 @@
 .c-core-rotor{position:absolute;inset:0;border-radius:50%;border:1.5px solid transparent;border-top-color:var(--mint-500);border-right-color:rgba(0,255,204,0.3);animation:core-spin 5.5s linear infinite}
 .c-core-disc{position:absolute;inset:26px;border-radius:50%;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px -6px var(--mint-glow),0 0 0 1px rgba(0,255,204,0.45) inset}
 .c-core-letter{font-family:var(--font-sans);font-weight:700;font-size:40px;color:var(--mint-400);animation:core-letter 7s ease-in-out infinite}
+.c-core-img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:50% 42%;animation:core-letter 7s ease-in-out infinite}
+.c-core.state-talking .c-core-img{animation:core-letter 3.4s ease-in-out infinite}
 .c-core-rimlight{position:absolute;inset:26px;border-radius:50%;pointer-events:none;box-shadow:0 0 0 2px rgba(0,255,204,0.16) inset;background:radial-gradient(120% 90% at 78% 8%,rgba(0,255,204,0.20),transparent 46%)}
 .c-core-ping{position:absolute;inset:7px;border-radius:50%;border:1px solid var(--mint-500);opacity:0}
 .c-core-wave{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;height:26px;padding:0 12px;background:rgba(5,7,10,0.82);border:1px solid var(--border-mint);border-radius:var(--r-pill);opacity:0;transition:.3s;box-shadow:0 8px 24px -8px var(--mint-glow)}

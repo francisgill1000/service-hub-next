@@ -5,7 +5,10 @@ export type OrbState = 'idle' | 'listening' | 'thinking' | 'talking';
  * assistant's current state. Pure presentation — all motion is CSS-driven
  * (see the c-core-* block in customer.css); this component holds no timers.
  */
-export function AiCoreOrb({ state, letter }: { state: OrbState; letter: string }) {
+export function AiCoreOrb(
+  { state, letter, imageSrc }:
+  { state: OrbState; letter: string; imageSrc?: string },
+) {
   return (
     <div className={`c-core state-${state}`} data-testid="ai-core">
       <div className="c-core-glow" />
@@ -14,7 +17,9 @@ export function AiCoreOrb({ state, letter }: { state: OrbState; letter: string }
       <div className="c-core-ring r2" />
       <div className="c-core-rotor" />
       <div className="c-core-disc">
-        <span className="c-core-letter">{letter}</span>
+        {imageSrc
+          ? <img className="c-core-img" src={imageSrc} alt="" />
+          : <span className="c-core-letter">{letter}</span>}
       </div>
       <div className="c-core-rimlight" />
       <div className="c-core-wave" aria-hidden="true">

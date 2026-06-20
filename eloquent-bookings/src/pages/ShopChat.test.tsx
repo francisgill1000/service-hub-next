@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import * as chatLib from '@/lib/chat';
@@ -65,14 +65,16 @@ describe('ShopChat', () => {
     expect(await screen.findByText(/could not send/i)).toBeInTheDocument();
   });
 
-  it('shows the AI core orb with the shop monogram, idle on load', async () => {
+  it('shows the AI core orb (assistant face), idle on load', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
 
     setup();
     await screen.findByText(/say hi/i);
     const orb = screen.getByTestId('ai-core');
-    expect(within(orb).getByText('G')).toBeInTheDocument(); // Glow Salon
+    expect(orb.querySelector('img')).toHaveAttribute('src', '/influencer-orb.png');
     expect(orb).toHaveClass('state-idle');
+    // shop identity still shows in the header avatar
+    expect(screen.getByText('Glow Salon')).toBeInTheDocument();
   });
 
   it('moves the orb to thinking after sending a message', async () => {

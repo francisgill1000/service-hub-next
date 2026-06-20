@@ -1,2 +1,7 @@
 .env
 node_modules
+# HeyGen secret + transient avatar build artifacts (never commit)
+heygenkey
+assistant-src.jpg
+heygen-raw.mp4
+hg_*.json

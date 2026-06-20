@@ -6,8 +6,8 @@ export type OrbState = 'idle' | 'listening' | 'thinking' | 'talking';
  * (see the c-core-* block in customer.css); this component holds no timers.
  */
 export function AiCoreOrb(
-  { state, letter, imageSrc }:
-  { state: OrbState; letter: string; imageSrc?: string },
+  { state, letter, imageSrc, talkingVideo }:
+  { state: OrbState; letter: string; imageSrc?: string; talkingVideo?: string },
 ) {
   return (
     <div className={`c-core state-${state}`} data-testid="ai-core">
@@ -17,9 +17,11 @@ export function AiCoreOrb(
       <div className="c-core-ring r2" />
       <div className="c-core-rotor" />
       <div className="c-core-disc">
-        {imageSrc
-          ? <img className="c-core-img" src={imageSrc} alt="" />
-          : <span className="c-core-letter">{letter}</span>}
+        {state === 'talking' && talkingVideo
+          ? <video className="c-core-img" src={talkingVideo} autoPlay muted loop playsInline />
+          : imageSrc
+            ? <img className="c-core-img" src={imageSrc} alt="" />
+            : <span className="c-core-letter">{letter}</span>}
       </div>
       <div className="c-core-rimlight" />
       <div className="c-core-wave" aria-hidden="true">

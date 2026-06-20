@@ -322,3 +322,47 @@
 @keyframes c-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 .c-mini-spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(4,20,15,0.3); border-top-color: #04140f; animation: c-spin 0.7s linear infinite; display: inline-block; }
 @keyframes c-spin { to { transform: rotate(360deg); } }
+
+/* ===== AI Core hero orb (chat) ===== */
+.c-core-hero{display:flex;flex-direction:column;align-items:center;padding:16px 16px 4px;gap:8px;flex-shrink:0}
+.c-core-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:1.4px}
+
+.c-core{position:relative;width:148px;height:148px;flex-shrink:0}
+.c-core-glow{position:absolute;inset:-26px;border-radius:50%;background:radial-gradient(circle,var(--mint-glow),transparent 65%);filter:blur(6px);animation:core-breathe 4.5s ease-in-out infinite}
+.c-core-ring{position:absolute;border-radius:50%;border:1px solid var(--border-mint)}
+.c-core-ring.r1{inset:7px}
+.c-core-ring.r2{inset:22px;border-color:rgba(0,255,204,0.14)}
+.c-core-rotor{position:absolute;inset:0;border-radius:50%;border:1.5px solid transparent;border-top-color:var(--mint-500);border-right-color:rgba(0,255,204,0.3);animation:core-spin 5.5s linear infinite}
+.c-core-disc{position:absolute;inset:26px;border-radius:50%;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px -6px var(--mint-glow),0 0 0 1px rgba(0,255,204,0.45) inset}
+.c-core-letter{font-family:var(--font-sans);font-weight:700;font-size:40px;color:var(--mint-400);animation:core-letter 7s ease-in-out infinite}
+.c-core-rimlight{position:absolute;inset:26px;border-radius:50%;pointer-events:none;box-shadow:0 0 0 2px rgba(0,255,204,0.16) inset;background:radial-gradient(120% 90% at 78% 8%,rgba(0,255,204,0.20),transparent 46%)}
+.c-core-ping{position:absolute;inset:7px;border-radius:50%;border:1px solid var(--mint-500);opacity:0}
+.c-core-wave{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;height:26px;padding:0 12px;background:rgba(5,7,10,0.82);border:1px solid var(--border-mint);border-radius:var(--r-pill);opacity:0;transition:.3s;box-shadow:0 8px 24px -8px var(--mint-glow)}
+.c-core-wave span{width:3px;height:7px;border-radius:4px;background:var(--mint-500);box-shadow:0 0 8px var(--mint-glow)}
+.c-core-wave span:nth-child(1){animation:core-wave 1s 0s infinite ease-in-out}
+.c-core-wave span:nth-child(2){animation:core-wave 1s -.2s infinite ease-in-out}
+.c-core-wave span:nth-child(3){animation:core-wave 1s -.4s infinite ease-in-out}
+.c-core-wave span:nth-child(4){animation:core-wave 1s -.1s infinite ease-in-out}
+.c-core-wave span:nth-child(5){animation:core-wave 1s -.3s infinite ease-in-out}
+
+.c-core.state-listening .c-core-glow{animation:core-breathe 1.4s ease-in-out infinite}
+.c-core.state-listening .c-core-wave{opacity:1}
+.c-core.state-listening .c-core-ping{animation:core-ping 1.6s ease-out infinite}
+.c-core.state-thinking .c-core-rotor{animation:core-spin 1.1s linear infinite}
+.c-core.state-thinking .c-core-rimlight{animation:core-scan 1.1s ease-in-out infinite}
+.c-core.state-talking .c-core-wave{opacity:1}
+.c-core.state-talking .c-core-glow{animation:core-breathe 1.6s ease-in-out infinite}
+.c-core.state-talking{animation:core-bob 1.7s ease-in-out infinite}
+
+@keyframes core-breathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.92}}
+@keyframes core-spin{to{transform:rotate(360deg)}}
+@keyframes core-wave{0%,100%{height:7px}50%{height:26px}}
+@keyframes core-ping{0%{transform:scale(.9);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+@keyframes core-scan{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes core-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes core-letter{0%,100%{transform:scale(1.02)}50%{transform:scale(1.06)}}
+
+/* light theme: soften the dark-glass bits so the orb reads on white */
+:root[data-theme='light'] .c-core-disc{background:var(--surface-3)}
+:root[data-theme='light'] .c-core-letter{color:var(--mint-300)}
+:root[data-theme='light'] .c-core-wave{background:rgba(255,255,255,0.9)}

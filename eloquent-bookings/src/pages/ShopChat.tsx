@@ -56,6 +56,7 @@ export default function ShopChat() {
   const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
   const spokenIdRef = useRef(0);
   const ttsInitRef = useRef(false);
+  const voiceOnRef = useRef(true);
 
   const appendMessages = useCallback((incoming: ChatMessage[]) => {
     if (incoming.length === 0) return;
@@ -212,6 +213,7 @@ export default function ShopChat() {
     stopSpeaking();
     try {
       const { data } = await api.post('/tts', { text }, { responseType: 'blob' });
+      if (!voiceOnRef.current) return; // muted while the audio was being fetched
       const url = URL.createObjectURL(data as Blob);
       const audio = new Audio(url);
       ttsAudioRef.current = audio;
@@ -220,8 +222,8 @@ export default function ShopChat() {
       audio.onerror = () => setSpeaking(false);
       await audio.play().catch(() => setSpeaking(false));
     } catch {
-      // Backend TTS unavailable — fall back to the browser voice.
-      browserSpeak(text);
+      // Backend TTS unavailable — fall back to the browser voice (unless muted).
+      if (voiceOnRef.current) browserSpeak(text);
     }
   }, [stopSpeaking, browserSpeak]);
 
@@ -247,15 +249,16 @@ export default function ShopChat() {
     if (text) void speakText(text);
   }, [messages, loading, voiceOn, speakText]);
 
+  // Keep a ref of the latest voice state for async callbacks (in-flight /tts).
+  useEffect(() => { voiceOnRef.current = voiceOn; }, [voiceOn]);
+
+  // Muting cuts off whatever is currently playing, immediately.
+  useEffect(() => { if (!voiceOn) stopSpeaking(); }, [voiceOn, stopSpeaking]);
+
   // Stop any audio when leaving the chat.
   useEffect(() => stopSpeaking, [stopSpeaking]);
 
-  const toggleVoice = () => {
-    setVoiceOn((on) => {
-      if (on) stopSpeaking(); // muting → cut off current playback
-      return !on;
-    });
-  };
+  const toggleVoice = () => setVoiceOn((on) => !on);
 
   const title = shopName || 'Chat';
   const monogram = (Array.from(title)[0] || '?').toUpperCase();

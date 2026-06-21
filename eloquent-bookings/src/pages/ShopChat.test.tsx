@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import * as chatLib from '@/lib/chat';
-import * as avatarLib from '@/lib/avatar';
 import ShopChat from './ShopChat';
 
 function setup() {
@@ -114,30 +113,28 @@ describe('ShopChat', () => {
     expect(screen.getByTestId('ai-core')).toHaveClass('state-thinking');
   });
 
-  it('opens the avatar modal from the header button', async () => {
+  it('opens the avatar video modal from the header button', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
-    // Keep the session pending so the SDK never constructs in jsdom.
-    vi.spyOn(avatarLib, 'createAvatarSession').mockReturnValue(new Promise(() => {}));
 
     setup();
     await screen.findByText(/say hi/i);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /video assistant/i }));
 
-    expect(await screen.findByText(/connecting/i)).toBeInTheDocument();
+    const dialog = await screen.findByRole('dialog', { name: /video assistant/i });
+    expect(dialog.querySelector('video')).toHaveAttribute('src', '/avatar-static.mp4');
   });
 
   it('closes the avatar modal', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
-    vi.spyOn(avatarLib, 'createAvatarSession').mockReturnValue(new Promise(() => {}));
 
     setup();
     await screen.findByText(/say hi/i);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /video assistant/i }));
-    await screen.findByText(/connecting/i);
+    await screen.findByRole('dialog', { name: /video assistant/i });
     await user.click(screen.getByRole('button', { name: /close/i }));
 
-    expect(screen.queryByText(/connecting/i)).toBeNull();
+    expect(screen.queryByRole('dialog', { name: /video assistant/i })).toBeNull();
   });
 });

@@ -276,7 +276,7 @@ export default function ShopChat() {
       </div>
 
       {avatarOpen && (
-        <AvatarSpeakModal shopId={shopId} onClose={() => setAvatarOpen(false)} />
+        <AvatarSpeakModal onClose={() => setAvatarOpen(false)} />
       )}
     </div>
   );

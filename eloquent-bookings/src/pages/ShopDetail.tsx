@@ -128,15 +128,6 @@ export default function ShopDetail() {
           >
             <Icons.Chat size={17} /> Live Chat
           </button>
-          {/* Video Assistant — hidden until LiveAvatar credits are decided.
-              The /shop/:id/avatar route still works for direct testing.
-          <button
-            className="c-chat-btn"
-            onClick={() => navigate(`/shop/${shop.id}/avatar`)}
-          >
-            <Icons.Mic size={17} /> Video Assistant
-          </button>
-          */}
           {shop.phone && (
             <a
               className="c-chat-btn wa"

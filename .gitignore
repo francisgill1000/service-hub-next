@@ -5,3 +5,9 @@ heygenkey
 assistant-src.jpg
 heygen-raw.mp4
 hg_*.json
+key
+# Secrets / sensitive — never commit
+*.keystore
+*-credentials.txt
+# Nested repo (tracked in its own git)
+backend/

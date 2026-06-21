@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '@/lib/api';
 import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
 import { linkify } from '@/lib/linkify';
+import { pickFemaleVoice } from '@/lib/voice';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
 import { VoiceMessage } from '@/components/VoiceMessage';
 import { AiCoreOrb, type OrbState } from '@/components/AiCoreOrb';
-import AvatarSpeakModal from '@/components/AvatarSpeakModal';
 import type { ChatMessage } from '@/types';
 
 const POLL_MS = 4000;
@@ -46,13 +46,16 @@ export default function ShopChat() {
   const [uploading, setUploading] = useState(false);
   const [awaitingReply, setAwaitingReply] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(true);
 
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const outCountRef = useRef(0);
+  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
+  const spokenIdRef = useRef(0);
+  const ttsInitRef = useRef(false);
 
   const appendMessages = useCallback((incoming: ChatMessage[]) => {
     if (incoming.length === 0) return;
@@ -82,7 +85,7 @@ export default function ShopChat() {
       }
     })();
     // Fetch the shop when name or logo wasn't handed over via navigation state
-    // (e.g. a direct link), so the assistant modal can show the shop's logo.
+    // (e.g. a direct link), so the hero orb can show the shop's logo.
     if (!stateShopName || !navState?.shopLogo) {
       void api.get(`/shops/${shopId}`)
         .then((res) => {
@@ -183,18 +186,76 @@ export default function ShopChat() {
     }
   };
 
-  // Phase 2: the assistant speaks the most recent reply ('out' = AI/salon side),
-  // falling back to the greeting when there's none yet. Strip any leading emoji
-  // (voice replies are prefixed with 🔊) so it isn't read aloud.
-  const latestReply = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const m = messages[i];
-      if (m.direction === 'out' && m.body) {
-        return m.body.replace(/^[^\p{L}\d]+/u, '').trim() || undefined;
-      }
+  // --- Voice: speak the assistant's replies aloud (OpenAI TTS via /tts) ---
+
+  const stopSpeaking = useCallback(() => {
+    ttsAudioRef.current?.pause();
+    ttsAudioRef.current = null;
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    setSpeaking(false);
+  }, []);
+
+  const browserSpeak = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const v = pickFemaleVoice(synth.getVoices());
+    if (v) { u.voice = v; u.lang = v.lang; }
+    u.onstart = () => setSpeaking(true);
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    synth.speak(u);
+  }, []);
+
+  const speakText = useCallback(async (text: string) => {
+    stopSpeaking();
+    try {
+      const { data } = await api.post('/tts', { text }, { responseType: 'blob' });
+      const url = URL.createObjectURL(data as Blob);
+      const audio = new Audio(url);
+      ttsAudioRef.current = audio;
+      audio.onplay = () => setSpeaking(true);
+      audio.onended = () => { setSpeaking(false); URL.revokeObjectURL(url); };
+      audio.onerror = () => setSpeaking(false);
+      await audio.play().catch(() => setSpeaking(false));
+    } catch {
+      // Backend TTS unavailable — fall back to the browser voice.
+      browserSpeak(text);
     }
-    return undefined;
-  }, [messages]);
+  }, [stopSpeaking, browserSpeak]);
+
+  // Speak each NEW assistant reply once it lands (not the history on open, and
+  // only while voice is on). 'out' = the AI/salon side; strip a leading emoji.
+  useEffect(() => {
+    if (loading) return;
+    let latest: ChatMessage | undefined;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].direction === 'out') { latest = messages[i]; break; }
+    }
+    const latestId = latest?.id ?? 0;
+    if (!ttsInitRef.current) {
+      // First settle after load — don't read existing history aloud.
+      ttsInitRef.current = true;
+      spokenIdRef.current = latestId;
+      return;
+    }
+    if (latestId <= spokenIdRef.current) return;
+    spokenIdRef.current = latestId;
+    if (!voiceOn || !latest) return;
+    const text = (latest.body ?? '').replace(/^[^\p{L}\d]+/u, '').trim();
+    if (text) void speakText(text);
+  }, [messages, loading, voiceOn, speakText]);
+
+  // Stop any audio when leaving the chat.
+  useEffect(() => stopSpeaking, [stopSpeaking]);
+
+  const toggleVoice = () => {
+    setVoiceOn((on) => {
+      if (on) stopSpeaking(); // muting → cut off current playback
+      return !on;
+    });
+  };
 
   const title = shopName || 'Chat';
   const monogram = (Array.from(title)[0] || '?').toUpperCase();
@@ -226,15 +287,16 @@ export default function ShopChat() {
         <button
           className="c-icon-btn"
           style={{ marginLeft: 'auto' }}
-          aria-label="Assistant"
-          onClick={() => setAvatarOpen(true)}
+          aria-label={voiceOn ? 'Mute voice' : 'Unmute voice'}
+          aria-pressed={voiceOn}
+          onClick={toggleVoice}
         >
-          <Icons.Video size={18} />
+          {voiceOn ? <Icons.Volume size={18} /> : <Icons.VolumeOff size={18} />}
         </button>
       </div>
 
       <div className="c-core-hero">
-        <AiCoreOrb state={orbState} letter={monogram} imageSrc="/influencer-orb.png" />
+        <AiCoreOrb state={orbState} letter={monogram} imageSrc={shopLogo || '/influencer-orb.png'} />
         <span className="c-core-sub">Ask about prices, timings or availability</span>
       </div>
 
@@ -296,10 +358,6 @@ export default function ShopChat() {
           </>
         )}
       </div>
-
-      {avatarOpen && (
-        <AvatarSpeakModal logo={shopLogo} message={latestReply} onClose={() => setAvatarOpen(false)} />
-      )}
     </div>
   );
 }

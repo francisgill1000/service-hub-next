@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import * as chatLib from '@/lib/chat';
 import ShopChat from './ShopChat';
 
-// ShopChat fetches the shop (logo/name) and the assistant modal posts to /tts.
+// ShopChat fetches the shop (logo/name) and posts replies to /tts for voice.
 // Mock the api client so tests never hit the real backend.
 vi.mock('@/lib/api', () => ({
   default: {
@@ -74,15 +74,15 @@ describe('ShopChat', () => {
     expect(await screen.findByText(/could not send/i)).toBeInTheDocument();
   });
 
-  it('shows the AI core orb (assistant face), idle on load', async () => {
+  it('shows the AI core orb using the shop logo, idle on load', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
 
     setup();
     await screen.findByText(/say hi/i);
     const orb = screen.getByTestId('ai-core');
-    expect(orb.querySelector('img')).toHaveAttribute('src', '/influencer-orb.png');
+    // logo arrives from the shop fetch
+    await waitFor(() => expect(orb.querySelector('img')).toHaveAttribute('src', '/logo.png'));
     expect(orb).toHaveClass('state-idle');
-    // shop identity still shows in the header avatar
     expect(screen.getByText('Glow Salon')).toBeInTheDocument();
   });
 
@@ -122,46 +122,18 @@ describe('ShopChat', () => {
     expect(screen.getByTestId('ai-core')).toHaveClass('state-thinking');
   });
 
-  it('opens the assistant modal (logo + greeting) from the header button', async () => {
+  it('has a voice toggle in the header, on by default, that mutes when tapped', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
 
     setup();
     await screen.findByText(/say hi/i);
+    // On by default → the action is to mute.
+    const toggle = screen.getByRole('button', { name: /mute voice/i });
+    expect(toggle).toBeInTheDocument();
+
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /assistant/i }));
-
-    const dialog = await screen.findByRole('dialog', { name: /assistant/i });
-    expect(dialog).toBeInTheDocument();
-    expect(screen.getByText(/i can help you with prices/i)).toBeInTheDocument();
-  });
-
-  it('speaks the latest assistant reply (not the greeting) when one exists', async () => {
-    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([
-      { id: 1, direction: 'in', body: 'When do you open?', created_at: '2026-06-12T10:00:00Z' },
-      { id: 2, direction: 'out', body: 'We open at 9am tomorrow.', created_at: '2026-06-12T10:00:05Z' },
-    ]);
-
-    setup();
-    await screen.findByText('We open at 9am tomorrow.'); // the chat bubble
-    const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /assistant/i }));
-
-    const dialog = await screen.findByRole('dialog', { name: /assistant/i });
-    // The modal caption shows the reply, not the static greeting.
-    expect(within(dialog).getByText('We open at 9am tomorrow.')).toBeInTheDocument();
-    expect(within(dialog).queryByText(/i can help you with prices/i)).toBeNull();
-  });
-
-  it('closes the assistant modal', async () => {
-    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
-
-    setup();
-    await screen.findByText(/say hi/i);
-    const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /assistant/i }));
-    await screen.findByRole('dialog', { name: /assistant/i });
-    await user.click(screen.getByRole('button', { name: /close/i }));
-
-    expect(screen.queryByRole('dialog', { name: /assistant/i })).toBeNull();
+    await user.click(toggle);
+    // Now muted → the action becomes unmute.
+    expect(screen.getByRole('button', { name: /unmute voice/i })).toBeInTheDocument();
   });
 });

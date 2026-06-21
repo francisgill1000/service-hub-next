@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LiveAvatarSession } from '@heygen/liveavatar-web-sdk';
+import { LiveAvatarSession, SessionEvent } from '@heygen/liveavatar-web-sdk';
 import { createAvatarSession, type AvatarSession } from '../lib/avatar';
 
 type Phase = 'connecting' | 'live' | 'mic-denied' | 'error';
@@ -46,10 +46,22 @@ export default function AvatarCall() {
 
         const session = new LiveAvatarSession(token, { voiceChat: true });
         sessionRef.current = session;
-        if (videoRef.current) session.attach(videoRef.current);
-        await session.start();
 
-        if (!cancelled) setPhase('live');
+        // The avatar video track only exists once the stream is ready — attach
+        // then, not before, or the <video> stays black.
+        session.on(SessionEvent.SESSION_STREAM_READY, () => {
+          if (cancelled) return;
+          if (videoRef.current) {
+            session.attach(videoRef.current);
+            void videoRef.current.play().catch(() => {});
+          }
+          setPhase('live');
+        });
+        session.on(SessionEvent.SESSION_DISCONNECTED, () => {
+          if (!cancelled) navigate(-1);
+        });
+
+        await session.start();
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : 'Could not start the assistant.');

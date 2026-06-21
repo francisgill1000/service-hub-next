@@ -140,13 +140,6 @@ export default function ShopDetail() {
           )}
         </div>
 
-        <button
-          className="c-avatar-cta"
-          onClick={() => navigate(`/shop/${shop.id}/assistant`)}
-        >
-          <Icons.User size={17} /> Meet your AI assistant
-        </button>
-
         <div className="m-section-title" style={{ padding: '0 16px' }}><h3>Select date</h3></div>
         <div className="c-date-strip">
           {dates.map((d) => {

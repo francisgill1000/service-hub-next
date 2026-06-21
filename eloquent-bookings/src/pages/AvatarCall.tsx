@@ -24,6 +24,18 @@ export default function AvatarCall() {
   const sessionRef = useRef<LiveAvatarSession | null>(null);
   const [phase, setPhase] = useState<Phase>('connecting');
   const [error, setError] = useState<string>('');
+  const leftRef = useRef(false);
+  const phaseRef = useRef<Phase>('connecting');
+
+  // Leave to the shop page deterministically (navigate(-1) bounced to Home on a
+  // hard refresh, where there was no in-app history). Guard against double-fire.
+  function leave() {
+    if (leftRef.current) return;
+    leftRef.current = true;
+    void sessionRef.current?.stop();
+    sessionRef.current = null;
+    navigate(`/shop/${id}`);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -55,10 +67,13 @@ export default function AvatarCall() {
             session.attach(videoRef.current);
             void videoRef.current.play().catch(() => {});
           }
+          phaseRef.current = 'live';
           setPhase('live');
         });
+        // Only treat a disconnect as "call over" once we were actually live, so
+        // connection churn during setup doesn't bounce the user off the page.
         session.on(SessionEvent.SESSION_DISCONNECTED, () => {
-          if (!cancelled) navigate(-1);
+          if (!cancelled && phaseRef.current === 'live') leave();
         });
 
         await session.start();
@@ -78,12 +93,6 @@ export default function AvatarCall() {
     };
   }, [id]);
 
-  function endCall() {
-    void sessionRef.current?.stop();
-    sessionRef.current = null;
-    navigate(-1);
-  }
-
   return (
     <div className="c-avatar-stage">
       <video ref={videoRef} className="c-avatar-video" autoPlay playsInline />
@@ -92,7 +101,7 @@ export default function AvatarCall() {
         <div className="c-avatar-status">Microphone access is needed to talk. Enable it and retry.</div>
       )}
       {phase === 'error' && <div className="c-avatar-status">{error || 'Something went wrong.'}</div>}
-      <button className="c-avatar-end" onClick={endCall}>End</button>
+      <button className="c-avatar-end" onClick={leave}>End</button>
     </div>
   );
 }

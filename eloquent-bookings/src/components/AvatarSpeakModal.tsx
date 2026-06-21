@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import api from '@/lib/api';
 import { pickFemaleVoice } from '@/lib/voice';
 
 /** What the assistant says when there's no reply yet (greeting / verify phase). */
@@ -13,18 +14,21 @@ type Props = {
   onClose: () => void;
 };
 
-const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
+const hasBrowserTts = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
 
 /**
  * Branded voice assistant: shows the shop logo (pulsing while it talks) and
- * speaks the message via the browser's Web Speech API — no avatar face, no
- * video, no per-shop render. Phase 2 will pass real reply text as `message`.
+ * speaks the message. Primary voice is ElevenLabs via our /tts backend (one
+ * consistent female voice); if that fails we fall back to the browser's voice
+ * so the assistant still talks.
  */
 export default function AvatarSpeakModal({ logo, message = AVATAR_STATIC_MESSAGE, onClose }: Props) {
   const [speaking, setSpeaking] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  function speak() {
-    if (!canSpeak()) return;
+  function speakViaBrowser() {
+    if (!hasBrowserTts()) return;
     const synth = window.speechSynthesis;
     synth.cancel();
     const u = new SpeechSynthesisUtterance(message);
@@ -38,19 +42,51 @@ export default function AvatarSpeakModal({ logo, message = AVATAR_STATIC_MESSAGE
   }
 
   useEffect(() => {
-    if (!canSpeak()) return;
-    const synth = window.speechSynthesis;
-    // Voices often load asynchronously (esp. Chrome) — speak once they're ready,
-    // otherwise pickFemaleVoice sees an empty list and we'd get the default voice.
-    if (synth.getVoices().length > 0) {
-      speak();
-      return () => synth.cancel();
-    }
-    const onVoices = () => speak();
-    synth.addEventListener('voiceschanged', onVoices, { once: true });
-    return () => { synth.removeEventListener('voiceschanged', onVoices); synth.cancel(); };
+    let cancelled = false;
+    let objectUrl: string | undefined;
+    setLoading(true);
+
+    (async () => {
+      try {
+        const { data } = await api.post('/tts', { text: message }, { responseType: 'blob' });
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(data as Blob);
+        const audio = new Audio(objectUrl);
+        audioRef.current = audio;
+        audio.onplay = () => setSpeaking(true);
+        audio.onended = () => setSpeaking(false);
+        audio.onpause = () => setSpeaking(false);
+        setLoading(false);
+        // Opening the modal is a user gesture, so playback is normally allowed;
+        // if the browser still blocks it, the Replay button is a direct gesture.
+        await audio.play().catch(() => {});
+      } catch {
+        // Backend TTS unavailable (not deployed / error) — use the browser voice.
+        if (cancelled) return;
+        setLoading(false);
+        speakViaBrowser();
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      audioRef.current?.pause();
+      audioRef.current = null;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      if (hasBrowserTts()) window.speechSynthesis.cancel();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
+
+  function replay() {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      void audio.play().catch(() => {});
+    } else {
+      speakViaBrowser();
+    }
+  }
 
   return (
     <div className="c-avatar-modal" role="dialog" aria-label="Assistant">
@@ -59,8 +95,8 @@ export default function AvatarSpeakModal({ logo, message = AVATAR_STATIC_MESSAGE
           ? <img className="c-avatar-logo" src={logo} alt="" />
           : <span className="c-avatar-logo-fallback" aria-hidden>💬</span>}
       </div>
-      <p className="c-avatar-caption">{message}</p>
-      <button className="c-avatar-replay" aria-label="Replay" onClick={speak}>▶ Replay</button>
+      <p className="c-avatar-caption">{loading ? 'Connecting…' : message}</p>
+      <button className="c-avatar-replay" aria-label="Replay" onClick={replay}>▶ Replay</button>
       <button className="c-avatar-close" aria-label="Close" onClick={onClose}>Close</button>
     </div>
   );

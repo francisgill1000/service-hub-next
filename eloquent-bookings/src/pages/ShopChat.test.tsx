@@ -5,6 +5,15 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import * as chatLib from '@/lib/chat';
 import ShopChat from './ShopChat';
 
+// ShopChat fetches the shop (logo/name) and the assistant modal posts to /tts.
+// Mock the api client so tests never hit the real backend.
+vi.mock('@/lib/api', () => ({
+  default: {
+    get: () => Promise.resolve({ data: { data: { name: 'Glow Salon', logo: '/logo.png' } } }),
+    post: () => Promise.reject(new Error('no tts in test')),
+  },
+}));
+
 function setup() {
   return render(
     <MemoryRouter initialEntries={[{ pathname: '/shop/5/chat', state: { shopName: 'Glow Salon' } }]}>

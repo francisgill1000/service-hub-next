@@ -29,6 +29,9 @@ export const Icons = {
   Locate: ({ size = 22 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
   ),
+  Video: ({ size = 22 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><rect x="3" y="6" width="13" height="12" rx="2" /><path d="M16 10l5-3v10l-5-3" /></svg>
+  ),
   Chevron: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M9 6l6 6-6 6" /></svg>
   ),

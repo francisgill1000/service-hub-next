@@ -18,9 +18,9 @@ const hasBrowserTts = () => typeof window !== 'undefined' && 'speechSynthesis' i
 
 /**
  * Branded voice assistant: shows the shop logo (pulsing while it talks) and
- * speaks the message. Primary voice is ElevenLabs via our /tts backend (one
- * consistent female voice); if that fails we fall back to the browser's voice
- * so the assistant still talks.
+ * speaks the message. Primary voice is the server /tts endpoint (OpenAI "nova",
+ * one consistent female voice — same TTS the chat uses); if that fails we fall
+ * back to the browser's voice so the assistant still talks.
  */
 export default function AvatarSpeakModal({ logo, message = AVATAR_STATIC_MESSAGE, onClose }: Props) {
   const [speaking, setSpeaking] = useState(false);

@@ -7,6 +7,7 @@ import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
 import { VoiceMessage } from '@/components/VoiceMessage';
 import { AiCoreOrb, type OrbState } from '@/components/AiCoreOrb';
+import AvatarSpeakModal from '@/components/AvatarSpeakModal';
 import type { ChatMessage } from '@/types';
 
 const POLL_MS = 4000;
@@ -43,6 +44,7 @@ export default function ShopChat() {
   const [uploading, setUploading] = useState(false);
   const [awaitingReply, setAwaitingReply] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
 
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -199,6 +201,14 @@ export default function ShopChat() {
             {statusText}
           </span>
         </div>
+        <button
+          className="c-icon-btn"
+          style={{ marginLeft: 'auto' }}
+          aria-label="Video assistant"
+          onClick={() => setAvatarOpen(true)}
+        >
+          <Icons.Video size={18} />
+        </button>
       </div>
 
       <div className="c-core-hero">
@@ -264,6 +274,10 @@ export default function ShopChat() {
           </>
         )}
       </div>
+
+      {avatarOpen && (
+        <AvatarSpeakModal shopId={shopId} onClose={() => setAvatarOpen(false)} />
+      )}
     </div>
   );
 }

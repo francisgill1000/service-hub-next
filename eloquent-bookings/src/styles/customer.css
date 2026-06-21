@@ -344,3 +344,11 @@
 .c-bubble.out .c-vm-wave span{background:rgba(4,20,15,0.3)}
 .c-bubble.out .c-vm-wave span.on{background:#04140f;opacity:1}
 .c-bubble.out .c-vm-time{color:rgba(4,20,15,0.6)}
+
+/* ===== live avatar (LiveAvatar embed) ===== */
+.c-avatar-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 32px);margin:0 16px 6px;padding:13px;border-radius:var(--r-pill);border:1px solid var(--border-mint);background:var(--mint-soft);color:var(--mint-300);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.18s}
+.c-avatar-cta:hover{background:rgba(0,255,204,0.12);box-shadow:0 0 22px -10px var(--mint-glow)}
+.c-avatar-title{font-size:14px;font-weight:600;color:var(--text-2)}
+.c-avatar-screen{background:var(--bg-0)}
+.c-avatar-stage{flex:1;display:flex;min-height:0;background:#000}
+.c-avatar-frame{flex:1;width:100%;border:none;background:#000}

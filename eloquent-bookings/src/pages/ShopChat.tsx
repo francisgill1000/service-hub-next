@@ -202,7 +202,7 @@ export default function ShopChat() {
       </div>
 
       <div className="c-core-hero">
-        <AiCoreOrb state={orbState} letter={monogram} imageSrc="/influencer-orb.png" talkingVideo="/avatar-talking.mp4" />
+        <AiCoreOrb state={orbState} letter={monogram} imageSrc="/influencer-orb.png" />
         <span className="c-core-sub">Ask about prices, timings or availability</span>
       </div>
 

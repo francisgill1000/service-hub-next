@@ -21,11 +21,14 @@ This is a fresh feature. It must not disturb existing functionality.
   or any existing chat route.
 - No edits to the Live Chat / WhatsApp backend: `ProcessWaReply` job, existing chat
   routes/controllers, WhatsApp webhook flow.
-- The Rezzy brain is **reused read-only**. A new backend service method calls the
-  existing reply-generation logic and returns text. It must NOT persist chat messages,
-  send WhatsApp, or change the existing job behaviour. If the brain's reply logic is not
-  cleanly callable without side effects, extract a thin read-only wrapper around the
-  shared core — without changing the existing path's behaviour.
+- The Rezzy brain is **reused as-is, no extraction needed**. The reply generator is
+  already cleanly separated: `App\Services\Wa\ClaudeClient` (`reply()` / `toolLoop()`) is
+  side-effect-free; all persistence / WhatsApp / TTS side effects live in the
+  `ProcessWaReply` *job*, which we do NOT touch. The avatar bridge calls `ClaudeClient`
+  (grounded by the existing `PersonaResolver`, optionally with `BookingTools`) directly.
+- **Bookings stay isolated.** When the bridge runs `toolLoop` with booking tools it uses
+  a `WaContact` on a dedicated `channel='avatar'`, so avatar turns never merge into the
+  live-chat (`channel='app'`) thread. The bridge never persists chat messages.
 - All new code lives in **new files**, **additive DB columns**, and **new routes**.
 - Reverted past experiments (LiveAvatar embed, HeyGen orb clip) are irrelevant; we start
   fresh.
@@ -102,19 +105,25 @@ New `AvatarController`, a new route group, and a `LiveAvatarClient` service:
    - Return connection creds to the browser. **`LIVEAVATAR_API_KEY` never leaves the
      server.**
 
-2. **`POST /avatar/llm/{id}/chat/completions`** (custom-LLM bridge)
+2. **`POST /avatar/llm/chat/completions`** (custom-LLM bridge, one global endpoint)
    - OpenAI-compatible **streaming** endpoint LiveAvatar calls each user turn.
-   - Map `{id}` → shop; run the **reused Rezzy brain** read-only; stream the reply back as
-     OpenAI chat-completion SSE chunks.
-   - Shop identity is carried by the URL path (each shop's LLM config `base_url` includes
-     its id), avoiding reliance on undocumented per-turn context fields.
+   - Per-session context (shop id + device id) travels via a **signed session token**
+     embedded in the session's `system_prompt` at mint time; the bridge parses it from the
+     incoming messages, then rebuilds the authoritative system prompt server-side via
+     `PersonaResolver` (never trusts client text).
+   - Runs the **reused Rezzy brain** (`ClaudeClient->toolLoop` with `BookingTools` against
+     an isolated `channel='avatar'` contact) and streams the final reply back as OpenAI
+     chat-completion SSE chunks (`data: {choices:[{delta:{content}}]}` … `data: [DONE]`).
+     Tool calls run server-side; LiveAvatar only ever receives the final spoken text.
 
 ## Data / config
 
-- Additive nullable columns on the shops table: `avatar_id`, `voice_id`,
-  `llm_configuration_id` (cached after first creation). Set manually / via seeder for MVP.
-- New env/config: `LIVEAVATAR_API_KEY`, `LIVEAVATAR_BASE_URL`, default `avatar_id` /
-  `voice_id`. Frontend receives no secret.
+- Additive nullable columns on the shops table: `avatar_id`, `voice_id` (per-salon avatar;
+  fall back to defaults when null). Set manually / via seeder for MVP.
+- The `llm_configuration_id` is a **single global** value (created once, stored in config),
+  not a per-shop column — context travels via the signed session token instead.
+- New env/config: `LIVEAVATAR_API_KEY`, `LIVEAVATAR_BASE_URL`, `LIVEAVATAR_LLM_CONFIG_ID`,
+  `LIVEAVATAR_SESSION_SECRET`, default `avatar_id` / `voice_id`. Frontend receives no secret.
 - One-time setup (out of the request path, documented as ops step): register the API key
   with LiveAvatar to obtain `secret_id`; this seeds custom-LLM config creation.
 

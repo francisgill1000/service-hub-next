@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { pickFemaleVoice } from '@/lib/voice';
 
-/** What the assistant says in the verification phase. Phase 2 passes a reply. */
+/** What the assistant says when there's no reply yet (greeting / verify phase). */
 export const AVATAR_STATIC_MESSAGE =
   "Hi! I'm your assistant. I can help you with prices, timings and availability. How can I help today?";
 
@@ -24,17 +25,30 @@ export default function AvatarSpeakModal({ logo, message = AVATAR_STATIC_MESSAGE
 
   function speak() {
     if (!canSpeak()) return;
-    window.speechSynthesis.cancel();
+    const synth = window.speechSynthesis;
+    synth.cancel();
     const u = new SpeechSynthesisUtterance(message);
+    const voice = pickFemaleVoice(synth.getVoices());
+    if (voice) { u.voice = voice; u.lang = voice.lang; }
+    u.pitch = 1.05;
     u.onstart = () => setSpeaking(true);
     u.onend = () => setSpeaking(false);
     u.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(u);
+    synth.speak(u);
   }
 
   useEffect(() => {
-    speak();
-    return () => { if (canSpeak()) window.speechSynthesis.cancel(); };
+    if (!canSpeak()) return;
+    const synth = window.speechSynthesis;
+    // Voices often load asynchronously (esp. Chrome) — speak once they're ready,
+    // otherwise pickFemaleVoice sees an empty list and we'd get the default voice.
+    if (synth.getVoices().length > 0) {
+      speak();
+      return () => synth.cancel();
+    }
+    const onVoices = () => speak();
+    synth.addEventListener('voiceschanged', onVoices, { once: true });
+    return () => { synth.removeEventListener('voiceschanged', onVoices); synth.cancel(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
 

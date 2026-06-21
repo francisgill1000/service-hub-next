@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '@/lib/api';
 import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
@@ -183,6 +183,19 @@ export default function ShopChat() {
     }
   };
 
+  // Phase 2: the assistant speaks the most recent reply ('out' = AI/salon side),
+  // falling back to the greeting when there's none yet. Strip any leading emoji
+  // (voice replies are prefixed with 🔊) so it isn't read aloud.
+  const latestReply = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m.direction === 'out' && m.body) {
+        return m.body.replace(/^[^\p{L}\d]+/u, '').trim() || undefined;
+      }
+    }
+    return undefined;
+  }, [messages]);
+
   const title = shopName || 'Chat';
   const monogram = (Array.from(title)[0] || '?').toUpperCase();
   const orbState: OrbState =
@@ -285,7 +298,7 @@ export default function ShopChat() {
       </div>
 
       {avatarOpen && (
-        <AvatarSpeakModal logo={shopLogo} onClose={() => setAvatarOpen(false)} />
+        <AvatarSpeakModal logo={shopLogo} message={latestReply} onClose={() => setAvatarOpen(false)} />
       )}
     </div>
   );

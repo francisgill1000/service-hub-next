@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import * as chatLib from '@/lib/chat';
@@ -124,6 +124,23 @@ describe('ShopChat', () => {
     const dialog = await screen.findByRole('dialog', { name: /assistant/i });
     expect(dialog).toBeInTheDocument();
     expect(screen.getByText(/i can help you with prices/i)).toBeInTheDocument();
+  });
+
+  it('speaks the latest assistant reply (not the greeting) when one exists', async () => {
+    vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([
+      { id: 1, direction: 'in', body: 'When do you open?', created_at: '2026-06-12T10:00:00Z' },
+      { id: 2, direction: 'out', body: 'We open at 9am tomorrow.', created_at: '2026-06-12T10:00:05Z' },
+    ]);
+
+    setup();
+    await screen.findByText('We open at 9am tomorrow.'); // the chat bubble
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /assistant/i }));
+
+    const dialog = await screen.findByRole('dialog', { name: /assistant/i });
+    // The modal caption shows the reply, not the static greeting.
+    expect(within(dialog).getByText('We open at 9am tomorrow.')).toBeInTheDocument();
+    expect(within(dialog).queryByText(/i can help you with prices/i)).toBeNull();
   });
 
   it('closes the assistant modal', async () => {

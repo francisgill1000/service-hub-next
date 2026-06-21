@@ -32,9 +32,11 @@ export default function ShopChat() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const shopId = Number(id);
-  const stateShopName = (useLocation().state as { shopName?: string } | null)?.shopName;
+  const navState = useLocation().state as { shopName?: string; shopLogo?: string } | null;
+  const stateShopName = navState?.shopName;
 
   const [shopName, setShopName] = useState(stateShopName ?? '');
+  const [shopLogo, setShopLogo] = useState(navState?.shopLogo ?? '');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -79,9 +81,16 @@ export default function ShopChat() {
         if (alive) setLoading(false);
       }
     })();
-    if (!stateShopName) {
+    // Fetch the shop when name or logo wasn't handed over via navigation state
+    // (e.g. a direct link), so the assistant modal can show the shop's logo.
+    if (!stateShopName || !navState?.shopLogo) {
       void api.get(`/shops/${shopId}`)
-        .then((res) => { if (alive) setShopName((res.data?.data ?? res.data)?.name ?? ''); })
+        .then((res) => {
+          if (!alive) return;
+          const shop = res.data?.data ?? res.data;
+          if (!stateShopName) setShopName(shop?.name ?? '');
+          if (!navState?.shopLogo) setShopLogo(shop?.logo ?? '');
+        })
         .catch(() => undefined);
     }
     return () => { alive = false; };
@@ -204,7 +213,7 @@ export default function ShopChat() {
         <button
           className="c-icon-btn"
           style={{ marginLeft: 'auto' }}
-          aria-label="Video assistant"
+          aria-label="Assistant"
           onClick={() => setAvatarOpen(true)}
         >
           <Icons.Video size={18} />
@@ -276,7 +285,7 @@ export default function ShopChat() {
       </div>
 
       {avatarOpen && (
-        <AvatarSpeakModal onClose={() => setAvatarOpen(false)} />
+        <AvatarSpeakModal logo={shopLogo} onClose={() => setAvatarOpen(false)} />
       )}
     </div>
   );

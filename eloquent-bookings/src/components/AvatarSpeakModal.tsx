@@ -1,57 +1,52 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-/** Bundled clip of the assistant speaking the static greeting (HeyGen-rendered). */
-export const AVATAR_STATIC_CLIP = '/avatar-static.mp4';
+/** What the assistant says in the verification phase. Phase 2 passes a reply. */
+export const AVATAR_STATIC_MESSAGE =
+  "Hi! I'm your assistant. I can help you with prices, timings and availability. How can I help today?";
 
 type Props = {
-  /** Video to play. Defaults to the bundled static greeting clip. */
-  src?: string;
+  /** Shop logo to show as the assistant's face. Falls back to a glyph. */
+  logo?: string;
+  /** Text the assistant speaks. Defaults to the static greeting. */
+  message?: string;
   onClose: () => void;
 };
 
+const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
+
 /**
- * Plays a pre-rendered avatar clip in a full-screen modal. Phase 1 plays the
- * bundled static greeting; phase 2 will pass a per-reply clip URL via `src`.
- *
- * Opening is a user gesture (the chat header button), so autoplay-with-sound is
- * normally allowed — but if the browser still blocks it we fall back to a
- * tap-to-play overlay rather than playing silently.
+ * Branded voice assistant: shows the shop logo (pulsing while it talks) and
+ * speaks the message via the browser's Web Speech API — no avatar face, no
+ * video, no per-shop render. Phase 2 will pass real reply text as `message`.
  */
-export default function AvatarSpeakModal({ src = AVATAR_STATIC_CLIP, onClose }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [needsTap, setNeedsTap] = useState(false);
-  const [failed, setFailed] = useState(false);
+export default function AvatarSpeakModal({ logo, message = AVATAR_STATIC_MESSAGE, onClose }: Props) {
+  const [speaking, setSpeaking] = useState(false);
 
-  useEffect(() => {
-    tryPlay();
-  }, [src]);
-
-  function tryPlay() {
-    // jsdom returns undefined from play(); real browsers return a promise that
-    // rejects when autoplay-with-sound is blocked.
-    const p = videoRef.current?.play();
-    if (p && typeof p.catch === 'function') p.catch(() => setNeedsTap(true));
+  function speak() {
+    if (!canSpeak()) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(message);
+    u.onstart = () => setSpeaking(true);
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(u);
   }
 
-  const handleTapPlay = () => {
-    setNeedsTap(false);
-    tryPlay();
-  };
+  useEffect(() => {
+    speak();
+    return () => { if (canSpeak()) window.speechSynthesis.cancel(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message]);
 
   return (
-    <div className="c-avatar-modal" role="dialog" aria-label="Video assistant">
-      <video
-        ref={videoRef}
-        className="c-avatar-video"
-        src={src}
-        playsInline
-        autoPlay
-        onError={() => setFailed(true)}
-      />
-      {failed && <div className="c-avatar-status">Video assistant is unavailable right now.</div>}
-      {needsTap && !failed && (
-        <button className="c-avatar-tap" aria-label="Play" onClick={handleTapPlay}>▶ Play</button>
-      )}
+    <div className="c-avatar-modal" role="dialog" aria-label="Assistant">
+      <div className={`c-avatar-logo-wrap ${speaking ? 'talking' : ''}`}>
+        {logo
+          ? <img className="c-avatar-logo" src={logo} alt="" />
+          : <span className="c-avatar-logo-fallback" aria-hidden>💬</span>}
+      </div>
+      <p className="c-avatar-caption">{message}</p>
+      <button className="c-avatar-replay" aria-label="Replay" onClick={speak}>▶ Replay</button>
       <button className="c-avatar-close" aria-label="Close" onClick={onClose}>Close</button>
     </div>
   );

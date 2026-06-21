@@ -124,7 +124,7 @@ export default function ShopDetail() {
         <div className="c-chat-row">
           <button
             className="c-chat-btn"
-            onClick={() => navigate(`/shop/${shop.id}/chat`, { state: { shopName: shop.name } })}
+            onClick={() => navigate(`/shop/${shop.id}/chat`, { state: { shopName: shop.name, shopLogo: shop.logo } })}
           >
             <Icons.Chat size={17} /> Live Chat
           </button>

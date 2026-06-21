@@ -113,28 +113,29 @@ describe('ShopChat', () => {
     expect(screen.getByTestId('ai-core')).toHaveClass('state-thinking');
   });
 
-  it('opens the avatar video modal from the header button', async () => {
+  it('opens the assistant modal (logo + greeting) from the header button', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
 
     setup();
     await screen.findByText(/say hi/i);
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /video assistant/i }));
+    await user.click(screen.getByRole('button', { name: /assistant/i }));
 
-    const dialog = await screen.findByRole('dialog', { name: /video assistant/i });
-    expect(dialog.querySelector('video')).toHaveAttribute('src', '/avatar-static.mp4');
+    const dialog = await screen.findByRole('dialog', { name: /assistant/i });
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByText(/i can help you with prices/i)).toBeInTheDocument();
   });
 
-  it('closes the avatar modal', async () => {
+  it('closes the assistant modal', async () => {
     vi.spyOn(chatLib, 'getChatMessages').mockResolvedValue([]);
 
     setup();
     await screen.findByText(/say hi/i);
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /video assistant/i }));
-    await screen.findByRole('dialog', { name: /video assistant/i });
+    await user.click(screen.getByRole('button', { name: /assistant/i }));
+    await screen.findByRole('dialog', { name: /assistant/i });
     await user.click(screen.getByRole('button', { name: /close/i }));
 
-    expect(screen.queryByRole('dialog', { name: /video assistant/i })).toBeNull();
+    expect(screen.queryByRole('dialog', { name: /assistant/i })).toBeNull();
   });
 });

@@ -280,6 +280,76 @@
   font-size: 11px; font-weight: 800;
 }
 
+/* ── Voice-first dock: glowing mic with radar rings ── */
+.c-voice-dock {
+  flex: 0 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border-1);
+  background: var(--bg-1);
+}
+.c-voice-status {
+  font-size: 13px; color: var(--text-3); text-align: center;
+  min-height: 18px; max-width: 88%; line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.c-voice-status.heard { color: var(--text-1); font-weight: 600; }
+.c-voice-toggle { background: none; border: none; color: var(--text-4); font-size: 12px; cursor: pointer; padding: 2px 8px; }
+.c-voice-toggle:active { color: var(--mint-300); }
+
+.c-mic {
+  position: relative; width: 104px; height: 104px;
+  display: grid; place-items: center; padding: 0;
+  border: none; background: transparent; cursor: pointer;
+}
+.c-mic-core {
+  position: relative; z-index: 2;
+  width: 66px; height: 66px; border-radius: 99px;
+  display: grid; place-items: center; color: #04140f;
+  background: radial-gradient(circle at 30% 25%, var(--mint-200), var(--mint-400) 58%, var(--mint-600));
+  box-shadow: 0 10px 26px -8px var(--mint-glow), inset 0 1px 0 rgba(255,255,255,0.4);
+  transition: transform .15s ease, background .2s ease, color .2s ease;
+}
+.c-mic:active .c-mic-core { transform: scale(0.94); }
+.c-mic-ring {
+  position: absolute; inset: 0; margin: auto;
+  width: 66px; height: 66px; border-radius: 99px;
+  border: 1.5px solid var(--mint-400); opacity: 0; pointer-events: none;
+}
+
+/* Idle — one calm outline + a gently breathing core. */
+.c-mic.state-idle .c-mic-ring.r1 { opacity: .45; border-color: var(--border-mint); animation: micBreathe 3.2s ease-in-out infinite; }
+.c-mic.state-idle .c-mic-core { animation: micCoreBreathe 3.2s ease-in-out infinite; }
+
+/* Listening — expanding radar pulses + a mint halo on the core. */
+.c-mic.state-listening .c-mic-core { box-shadow: 0 0 0 5px var(--mint-soft), 0 10px 30px -6px var(--mint-glow), inset 0 1px 0 rgba(255,255,255,0.4); }
+.c-mic.state-listening .c-mic-ring { animation: micPulse 1.8s ease-out infinite; }
+.c-mic.state-listening .c-mic-ring.r2 { animation-delay: .6s; }
+.c-mic.state-listening .c-mic-ring.r3 { animation-delay: 1.2s; }
+
+/* Thinking — quiet the core, show a spinner. */
+.c-mic.state-thinking .c-mic-core { background: var(--surface-2); color: var(--mint-300); box-shadow: inset 0 0 0 1px var(--border-2); }
+.c-mic-spin {
+  width: 26px; height: 26px; border-radius: 99px;
+  border: 2.5px solid var(--surface-3); border-top-color: var(--mint-400);
+  animation: micSpin .8s linear infinite;
+}
+
+@keyframes micPulse { 0% { opacity: .55; transform: scale(1); } 100% { opacity: 0; transform: scale(2.5); } }
+@keyframes micBreathe { 0%,100% { transform: scale(1); opacity: .45; } 50% { transform: scale(1.14); opacity: .2; } }
+@keyframes micCoreBreathe {
+  0%,100% { box-shadow: 0 10px 26px -8px var(--mint-glow), inset 0 1px 0 rgba(255,255,255,0.4); }
+  50% { box-shadow: 0 10px 34px -4px var(--mint-glow), inset 0 1px 0 rgba(255,255,255,0.5); }
+}
+@keyframes micSpin { to { transform: rotate(360deg); } }
+
+/* Switch-to-voice button inside the typed-input fallback composer. */
+.c-composer-mic {
+  width: 38px; height: 38px; padding: 0; flex: 0 0 auto; display: grid; place-items: center;
+  border-radius: 99px; border: 1px solid var(--border-2); background: var(--surface-2);
+  color: var(--mint-300); cursor: pointer;
+}
+
 /* Services list — compact name + price, grouped by category. Used inline in an
    assistant bubble and inside the services sheet. */
 .c-svc-list { display: flex; flex-direction: column; gap: 14px; }

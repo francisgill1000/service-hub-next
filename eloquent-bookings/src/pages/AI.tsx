@@ -4,6 +4,7 @@ import { aiSearch, getAiCategories, type AiCategory } from '@/lib/ai';
 import { toggleFavourite } from '@/lib/shops';
 import { Icons } from '@/components/Icons';
 import { ShopCard } from '@/components/ShopCard';
+import { VoiceMic, type MicState } from '@/components/VoiceMic';
 import type { Shop } from '@/types';
 
 type AiMsg = {
@@ -18,20 +19,32 @@ const GREETING_ID = 0;
 const GREETING: AiMsg = {
   id: GREETING_ID,
   role: 'ai',
-  text: 'Hey! 👋 How can I help you? Pick a service below, or try "find a barber near me".',
+  text: 'Hey! 👋 Tap the mic and ask for a service — or pick one below.',
 };
+
+/** Browser speech-to-text (Chrome/Edge/Safari). Undefined where unsupported. */
+function getSpeechRecognition(): (new () => any) | undefined {
+  if (typeof window === 'undefined') return undefined;
+  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+}
 
 export default function AI() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<AiMsg[]>([GREETING]);
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [heard, setHeard] = useState('');
+  const [typing, setTyping] = useState(false);
+
   const coordsRef = useRef<{ lat: number; lon: number } | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const nextId = useRef(1);
+  const recognitionRef = useRef<any>(null);
+  const finalRef = useRef('');
+  const speechSupported = useRef(!!getSpeechRecognition());
 
   // Best-effort location once, so "near me" queries rank by distance.
-  // Non-blocking: if denied, search still works without distance.
   useEffect(() => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
@@ -56,6 +69,9 @@ export default function AI() {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, sending]);
+
+  // Stop recognition if we navigate away mid-listen.
+  useEffect(() => () => { recognitionRef.current?.abort?.(); }, []);
 
   const onFavourite = useCallback(async (id: number) => {
     setMessages((prev) => prev.map((m) => (m.shops
@@ -90,6 +106,55 @@ export default function AI() {
     }
   }, [sending]);
 
+  const startListening = useCallback(() => {
+    const SR = getSpeechRecognition();
+    if (!SR || sending) { if (!SR) setTyping(true); return; }
+    const rec = new SR();
+    rec.lang = 'en-US';
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.maxAlternatives = 1;
+    finalRef.current = '';
+    setHeard('');
+
+    rec.onresult = (e: any) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalRef.current += t;
+        else interim += t;
+      }
+      setHeard((finalRef.current + ' ' + interim).trim());
+    };
+    rec.onerror = (e: any) => {
+      setListening(false);
+      if (e?.error === 'not-allowed' || e?.error === 'service-not-allowed') setTyping(true);
+    };
+    rec.onend = () => {
+      setListening(false);
+      recognitionRef.current = null;
+      const text = finalRef.current.trim();
+      setHeard('');
+      if (text) void send(text);
+    };
+
+    recognitionRef.current = rec;
+    try { rec.start(); setListening(true); } catch { setListening(false); }
+  }, [sending, send]);
+
+  const toggleListen = useCallback(() => {
+    if (!speechSupported.current) { setTyping(true); return; }
+    if (listening) recognitionRef.current?.stop();
+    else startListening();
+  }, [listening, startListening]);
+
+  const micState: MicState = sending ? 'thinking' : listening ? 'listening' : 'idle';
+  const statusText = !speechSupported.current
+    ? 'Voice isn’t supported here — tap "Type instead".'
+    : sending ? 'Thinking…'
+      : listening ? (heard || 'Listening…')
+        : 'Tap the mic and ask for a service';
+
   return (
     <div className="m-screen">
       <div className="c-thread-head">
@@ -98,7 +163,7 @@ export default function AI() {
           <span className="c-thread-title">AI Assistant</span>
           <span className="c-thread-sub">
             <span className="c-live-dot" />
-            {sending ? 'thinking…' : 'Ask me to find a service'}
+            {sending ? 'thinking…' : listening ? 'listening…' : 'Voice service finder'}
           </span>
         </div>
       </div>
@@ -112,13 +177,7 @@ export default function AI() {
             {m.categories && m.categories.length > 0 && (
               <div className="c-ai-chips">
                 {m.categories.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    className="c-ai-chip"
-                    disabled={sending}
-                    onClick={() => void send(c.name)}
-                  >
+                  <button key={c.id} type="button" className="c-ai-chip" disabled={sending} onClick={() => void send(c.name)}>
                     {c.name} <span className="c-ai-chip-count">{c.count}</span>
                   </button>
                 ))}
@@ -138,23 +197,30 @@ export default function AI() {
         )}
       </div>
 
-      <div className="c-composer">
-        <input
-          type="text"
-          placeholder="Ask me to find a service…"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') void send(draft); }}
-        />
-        <button
-          className="c-composer-send"
-          aria-label="Send"
-          disabled={!draft.trim() || sending}
-          onClick={() => void send(draft)}
-        >
-          <Icons.Send size={18} />
-        </button>
-      </div>
+      {typing ? (
+        <div className="c-composer">
+          <button className="c-composer-mic" aria-label="Use voice" onClick={() => setTyping(false)}>
+            <Icons.Mic size={18} />
+          </button>
+          <input
+            type="text"
+            placeholder="Ask me to find a service…"
+            value={draft}
+            autoFocus
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') void send(draft); }}
+          />
+          <button className="c-composer-send" aria-label="Send" disabled={!draft.trim() || sending} onClick={() => void send(draft)}>
+            <Icons.Send size={18} />
+          </button>
+        </div>
+      ) : (
+        <div className="c-voice-dock">
+          <div className={`c-voice-status ${listening && heard ? 'heard' : ''}`}>{statusText}</div>
+          <VoiceMic state={micState} onClick={toggleListen} />
+          <button className="c-voice-toggle" onClick={() => setTyping(true)}>Type instead</button>
+        </div>
+      )}
     </div>
   );
 }

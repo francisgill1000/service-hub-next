@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { aiSearch, getAiCategories, type AiCategory } from '@/lib/ai';
+import { aiSearch, type AiCategory } from '@/lib/ai';
 import { toggleFavourite } from '@/lib/shops';
 import { Icons } from '@/components/Icons';
 import { ShopCard } from '@/components/ShopCard';
@@ -15,13 +15,6 @@ type AiMsg = {
   categories?: AiCategory[];
 };
 
-const GREETING_ID = 0;
-const GREETING: AiMsg = {
-  id: GREETING_ID,
-  role: 'ai',
-  text: 'Hey! 👋 Tap the mic and ask for a service — or pick one below.',
-};
-
 /** Browser speech-to-text (Chrome/Edge/Safari). Undefined where unsupported. */
 function getSpeechRecognition(): (new () => any) | undefined {
   if (typeof window === 'undefined') return undefined;
@@ -30,7 +23,7 @@ function getSpeechRecognition(): (new () => any) | undefined {
 
 export default function AI() {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<AiMsg[]>([GREETING]);
+  const [messages, setMessages] = useState<AiMsg[]>([]);
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [listening, setListening] = useState(false);
@@ -52,16 +45,6 @@ export default function AI() {
       () => { /* denied — ignore */ },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
     );
-  }, []);
-
-  // Load the available service chips and attach them under the greeting.
-  useEffect(() => {
-    getAiCategories()
-      .then((categories) => {
-        if (categories.length === 0) return;
-        setMessages((prev) => prev.map((m) => (m.id === GREETING_ID ? { ...m, categories } : m)));
-      })
-      .catch(() => { /* chips are a bonus — ignore failure */ });
   }, []);
 
   // Auto-scroll on new messages / typing indicator.

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { aiSearch } from '@/lib/ai';
+import { aiSearch, getAiCategories, type AiCategory } from '@/lib/ai';
 import { toggleFavourite } from '@/lib/shops';
 import { Icons } from '@/components/Icons';
 import { ShopCard } from '@/components/ShopCard';
@@ -11,12 +11,14 @@ type AiMsg = {
   role: 'user' | 'ai';
   text: string;
   shops?: Shop[];
+  categories?: AiCategory[];
 };
 
+const GREETING_ID = 0;
 const GREETING: AiMsg = {
-  id: 0,
+  id: GREETING_ID,
   role: 'ai',
-  text: 'Hey! 👋 How can I help you? Try "find a barber near me" or "AC repair".',
+  text: 'Hey! 👋 How can I help you? Pick a service below, or try "find a barber near me".',
 };
 
 export default function AI() {
@@ -39,6 +41,16 @@ export default function AI() {
     );
   }, []);
 
+  // Load the available service chips and attach them under the greeting.
+  useEffect(() => {
+    getAiCategories()
+      .then((categories) => {
+        if (categories.length === 0) return;
+        setMessages((prev) => prev.map((m) => (m.id === GREETING_ID ? { ...m, categories } : m)));
+      })
+      .catch(() => { /* chips are a bonus — ignore failure */ });
+  }, []);
+
   // Auto-scroll on new messages / typing indicator.
   useEffect(() => {
     const el = scrollRef.current;
@@ -52,19 +64,20 @@ export default function AI() {
     try { await toggleFavourite(id); } catch { /* optimistic — leave as toggled */ }
   }, []);
 
-  const handleSend = async () => {
-    const text = draft.trim();
-    if (!text || sending) return;
-    setMessages((prev) => [...prev, { id: nextId.current++, role: 'user', text }]);
+  const send = useCallback(async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || sending) return;
+    setMessages((prev) => [...prev, { id: nextId.current++, role: 'user', text: trimmed }]);
     setDraft('');
     setSending(true);
     try {
-      const res = await aiSearch(text, coordsRef.current);
+      const res = await aiSearch(trimmed, coordsRef.current);
       setMessages((prev) => [...prev, {
         id: nextId.current++,
         role: 'ai',
         text: res.reply,
         shops: res.shops?.length ? res.shops : undefined,
+        categories: res.categories?.length ? res.categories : undefined,
       }]);
     } catch {
       setMessages((prev) => [...prev, {
@@ -75,7 +88,7 @@ export default function AI() {
     } finally {
       setSending(false);
     }
-  };
+  }, [sending]);
 
   return (
     <div className="m-screen">
@@ -96,6 +109,21 @@ export default function AI() {
             <div className={`c-bubble ${m.role === 'user' ? 'out' : 'in'}`}>
               <span className="c-bubble-text">{m.text}</span>
             </div>
+            {m.categories && m.categories.length > 0 && (
+              <div className="c-ai-chips">
+                {m.categories.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="c-ai-chip"
+                    disabled={sending}
+                    onClick={() => void send(c.name)}
+                  >
+                    {c.name} <span className="c-ai-chip-count">{c.count}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             {m.shops && m.shops.length > 0 && (
               <div className="c-ai-results">
                 {m.shops.map((s) => (
@@ -116,13 +144,13 @@ export default function AI() {
           placeholder="Ask me to find a service…"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') void handleSend(); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') void send(draft); }}
         />
         <button
           className="c-composer-send"
           aria-label="Send"
           disabled={!draft.trim() || sending}
-          onClick={() => void handleSend()}
+          onClick={() => void send(draft)}
         >
           <Icons.Send size={18} />
         </button>

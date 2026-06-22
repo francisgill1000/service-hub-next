@@ -1,17 +1,20 @@
 import api from './api';
 import type { Shop } from '@/types';
 
+export type AiCategory = { id: number; name: string; count: number };
+
 export type AiSearchResult = {
   reply: string;
   category_id: number | null;
   shops: Shop[];
+  categories?: AiCategory[];
 };
 
 /**
  * Ask the AI service finder a question. The backend classifies it into a
- * service category (or marks it off-topic) and returns matching shops in the
- * same shape ShopCard consumes. Pass coords when available so "near me"
- * queries rank by distance.
+ * service category, a "what's available" list request, or off-topic, and
+ * returns matching shops (same shape ShopCard consumes) or the category list.
+ * Pass coords when available so "near me" queries rank by distance.
  */
 export async function aiSearch(
   message: string,
@@ -23,4 +26,10 @@ export async function aiSearch(
     lon: coords?.lon,
   });
   return res.data;
+}
+
+/** Service categories that currently have shops (with counts), for the chips. */
+export async function getAiCategories(): Promise<AiCategory[]> {
+  const res = await api.get<{ categories: AiCategory[] }>('/ai/categories');
+  return res.data.categories ?? [];
 }

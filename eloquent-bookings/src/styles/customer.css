@@ -264,6 +264,22 @@
 .c-ai-turn { display: flex; flex-direction: column; gap: 10px; }
 .c-ai-results { display: flex; flex-direction: column; gap: 10px; }
 
+/* Tappable service chips (greeting + "what can I search?" reply). */
+.c-ai-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.c-ai-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 99px; cursor: pointer;
+  background: var(--surface-1); border: 1px solid var(--border-2);
+  color: var(--text-1); font-size: 13px; font-weight: 600;
+}
+.c-ai-chip:active { transform: scale(0.96); }
+.c-ai-chip:disabled { opacity: 0.5; cursor: default; }
+.c-ai-chip-count {
+  display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 99px; background: var(--mint-500); color: #04140f;
+  font-size: 11px; font-weight: 800;
+}
+
 /* Services list — compact name + price, grouped by category. Used inline in an
    assistant bubble and inside the services sheet. */
 .c-svc-list { display: flex; flex-direction: column; gap: 14px; }

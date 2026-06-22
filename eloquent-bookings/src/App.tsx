@@ -4,6 +4,7 @@ import { MobileLayout } from '@/layout/MobileLayout';
 import Home from '@/pages/Home';
 import Explore from '@/pages/Explore';
 import NearMe from '@/pages/NearMe';
+import AI from '@/pages/AI';
 import Favourites from '@/pages/Favourites';
 import Bookings from '@/pages/Bookings';
 import BookingView from '@/pages/BookingView';
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/near-me" element={<NearMe />} />
+          <Route path="/ai" element={<AI />} />
           <Route path="/favourites" element={<Favourites />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/account" element={<Account />} />

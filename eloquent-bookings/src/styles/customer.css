@@ -238,7 +238,9 @@
   width: 38px; height: 38px; flex: 0 0 auto; display: grid; place-items: center;
   border-radius: 38%; font-size: 15px; font-weight: 800; color: #04140f;
   background: radial-gradient(circle at 30% 25%, var(--mint-200), var(--mint-300) 55%, var(--mint-700));
+  overflow: hidden;
 }
+.c-thread-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .c-thread-head-text { display: flex; flex-direction: column; min-width: 0; }
 .c-thread-title { font-size: 14.5px; font-weight: 700; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .c-thread-sub { font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
@@ -252,8 +254,36 @@
 .c-bubble.out { align-self: flex-end; border-bottom-right-radius: 6px; background: var(--mint-500); border: none; }
 .c-bubble-text { font-size: 13.5px; line-height: 1.45; color: var(--text-1); white-space: pre-wrap; word-break: break-word; }
 .c-bubble.out .c-bubble-text { color: #04140f; font-weight: 500; }
+/* Links (e.g. the Ziina pay link) must stay readable on both bubble colours —
+   inherit the high-contrast bubble text colour and underline so it reads as tappable. */
+.c-bubble-text a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 700; overflow-wrap: anywhere; }
 .c-bubble-time { font-size: 10px; color: var(--text-4); align-self: flex-end; }
 .c-bubble.out .c-bubble-time { color: rgba(4,20,15,0.55); }
+
+/* AI finder: a reply bubble plus its inline shop results stacked full-width. */
+.c-ai-turn { display: flex; flex-direction: column; gap: 10px; }
+.c-ai-results { display: flex; flex-direction: column; gap: 10px; }
+
+/* Services list — compact name + price, grouped by category. Used inline in an
+   assistant bubble and inside the services sheet. */
+.c-svc-list { display: flex; flex-direction: column; gap: 14px; }
+/* Inside a chat bubble it reads as a distinct menu card sitting under the reply. */
+.c-bubble .c-svc-list { margin-top: 10px; min-width: 236px; gap: 14px; background: var(--surface-1); border: 1px solid var(--border-1); border-radius: 14px; padding: 10px 13px; }
+.c-svc-group { display: flex; flex-direction: column; }
+.c-svc-group-name { font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--mint-300); padding-bottom: 5px; }
+.c-svc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 8px 0; }
+.c-svc-row + .c-svc-row { border-top: 1px solid var(--border-1); }
+.c-svc-name { font-size: 13.5px; line-height: 1.3; color: var(--text-1); }
+.c-svc-price { font-size: 13px; font-weight: 800; white-space: nowrap; color: var(--mint-300); }
+
+/* Services bottom sheet (opened from the header button). */
+.c-sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; animation: fadeIn .18s ease-out; }
+.c-sheet { width: 100%; max-height: 72vh; display: flex; flex-direction: column; background: var(--surface-1); border-top-left-radius: 18px; border-top-right-radius: 18px; border-top: 1px solid var(--border-1); animation: sheetUp .24s ease-out; }
+.c-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
+.c-sheet-title { font-size: 16px; font-weight: 800; color: var(--text-1); }
+.c-sheet-body { padding: 4px 16px 24px; overflow-y: auto; color: var(--text-1); }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
 .c-composer {
   display: flex; align-items: center; gap: 8px;
   margin: 8px 14px calc(14px + env(safe-area-inset-bottom, 0px));

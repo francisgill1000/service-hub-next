@@ -4,27 +4,11 @@ import api from '@/lib/api';
 import { toggleFavourite } from '@/lib/shops';
 import { buildBookingPayload } from '@/lib/booking';
 import { generateDates, formatLocalDate, dow } from '@/lib/date';
-import type { Shop, Service } from '@/types';
+import { groupByParentCategory } from '@/lib/services';
+import type { Shop } from '@/types';
 import { Spinner } from '@/components/Spinner';
 import { Icons } from '@/components/Icons';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-const DEFAULT_SECTION = 'Services';
-
-type ServiceGroup = { name: string; image?: string | null; items: Service[] };
-
-// Group services by parent category; categorised sections come first
-// (in first-seen order), with uncategorised services last under "Services".
-function groupByParentCategory(items: Service[]): ServiceGroup[] {
-  const groups = new Map<string, ServiceGroup>();
-  for (const item of items) {
-    const name = item.parent_category?.name ?? DEFAULT_SECTION;
-    if (!groups.has(name)) groups.set(name, { name, image: item.parent_category?.image ?? null, items: [] });
-    groups.get(name)!.items.push(item);
-  }
-  return [...groups.values()]
-    .sort((a, b) => (a.name === DEFAULT_SECTION ? 1 : b.name === DEFAULT_SECTION ? -1 : 0));
-}
 
 export default function ShopDetail() {
   const { id } = useParams<{ id: string }>();

@@ -3,12 +3,14 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '@/lib/api';
 import { getChatMessages, sendChatMessage, sendChatVoice } from '@/lib/chat';
 import { linkify } from '@/lib/linkify';
-import { pickFemaleVoice } from '@/lib/voice';
+import { toSpeech, SERVICES_TOKEN } from '@/lib/voice';
 import { Icons } from '@/components/Icons';
 import { Spinner } from '@/components/Spinner';
 import { VoiceMessage } from '@/components/VoiceMessage';
-import { AiCoreOrb, type OrbState } from '@/components/AiCoreOrb';
-import type { ChatMessage } from '@/types';
+import { ServicesList } from '@/components/ServicesList';
+import { ServicesSheet } from '@/components/ServicesSheet';
+import { type OrbState } from '@/components/AiCoreOrb';
+import type { ChatMessage, Service } from '@/types';
 
 const POLL_MS = 4000;
 
@@ -37,6 +39,8 @@ export default function ShopChat() {
 
   const [shopName, setShopName] = useState(stateShopName ?? '');
   const [shopLogo, setShopLogo] = useState(navState?.shopLogo ?? '');
+  const [services, setServices] = useState<Service[]>([]);
+  const [showServices, setShowServices] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -46,7 +50,7 @@ export default function ShopChat() {
   const [uploading, setUploading] = useState(false);
   const [awaitingReply, setAwaitingReply] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [voiceOn, setVoiceOn] = useState(true);
+  const [voiceOn] = useState(true);
 
   const lastIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -54,6 +58,7 @@ export default function ShopChat() {
   const chunksRef = useRef<Blob[]>([]);
   const outCountRef = useRef(0);
   const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
+  const speakSeqRef = useRef(0); // invalidates older, in-flight /tts so clips never overlap
   const spokenIdRef = useRef(0);
   const ttsInitRef = useRef(false);
   const voiceOnRef = useRef(true);
@@ -85,18 +90,18 @@ export default function ShopChat() {
         if (alive) setLoading(false);
       }
     })();
-    // Fetch the shop when name or logo wasn't handed over via navigation state
-    // (e.g. a direct link), so the hero orb can show the shop's logo.
-    if (!stateShopName || !navState?.shopLogo) {
-      void api.get(`/shops/${shopId}`)
-        .then((res) => {
-          if (!alive) return;
-          const shop = res.data?.data ?? res.data;
-          if (!stateShopName) setShopName(shop?.name ?? '');
-          if (!navState?.shopLogo) setShopLogo(shop?.logo ?? '');
-        })
-        .catch(() => undefined);
-    }
+    // Always fetch the shop: we need its services for the in-chat list, and we
+    // fill in the name/logo too when they weren't handed over via navigation
+    // state (e.g. a direct link).
+    void api.get(`/shops/${shopId}`)
+      .then((res) => {
+        if (!alive) return;
+        const shop = res.data?.data ?? res.data;
+        if (!stateShopName) setShopName(shop?.name ?? '');
+        if (!navState?.shopLogo) setShopLogo(shop?.logo ?? '');
+        setServices(Array.isArray(shop?.catalogs) ? shop.catalogs : []);
+      })
+      .catch(() => undefined);
     return () => { alive = false; };
   }, [shopId, stateShopName, appendMessages]);
 
@@ -190,30 +195,23 @@ export default function ShopChat() {
   // --- Voice: speak the assistant's replies aloud (OpenAI TTS via /tts) ---
 
   const stopSpeaking = useCallback(() => {
+    speakSeqRef.current++; // cancel any /tts fetch still in flight
     ttsAudioRef.current?.pause();
     ttsAudioRef.current = null;
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
     setSpeaking(false);
   }, []);
 
-  const browserSpeak = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const v = pickFemaleVoice(synth.getVoices());
-    if (v) { u.voice = v; u.lang = v.lang; }
-    u.onstart = () => setSpeaking(true);
-    u.onend = () => setSpeaking(false);
-    u.onerror = () => setSpeaking(false);
-    synth.speak(u);
-  }, []);
-
+  // Speak a reply ONLY through the in-thread OpenAI voice (one voice, in chat).
+  // No browser speechSynthesis fallback — that produced a second, overlapping
+  // "notification" voice. If /tts is unavailable, the reply stays silent.
   const speakText = useCallback(async (text: string) => {
-    stopSpeaking();
+    stopSpeaking();                    // stop prior clip + invalidate its in-flight fetch
+    const seq = ++speakSeqRef.current; // claim this run; a newer reply will supersede it
     try {
       const { data } = await api.post('/tts', { text }, { responseType: 'blob' });
-      if (!voiceOnRef.current) return; // muted while the audio was being fetched
+      // Bail if muted, or a newer reply started speaking while /tts was in flight
+      // (otherwise this older clip would play on top of the newer one).
+      if (seq !== speakSeqRef.current || !voiceOnRef.current) return;
       const url = URL.createObjectURL(data as Blob);
       const audio = new Audio(url);
       ttsAudioRef.current = audio;
@@ -222,10 +220,9 @@ export default function ShopChat() {
       audio.onerror = () => setSpeaking(false);
       await audio.play().catch(() => setSpeaking(false));
     } catch {
-      // Backend TTS unavailable — fall back to the browser voice (unless muted).
-      if (voiceOnRef.current) browserSpeak(text);
+      setSpeaking(false);
     }
-  }, [stopSpeaking, browserSpeak]);
+  }, [stopSpeaking]);
 
   // Speak each NEW assistant reply once it lands (not the history on open, and
   // only while voice is on). 'out' = the AI/salon side; strip a leading emoji.
@@ -245,7 +242,10 @@ export default function ShopChat() {
     if (latestId <= spokenIdRef.current) return;
     spokenIdRef.current = latestId;
     if (!voiceOn || !latest) return;
-    const text = (latest.body ?? '').replace(/^[^\p{L}\d]+/u, '').trim();
+    // Voice notes have their own in-bubble player — don't also read them aloud.
+    const isAudio = !!latest.media_url && (latest.type === 'audio' || latest.type === 'voice');
+    if (isAudio) return;
+    const text = toSpeech(latest.body);
     if (text) void speakText(text);
   }, [messages, loading, voiceOn, speakText]);
 
@@ -257,8 +257,6 @@ export default function ShopChat() {
 
   // Stop any audio when leaving the chat.
   useEffect(() => stopSpeaking, [stopSpeaking]);
-
-  const toggleVoice = () => setVoiceOn((on) => !on);
 
   const title = shopName || 'Chat';
   const monogram = (Array.from(title)[0] || '?').toUpperCase();
@@ -279,7 +277,9 @@ export default function ShopChat() {
         <button className="c-icon-btn" aria-label="Back" onClick={() => navigate(`/shop/${shopId}`)}>
           <Icons.ChevronLeft size={18} />
         </button>
-        <div className="c-thread-avatar">{monogram}</div>
+        <div className="c-thread-avatar">
+          {shopLogo ? <img src={shopLogo} alt={title} /> : monogram}
+        </div>
         <div className="c-thread-head-text">
           <span className="c-thread-title">{title}</span>
           <span className="c-thread-sub">
@@ -287,21 +287,19 @@ export default function ShopChat() {
             {statusText}
           </span>
         </div>
-        <button
-          className="c-icon-btn"
-          style={{ marginLeft: 'auto' }}
-          aria-label={voiceOn ? 'Mute voice' : 'Unmute voice'}
-          aria-pressed={voiceOn}
-          onClick={toggleVoice}
-        >
-          {voiceOn ? <Icons.Volume size={18} /> : <Icons.VolumeOff size={18} />}
-        </button>
+        {services.length > 0 && (
+          <button
+            className="c-icon-btn"
+            style={{ marginLeft: 'auto' }}
+            aria-label="View services"
+            onClick={() => setShowServices(true)}
+          >
+            <Icons.List size={18} />
+          </button>
+        )}
       </div>
 
-      <div className="c-core-hero">
-        <AiCoreOrb state={orbState} letter={monogram} imageSrc={shopLogo || '/influencer-orb.png'} />
-        <span className="c-core-sub">Ask about prices, timings or availability</span>
-      </div>
+      {showServices && <ServicesSheet services={services} onClose={() => setShowServices(false)} />}
 
       <div className="c-thread-scroll" ref={scrollRef}>
         {loading ? (
@@ -314,13 +312,19 @@ export default function ShopChat() {
             // 'out' = the AI/salon. Audio messages render the voice player.
             const isAudio = !!m.media_url && (m.type === 'audio' || m.type === 'voice');
             const isBot = m.direction === 'out';
+            // The assistant marks "show the services list" with [[services]];
+            // strip the token from the text and render the priced list below —
+            // also when the reply is a voice note (token lives in its body).
+            const showSvc = isBot && m.body.includes(SERVICES_TOKEN);
+            const text = showSvc ? m.body.split(SERVICES_TOKEN).join('').trim() : m.body;
             return (
               <div key={m.id} className={`c-bubble ${isBot ? 'in' : 'out'}`}>
                 {isAudio ? (
                   <VoiceMessage src={m.media_url!} onSpeakingChange={isBot ? setSpeaking : undefined} />
                 ) : (
-                  <span className="c-bubble-text">{linkify(m.body)}</span>
+                  text && <span className="c-bubble-text">{linkify(text)}</span>
                 )}
+                {showSvc && <ServicesList services={services} />}
                 <span className="c-bubble-time">{bubbleTime(m.created_at)}</span>
               </div>
             );

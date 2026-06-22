@@ -874,6 +874,23 @@
   box-shadow: 0 0 12px var(--mint-400);
 }
 
+/* Elevated centre AI button: a raised mint orb lifted above the bar. */
+.m-tabbar .tab-ai { gap: 2px; color: var(--text-4); }
+.m-tabbar .tab-ai .tab-ai-orb {
+  display: grid; place-items: center;
+  width: 52px; height: 52px;
+  margin-top: -22px; margin-bottom: 2px;
+  border-radius: 99px;
+  color: #04140f;
+  background: radial-gradient(circle at 30% 25%, var(--mint-200), var(--mint-400) 60%, var(--mint-600));
+  box-shadow: 0 6px 16px var(--mint-glow), 0 0 0 4px var(--bg-1);
+}
+.m-tabbar .tab-ai.active { color: var(--mint-300); }
+/* The orb itself is the active affordance — drop the little top dash. */
+.m-tabbar .tab-ai.active::before { display: none; }
+.m-tabbar .tab-ai.active .tab-ai-orb { box-shadow: 0 6px 20px var(--mint-glow), 0 0 0 4px var(--bg-1); }
+.m-tabbar .tab-ai:active .tab-ai-orb { transform: scale(0.94); }
+
 /* ─── Active check-in panel (top of Check-in screen) ─── */
 .m-active-list {
   margin-bottom: 18px;

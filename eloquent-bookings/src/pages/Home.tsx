@@ -47,7 +47,10 @@ export default function Home() {
 
   return (
     <div className="m-screen">
-      <AppBar title="Eloquent Bookings" actions={<><ThemeToggle /><WhatsAppButton /></>} />
+      <AppBar title="Eloquent Bookings" actions={<>
+        <button className="c-wa" aria-label="Near me" onClick={() => navigate('/near-me')}><Icons.MapPin size={18} /></button>
+        <ThemeToggle /><WhatsAppButton />
+      </>} />
       <div className="c-search">
         <Icons.Search size={18} />
         <input placeholder="Search businesses…" value={search} onChange={(e) => setSearch(e.target.value)} />

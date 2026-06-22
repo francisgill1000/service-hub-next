@@ -26,6 +26,12 @@ export const Icons = {
   Search: ({ size = 18 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg>
   ),
+  List: ({ size = 18 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" /></svg>
+  ),
+  Close: ({ size = 18 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M6 6l12 12M18 6L6 18" /></svg>
+  ),
   Locate: ({ size = 22 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
   ),
@@ -61,6 +67,9 @@ export const Icons = {
   ),
   Chat: ({ size = 22 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" /><path d="M8 11h8M8 14.5h5" /></svg>
+  ),
+  Sparkle: ({ size = 22 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /><path d="M19 15l.7 1.8L21.5 17l-1.8.7L19 19.5l-.7-1.8L16.5 17l1.8-.7z" /></svg>
   ),
   Send: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>

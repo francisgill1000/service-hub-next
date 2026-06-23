@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { CustomerProvider } from '@/context/CustomerContext';
+import { VoiceSearchProvider } from '@/context/VoiceSearchContext';
 import { MobileLayout } from '@/layout/MobileLayout';
 import Home from '@/pages/Home';
 import Explore from '@/pages/Explore';
@@ -17,6 +18,7 @@ import Account from '@/pages/Account';
 export default function App() {
   return (
     <CustomerProvider>
+      <VoiceSearchProvider>
       <Routes>
         {/* Full-screen routes (no tab bar) */}
         <Route path="/shop/:id" element={<ShopDetail />} />
@@ -35,6 +37,7 @@ export default function App() {
           <Route path="/account" element={<Account />} />
         </Route>
       </Routes>
+      </VoiceSearchProvider>
     </CustomerProvider>
   );
 }

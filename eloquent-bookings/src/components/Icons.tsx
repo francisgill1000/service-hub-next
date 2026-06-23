@@ -77,6 +77,9 @@ export const Icons = {
   Mic: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg>
   ),
+  Keyboard: ({ size = 20 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" /></svg>
+  ),
   Stop: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
   ),

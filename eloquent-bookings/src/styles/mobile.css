@@ -892,6 +892,24 @@
 .m-tabbar .tab-ai.active .tab-ai-orb { box-shadow: 0 6px 20px var(--mint-glow), 0 0 0 4px var(--bg-1); }
 .m-tabbar .tab-ai:active .tab-ai-orb { transform: scale(0.94); }
 
+/* The centre orb is a press-to-talk button — reset native button chrome. */
+.m-tabbar button.tab { background: none; border: 0; font-family: inherit; }
+.m-tabbar .tab-ai .tab-ai-orb { position: relative; }
+.m-tabbar .tab-ai-ring {
+  position: absolute; inset: 0; border-radius: 99px;
+  border: 1.5px solid var(--mint-400); opacity: 0; pointer-events: none;
+}
+/* Listening — radar pulse out of the orb + a mint halo. */
+.m-tabbar .tab-ai.listening .tab-ai-orb { box-shadow: 0 0 0 4px var(--mint-soft), 0 6px 18px var(--mint-glow); }
+.m-tabbar .tab-ai.listening .tab-ai-ring { animation: micPulse 1.6s ease-out infinite; }
+.m-tabbar .tab-ai.listening .tab-ai-ring:nth-child(2) { animation-delay: .8s; }
+/* Thinking — spinner in the orb. */
+.m-tabbar .tab-ai-spin {
+  width: 22px; height: 22px; border-radius: 99px;
+  border: 2.5px solid rgba(4,20,15,0.25); border-top-color: #04140f;
+  animation: micSpin .8s linear infinite;
+}
+
 /* ─── Active check-in panel (top of Check-in screen) ─── */
 .m-active-list {
   margin-bottom: 18px;

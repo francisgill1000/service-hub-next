@@ -14,6 +14,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 .mobile-main:has(.mobile-map-page) {
   padding-bottom: 0;

@@ -280,11 +280,10 @@
   font-size: 11px; font-weight: 800;
 }
 
-/* Fill the layout column by flex-grow alone (basis 0, not height:100%) so the
-   screen is exactly the available height — never taller, which would push the
-   mic dock down behind the nav — and the empty message area expands to pin the
-   dock just above the nav. */
-.ai-screen { flex: 1 1 0%; min-height: 0; height: auto; }
+/* Absolutely fill the layout's main area (which sits exactly above the nav) so
+   the screen height can't over- or under-resolve. The empty message area then
+   expands and the mic dock pins just above the nav, on every device. */
+.ai-screen { position: absolute; inset: 0; }
 
 /* ── Voice-first dock: glowing mic with radar rings ── */
 .c-voice-dock {

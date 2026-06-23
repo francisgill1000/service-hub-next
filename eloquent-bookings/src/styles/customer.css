@@ -280,9 +280,11 @@
   font-size: 11px; font-weight: 800;
 }
 
-/* Fill the layout column so the empty message area expands and the mic dock
-   pins to the bottom (m-screen's height:100% collapses when the list is empty). */
-.ai-screen { flex: 1 1 auto; min-height: 0; }
+/* Fill the layout column by flex-grow alone (basis 0, not height:100%) so the
+   screen is exactly the available height — never taller, which would push the
+   mic dock down behind the nav — and the empty message area expands to pin the
+   dock just above the nav. */
+.ai-screen { flex: 1 1 0%; min-height: 0; height: auto; }
 
 /* ── Voice-first dock: glowing mic with radar rings ── */
 .c-voice-dock {

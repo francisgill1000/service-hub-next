@@ -58,7 +58,6 @@ export function MobileLayout() {
                   <span className="tab-ai-ring" aria-hidden="true" />
                   {voice.sending ? <span className="tab-ai-spin" aria-hidden="true" /> : <Icons.Mic size={24} />}
                 </span>
-                <span>AI</span>
               </button>
             );
           }

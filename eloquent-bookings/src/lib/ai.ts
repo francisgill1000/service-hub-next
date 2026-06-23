@@ -3,25 +3,32 @@ import type { Shop } from '@/types';
 
 export type AiCategory = { id: number; name: string; count: number };
 
+export type AiChatMessage = { role: 'user' | 'assistant'; content: string };
+
+export type AiAction =
+  | { type: 'navigate'; route: string }
+  | { type: 'register'; fields: { name?: string; phone?: string } }
+  | { type: 'login'; fields: { phone?: string } };
+
 export type AiSearchResult = {
   reply: string;
-  category_id: number | null;
+  action?: AiAction | null;
   shops: Shop[];
   categories?: AiCategory[];
 };
 
 /**
- * Ask the AI service finder a question. The backend classifies it into a
- * service category, a "what's available" list request, or off-topic, and
- * returns matching shops (same shape ShopCard consumes) or the category list.
- * Pass coords when available so "near me" queries rank by distance.
+ * Ask the in-app assistant. Sends the conversation so far; the backend runs a
+ * tool loop and may return matching shops (ShopCard shape) and/or an action
+ * directive (navigate / register / login) for the app to execute. Pass coords
+ * when available so "near me" queries rank by distance.
  */
 export async function aiSearch(
-  message: string,
+  messages: AiChatMessage[],
   coords?: { lat: number; lon: number },
 ): Promise<AiSearchResult> {
   const res = await api.post<AiSearchResult>('/ai/search', {
-    message,
+    messages,
     lat: coords?.lat,
     lon: coords?.lon,
   });

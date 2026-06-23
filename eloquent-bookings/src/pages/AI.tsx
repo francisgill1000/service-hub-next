@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useVoiceSearch } from '@/context/VoiceSearchContext';
 import { Icons } from '@/components/Icons';
 import { ShopCard } from '@/components/ShopCard';
+import { AuthInline } from '@/components/AuthInline';
 
 export default function AI() {
   const navigate = useNavigate();
-  const { messages, listening, sending, interim, supported, send, favourite } = useVoiceSearch();
+  const { messages, listening, sending, interim, supported, send, favourite, signedIn } = useVoiceSearch();
   const [typing, setTyping] = useState(!supported);
   const [draft, setDraft] = useState('');
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -60,6 +61,14 @@ export default function AI() {
                   </button>
                 ))}
               </div>
+            )}
+            {m.auth && (
+              <AuthInline
+                mode={m.auth.mode}
+                name={m.auth.name}
+                phone={m.auth.phone}
+                onDone={(name) => signedIn(name)}
+              />
             )}
             {m.shops && m.shops.length > 0 && (
               <div className="c-ai-results">

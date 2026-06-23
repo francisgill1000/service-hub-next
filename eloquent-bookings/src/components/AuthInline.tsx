@@ -61,7 +61,7 @@ export function AuthInline({ mode, name: initialName = '', phone: initialPhone =
         <input className="c-ai-auth-input" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
       )}
       <input className="c-ai-auth-input" placeholder="Mobile number" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
-      <input className="c-ai-auth-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input className="c-ai-auth-input" type="password" placeholder="Password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} />
       {mode === 'register' && (
         <input className="c-ai-auth-input" type="password" placeholder="Confirm password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
       )}

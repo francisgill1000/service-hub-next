@@ -296,24 +296,34 @@
   font-size: 11px; font-weight: 800;
 }
 
-/* Inline conversational auth (sign in / create account) under an AI reply. */
-.c-ai-auth { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 4px; max-width: 280px; }
-.c-ai-auth-input {
-  padding: 10px 12px; border: 1px solid var(--border-2); border-radius: 12px;
-  background: var(--surface-1); color: var(--text-1); font-size: 15px;
+/* Inline conversational auth (sign in / create account) under an AI reply —
+   styled as a clear, full-width card so it reads as an actionable panel. */
+.c-ai-auth {
+  display: flex; flex-direction: column; gap: 10px; margin: 8px 0 4px; width: 100%;
+  padding: 14px; background: var(--surface-2); border: 1px solid var(--border-1);
+  border-radius: 16px; box-shadow: var(--shadow-2);
 }
+.c-ai-auth-input {
+  padding: 12px 14px; border: 1px solid var(--border-2); border-radius: 12px;
+  background: var(--surface-1); color: var(--text-1); font-size: 16px;
+}
+.c-ai-auth-input:focus { outline: none; border-color: var(--mint-400); }
 .c-ai-auth-error { color: #e05656; font-size: 13px; }
 .c-ai-auth-submit {
-  padding: 10px 12px; border: 0; border-radius: 12px;
-  background: var(--mint-500); color: #04140f; font-weight: 700; cursor: pointer;
+  padding: 13px 12px; border: 0; border-radius: 12px;
+  background: var(--mint-500); color: #04140f; font-weight: 800; font-size: 15px; cursor: pointer;
 }
 .c-ai-auth-submit:active { transform: scale(0.98); }
 .c-ai-auth-submit:disabled { opacity: .6; cursor: default; }
 
-/* Absolutely fill the layout's main area (which sits exactly above the nav) so
-   the screen height can't over- or under-resolve. The empty message area then
-   expands and the mic dock pins just above the nav, on every device. */
-.ai-screen { position: absolute; inset: 0; }
+/* Fill the layout's main area but STOP at the top of the fixed bottom nav, so
+   the thread and composer never slide underneath it. The centre mic orb (in the
+   nav) still pokes ~28px into the bottom of this area — the thread's extra
+   bottom padding below keeps content clear of it. */
+.ai-screen { position: absolute; top: 0; left: 0; right: 0; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+/* Clear the mic orb that protrudes above the nav into the bottom of the screen. */
+.ai-screen .c-thread-scroll { padding-bottom: 40px; }
+.ai-screen .c-composer { margin-bottom: 10px; }
 
 /* ── Voice-first dock: glowing mic with radar rings ── */
 .c-voice-dock {

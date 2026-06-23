@@ -280,6 +280,10 @@
   font-size: 11px; font-weight: 800;
 }
 
+/* Fill the layout column so the empty message area expands and the mic dock
+   pins to the bottom (m-screen's height:100% collapses when the list is empty). */
+.ai-screen { flex: 1 1 auto; min-height: 0; }
+
 /* ── Voice-first dock: glowing mic with radar rings ── */
 .c-voice-dock {
   flex: 0 0 auto;

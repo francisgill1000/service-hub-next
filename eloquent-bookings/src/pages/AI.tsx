@@ -139,7 +139,7 @@ export default function AI() {
         : 'Tap the mic and ask for a service';
 
   return (
-    <div className="m-screen">
+    <div className="m-screen ai-screen">
       <div className="c-thread-head">
         <div className="c-thread-avatar"><Icons.Sparkle size={20} /></div>
         <div className="c-thread-head-text">

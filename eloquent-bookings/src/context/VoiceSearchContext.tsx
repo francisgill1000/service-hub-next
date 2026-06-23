@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
-import { aiSearch, type AiCategory } from '@/lib/ai';
+import { useNavigate } from 'react-router-dom';
+import { aiSearch, type AiCategory, type AiChatMessage } from '@/lib/ai';
 import { toggleFavourite } from '@/lib/shops';
 import type { Shop } from '@/types';
 
@@ -9,6 +10,7 @@ export type AiMsg = {
   text: string;
   shops?: Shop[];
   categories?: AiCategory[];
+  auth?: { mode: 'login' | 'register'; name?: string; phone?: string };
 };
 
 type VoiceSearch = {
@@ -22,6 +24,7 @@ type VoiceSearch = {
   toggleListening: () => void;
   send: (text: string) => void;
   favourite: (id: number) => void;
+  signedIn: (name: string) => void;
 };
 
 const Ctx = createContext<VoiceSearch | null>(null);
@@ -43,6 +46,8 @@ export function VoiceSearchProvider({ children }: { children: ReactNode }) {
   const [sending, setSending] = useState(false);
   const [interim, setInterim] = useState('');
 
+  const navigate = useNavigate();
+
   const coordsRef = useRef<{ lat: number; lon: number } | undefined>(undefined);
   const recognitionRef = useRef<any>(null);
   const finalRef = useRef('');
@@ -62,23 +67,40 @@ export function VoiceSearchProvider({ children }: { children: ReactNode }) {
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
+
+    // Build the Anthropic-style thread from prior turns + this one. Skip turns
+    // with no text (e.g. inline auth prompts).
+    const history: AiChatMessage[] = messages
+      .filter((m) => m.text.trim() !== '')
+      .map((m) => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
+    history.push({ role: 'user', content: trimmed });
+
     setMessages((prev) => [...prev, { id: nextId.current++, role: 'user', text: trimmed }]);
     setSending(true);
     try {
-      const res = await aiSearch(trimmed, coordsRef.current);
+      const res = await aiSearch(history, coordsRef.current);
+
+      const action = res.action ?? null;
+      const auth = action && (action.type === 'login' || action.type === 'register')
+        ? { mode: action.type, ...action.fields }
+        : undefined;
+
       setMessages((prev) => [...prev, {
         id: nextId.current++,
         role: 'ai',
         text: res.reply,
         shops: res.shops?.length ? res.shops : undefined,
         categories: res.categories?.length ? res.categories : undefined,
+        auth,
       }]);
+
+      if (action?.type === 'navigate') navigate(action.route);
     } catch {
       setMessages((prev) => [...prev, { id: nextId.current++, role: 'ai', text: 'Something went wrong. Please try again.' }]);
     } finally {
       setSending(false);
     }
-  }, []);
+  }, [messages, navigate]);
 
   const stopListening = useCallback(() => { recognitionRef.current?.stop(); }, []);
 
@@ -128,8 +150,12 @@ export function VoiceSearchProvider({ children }: { children: ReactNode }) {
     try { await toggleFavourite(id); } catch { /* optimistic — leave toggled */ }
   }, []);
 
+  const signedIn = useCallback((name: string) => {
+    setMessages((prev) => [...prev, { id: nextId.current++, role: 'ai', text: `✅ You're signed in${name ? `, ${name}` : ''}.` }]);
+  }, []);
+
   return (
-    <Ctx.Provider value={{ messages, listening, sending, interim, supported, startListening, stopListening, toggleListening, send, favourite }}>
+    <Ctx.Provider value={{ messages, listening, sending, interim, supported, startListening, stopListening, toggleListening, send, favourite, signedIn }}>
       {children}
     </Ctx.Provider>
   );

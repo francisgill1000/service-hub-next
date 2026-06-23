@@ -34,9 +34,11 @@ export function MobileLayout() {
         {tabs.map((tab) => {
           const Icon = Icons[tab.icon];
           const isActive = active === tab.id;
-          if (tab.id === 'ai') {
+          // On the AI screen the mic is the hero, so drop the raised orb (it
+          // collided with the mic) and render AI as a normal flat tab instead.
+          if (tab.id === 'ai' && !isActive) {
             return (
-              <Link key={tab.id} to={tab.href} className={`tab tab-ai ${isActive ? 'active' : ''}`}>
+              <Link key={tab.id} to={tab.href} className="tab tab-ai">
                 <span className="tab-ai-orb"><Icon size={24} /></span>
                 <span>{tab.label}</span>
               </Link>

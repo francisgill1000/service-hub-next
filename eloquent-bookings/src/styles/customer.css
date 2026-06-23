@@ -296,6 +296,20 @@
   font-size: 11px; font-weight: 800;
 }
 
+/* Inline conversational auth (sign in / create account) under an AI reply. */
+.c-ai-auth { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 4px; max-width: 280px; }
+.c-ai-auth-input {
+  padding: 10px 12px; border: 1px solid var(--border-2); border-radius: 12px;
+  background: var(--surface-1); color: var(--text-1); font-size: 15px;
+}
+.c-ai-auth-error { color: #e05656; font-size: 13px; }
+.c-ai-auth-submit {
+  padding: 10px 12px; border: 0; border-radius: 12px;
+  background: var(--mint-500); color: #04140f; font-weight: 700; cursor: pointer;
+}
+.c-ai-auth-submit:active { transform: scale(0.98); }
+.c-ai-auth-submit:disabled { opacity: .6; cursor: default; }
+
 /* Absolutely fill the layout's main area (which sits exactly above the nav) so
    the screen height can't over- or under-resolve. The empty message area then
    expands and the mic dock pins just above the nav, on every device. */

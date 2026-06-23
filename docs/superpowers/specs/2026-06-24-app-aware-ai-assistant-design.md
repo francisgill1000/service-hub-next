@@ -71,20 +71,29 @@ route unchanged, throttle unchanged).
 
 ### 2. Tools
 
+**Auth reality (discovered during planning — supersedes earlier "auth-gated"
+language):** There is **no Customer model**; a logged-in customer is a `User`
+with a Sanctum token. Favourites (`guest_favourites`) and bookings are
+**device-scoped by `X-Device-Id`**, not user-scoped — so "my favourites" and "my
+bookings" work for guests *and* logged-in users with no auth gating. Only
+`get_account` requires a logged-in `User`. Note `BookingController::index()` does
+**not** currently filter by device, so `list_bookings` must scope by `X-Device-Id`
+itself.
+
 **Read tools — execute server-side inside the loop:**
 
-| Tool | Backs onto | Auth |
+| Tool | Backs onto | Scope |
 |---|---|---|
-| `list_favourites` | existing favourites query | user (token/device) |
-| `list_bookings` (scope: upcoming \| history) | `my_bookings` logic in `BookingTools.php` | user |
-| `get_account` | current customer profile | logged-in |
-| `search_shops` (query, category, near) | existing `GET /shops` | public |
+| `list_favourites` | `guest_favourites` by device | device (guest or logged-in) |
+| `list_bookings` (scope: upcoming \| history) | `Booking` by `device_id` | device |
+| `get_account` | `$request->user()` (`User`) | logged-in only |
+| `search_shops` (query, category, near) | existing `ShopController` query | public |
 | `get_shop` (services, working hours) | existing `GET /shops/{id}` | public |
-| `list_categories` | the 10 fixed categories | public |
-| `check_availability` (shop, date) | `BookingTools.php` | public |
+| `list_categories` | `ServiceCategories` + counts | public |
 
 Read tools chain naturally (e.g. "what does my favourite barber offer?" →
-`list_favourites` → `get_shop`).
+`list_favourites` → `get_shop`). `get_account` returns a "not logged in" signal
+for guests, which the model turns into an offer to log in (emits `login`).
 
 **Action tools — end the loop, return an `action` directive to the client:**
 
@@ -153,6 +162,23 @@ chat pipeline.
 - No editing of favourites via AI beyond navigation (toggle stays a tap on shop
   cards) — revisit if wanted.
 - No multi-language prompt tuning beyond what the model already does.
+
+## Delivery phasing
+
+The booking *mutation* tools (`create_booking` / `cancel_booking` /
+`reschedule_booking`) do not map cleanly onto the customer app: the WA
+`BookingTools` is scoped to a single `Shop` + `WaContact`, whereas the customer
+assistant is app-wide and device-scoped. They therefore need new
+**customer-scoped** handlers, which is a separable body of work. To keep the
+core shippable:
+
+- **Plan A (this spec → first plan):** tool-loop agent, read tools
+  (`list_favourites`, `list_bookings`, `get_account`, `search_shops`,
+  `get_shop`, `list_categories`), `navigate`, and conversational auth
+  (`register` / `login`). Delivers everything the user demonstrated except
+  creating/changing bookings by voice.
+- **Plan B (follow-up plan):** customer-scoped booking mutation tools +
+  confirmation UI. Built on Plan A's contract once it's live.
 
 ## Data flow (happy path)
 

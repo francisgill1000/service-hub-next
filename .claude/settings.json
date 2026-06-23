@@ -12,7 +12,9 @@
       "Bash(git commit *)",
       "Bash(netstat -ano)",
       "Bash(findstr :3000)",
-      "Bash(tasklist /FI \"PID eq 10736\" /FO LIST)"
+      "Bash(tasklist /FI \"PID eq 10736\" /FO LIST)",
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:brainstorming:*)"
     ]
   }
 }

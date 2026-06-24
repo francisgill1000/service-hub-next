@@ -1,10 +1,10 @@
-# Bizrezzy — Service Provider Web App
+# Admin — Service Provider Web App
 
 Provider-facing PWA for Rezzy shops. Vite + React + TypeScript, talking to the Rezzy
 Laravel API. Mirrors the `rezzy-customer` stack/design; functionality is ported from the
 `mobile-app/` shop screens.
 
-Live: **https://bizrezzy.eloquentservice.com**
+Live: **https://admin.eloquentservice.com**
 
 ## Setup
 ```bash
@@ -33,7 +33,7 @@ Two-step shop login → `POST shops/login`. Token persisted in `localStorage` as
 
 ## Deployment
 Static SPA served by nginx on the shared droplet (`64.227.153.90`) at
-`bizrezzy.eloquentservice.com`, same model as `rezzy-customer` (served at
+`admin.eloquentservice.com`, same model as `rezzy-customer` (served at
 `rezzy.eloquentservice.com`). Run `./deploy.ps1` to build + upload `dist/` and chown to
-`www-data`. The nginx server block (`/etc/nginx/sites-available/bizrezzy`) has an SPA
+`www-data`. The nginx server block (`/etc/nginx/sites-available/admin`) has an SPA
 fallback (`try_files $uri /index.html`) and a Certbot-managed TLS cert.

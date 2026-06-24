@@ -1,6 +1,6 @@
 {
-  "name": "Bizrezzy",
-  "short_name": "Bizrezzy",
+  "name": "Admin",
+  "short_name": "Admin",
   "description": "Rezzy for service providers — manage bookings, staff, and services.",
   "start_url": "/",
   "display": "standalone",

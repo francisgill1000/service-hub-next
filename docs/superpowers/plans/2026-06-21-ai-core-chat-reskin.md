@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- App dir: `eloquent-bookings/`. Branch `feat/rezzy-customer-web` — stay on it; do NOT checkout master or `git stash` (tree has unrelated untracked files at repo root — never commit those).
+- App dir: `eloquent-bookings/`. Branch `feat/eloquent-bookings-web` — stay on it; do NOT checkout master or `git stash` (tree has unrelated untracked files at repo root — never commit those).
 - Presentation-only: do NOT change `src/lib/chat.ts`, `src/lib/api.ts`, `src/types.ts`, the backend, or the provider app.
 - `OrbState` is exactly the union `'idle' | 'listening' | 'thinking' | 'talking'`.
 - `orbState` priority (highest first): `recording`→`listening`, else `speaking`→`talking`, else `awaitingReply || uploading`→`thinking`, else `idle`.

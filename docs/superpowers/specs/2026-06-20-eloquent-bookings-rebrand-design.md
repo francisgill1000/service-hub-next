@@ -1,7 +1,7 @@
 # Rebrand: Rezzy Customer → "Eloquent Bookings"
 
 **Date:** 2026-06-20
-**Scope:** The customer-facing app only (`rezzy-customer`). The provider app
+**Scope:** The customer-facing app only (`eloquent-bookings`). The provider app
 (`bizrezzy`) keeps its current "Rezzy" identity. Backend customer-facing strings
 are included; the shared backend itself is not renamed.
 
@@ -39,14 +39,14 @@ while keeping the existing `rezzy.eloquentservice.com` live in parallel.
 
 ### B. Customer app — internal identifiers
 
-- Rename directory `rezzy-customer/` → `eloquent-bookings/` (`git mv` to preserve history)
+- Rename directory `eloquent-bookings/` → `eloquent-bookings/` (`git mv` to preserve history)
 - `package.json` `name` → `eloquent-bookings`
 - `package-lock.json` top-level `name` (and any self-referencing `name`) → `eloquent-bookings`
 - `README.md` — title / references
 - `deploy.ps1`:
   - header comment
-  - `$webroot` `/var/www/rezzy-customer` → `/var/www/eloquent-bookings`
-  - tarball temp name `rezzy-customer-dist.tar.gz` → `eloquent-bookings-dist.tar.gz`
+  - `$webroot` `/var/www/eloquent-bookings` → `/var/www/eloquent-bookings`
+  - tarball temp name `eloquent-bookings-dist.tar.gz` → `eloquent-bookings-dist.tar.gz`
   - verify URL → `https://bookings.eloquentservice.com/`
   - keep ASCII-only (PS 5.1), keep the single-tarball upload model
 
@@ -66,7 +66,7 @@ Tests referencing these exact strings (e.g. `WaPromptsTest`) get updated in lock
 Parallel-serve model — one app, one webroot, two domains:
 
 1. New webroot `/var/www/eloquent-bookings` (owned `www-data`). First deploy
-   uploads `dist/` here. The old `/var/www/rezzy-customer` can be removed once
+   uploads `dist/` here. The old `/var/www/eloquent-bookings` can be removed once
    the new path serves both domains.
 2. nginx: edit the customer site (`sites-enabled/frontend`) so its `server_name`
    lists **both** `bookings.eloquentservice.com rezzy.eloquentservice.com`, and
@@ -89,13 +89,13 @@ Parallel-serve model — one app, one webroot, two domains:
 
 ## Risks & notes
 
-- **Folder rename churn:** `rezzy-customer/` is referenced only in its own files,
+- **Folder rename churn:** `eloquent-bookings/` is referenced only in its own files,
   two backend *comments*, one `bizrezzy` CSS comment, and historical docs — no
   runtime/data dependency (the live-chat `channel` value is not the folder name).
   Comments may be updated opportunistically but are non-blocking.
 - **Dev server / node_modules:** `node_modules` moves with the `git mv`; no
   reinstall needed. Restart any running `npm run dev` after the move.
-- **Branch state:** work continues on `feat/rezzy-customer-web`; tree is normally
+- **Branch state:** work continues on `feat/eloquent-bookings-web`; tree is normally
   dirty — do not checkout master or stash.
 - **Parallel domain:** keeping `rezzy.*` live means existing printed QR codes and
   shared links keep working; both names resolve to the same renamed app.

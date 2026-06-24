@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build `bizrezzy/`, a provider-facing PWA at full parity with the mobile app's shop screens, mirroring the `rezzy-customer` stack and design, deployed to `bizrezzy.eloquentservice.com`.
+**Goal:** Build `bizrezzy/`, a provider-facing PWA at full parity with the mobile app's shop screens, mirroring the `eloquent-bookings` stack and design, deployed to `bizrezzy.eloquentservice.com`.
 
-**Architecture:** Clone the `rezzy-customer` Vite + React + TypeScript scaffold (design tokens, `MobileLayout`, shared libs). Swap `CustomerContext`→`ShopContext` (auth token `shop_token`). Each page is a direct port of a named `mobile-app/src/screens/shop` or `auth` screen, calling the shared Laravel API. Ship as a static SPA behind nginx.
+**Architecture:** Clone the `eloquent-bookings` Vite + React + TypeScript scaffold (design tokens, `MobileLayout`, shared libs). Swap `CustomerContext`→`ShopContext` (auth token `shop_token`). Each page is a direct port of a named `mobile-app/src/screens/shop` or `auth` screen, calling the shared Laravel API. Ship as a static SPA behind nginx.
 
 **Tech Stack:** Vite 5, React 18, TypeScript 5, react-router-dom 6, axios, Vitest + Testing Library.
 
@@ -13,9 +13,9 @@
 **Source-of-truth screens** (read these when porting a page):
 - Auth: `mobile-app/src/screens/auth/{LoginScreen,RegisterScreen,ForgotPinScreen}.js`
 - Shop: `mobile-app/src/screens/shop/{DashboardScreen,ShopBookingsScreen,BookingActionScreen,RemindersScreen,CatalogsScreen,CatalogEditScreen,StaffScreen,WorkingHoursScreen,ProfileScreen,ScanLoginScreen}.js`
-- Design refs to copy verbatim: `rezzy-customer/src/styles/{tokens,mobile,customer}.css`, `rezzy-customer/src/components/Icons.tsx`, `rezzy-customer/src/components/{Spinner,EmptyState,WhatsAppButton}.tsx`
+- Design refs to copy verbatim: `eloquent-bookings/src/styles/{tokens,mobile,customer}.css`, `eloquent-bookings/src/components/Icons.tsx`, `eloquent-bookings/src/components/{Spinner,EmptyState,WhatsAppButton}.tsx`
 
-> **Porting rule:** Provider pages reuse rezzy-customer CSS classes (`mobile-app`, `mobile-main`, `m-appbar`, `m-tabbar`, card/list classes). Translate React Native (`View`/`Text`/`TouchableOpacity`/`StyleSheet`) to semantic HTML (`div`/`span`/`button`) with those classes. Drop native-only deps (`expo-*`, `react-navigation`, `SafeAreaView`, biometric). Use `react-router` (`useNavigate`, `useParams`, `Link`) for navigation.
+> **Porting rule:** Provider pages reuse eloquent-bookings CSS classes (`mobile-app`, `mobile-main`, `m-appbar`, `m-tabbar`, card/list classes). Translate React Native (`View`/`Text`/`TouchableOpacity`/`StyleSheet`) to semantic HTML (`div`/`span`/`button`) with those classes. Drop native-only deps (`expo-*`, `react-navigation`, `SafeAreaView`, biometric). Use `react-router` (`useNavigate`, `useParams`, `Link`) for navigation.
 
 ---
 
@@ -24,21 +24,21 @@
 **Files:**
 - Create: `bizrezzy/package.json`, `bizrezzy/vite.config.ts`, `bizrezzy/tsconfig.json`, `bizrezzy/tsconfig.node.json`, `bizrezzy/index.html`, `bizrezzy/.gitignore`, `bizrezzy/.env.example`
 - Create: `bizrezzy/src/main.tsx`, `bizrezzy/src/vite-env.d.ts`, `bizrezzy/src/test/setup.ts`
-- Copy: `bizrezzy/src/styles/{tokens,mobile,customer}.css` (verbatim from `rezzy-customer/src/styles/`)
+- Copy: `bizrezzy/src/styles/{tokens,mobile,customer}.css` (verbatim from `eloquent-bookings/src/styles/`)
 
 - [ ] **Step 1: Copy the project skeleton.** From repo root:
 
 ```bash
 mkdir -p bizrezzy/src/styles bizrezzy/src/test bizrezzy/public
-cp rezzy-customer/vite.config.ts        bizrezzy/vite.config.ts
-cp rezzy-customer/tsconfig.json         bizrezzy/tsconfig.json
-cp rezzy-customer/tsconfig.node.json    bizrezzy/tsconfig.node.json
-cp rezzy-customer/src/vite-env.d.ts     bizrezzy/src/vite-env.d.ts
-cp rezzy-customer/src/test/setup.ts     bizrezzy/src/test/setup.ts
-cp rezzy-customer/src/styles/tokens.css   bizrezzy/src/styles/tokens.css
-cp rezzy-customer/src/styles/mobile.css   bizrezzy/src/styles/mobile.css
-cp rezzy-customer/src/styles/customer.css bizrezzy/src/styles/customer.css
-cp rezzy-customer/.gitignore            bizrezzy/.gitignore 2>/dev/null || printf "node_modules\ndist\n*.tsbuildinfo\n.env\n" > bizrezzy/.gitignore
+cp eloquent-bookings/vite.config.ts        bizrezzy/vite.config.ts
+cp eloquent-bookings/tsconfig.json         bizrezzy/tsconfig.json
+cp eloquent-bookings/tsconfig.node.json    bizrezzy/tsconfig.node.json
+cp eloquent-bookings/src/vite-env.d.ts     bizrezzy/src/vite-env.d.ts
+cp eloquent-bookings/src/test/setup.ts     bizrezzy/src/test/setup.ts
+cp eloquent-bookings/src/styles/tokens.css   bizrezzy/src/styles/tokens.css
+cp eloquent-bookings/src/styles/mobile.css   bizrezzy/src/styles/mobile.css
+cp eloquent-bookings/src/styles/customer.css bizrezzy/src/styles/customer.css
+cp eloquent-bookings/.gitignore            bizrezzy/.gitignore 2>/dev/null || printf "node_modules\ndist\n*.tsbuildinfo\n.env\n" > bizrezzy/.gitignore
 ```
 
 - [ ] **Step 2: Write `bizrezzy/package.json`.**
@@ -80,9 +80,9 @@ cp rezzy-customer/.gitignore            bizrezzy/.gitignore 2>/dev/null || print
 }
 ```
 
-- [ ] **Step 3: Change the dev port.** In `bizrezzy/vite.config.ts`, change `server: { port: 5174, host: true }` to `server: { port: 5175, host: true }` (avoid clashing with rezzy-customer).
+- [ ] **Step 3: Change the dev port.** In `bizrezzy/vite.config.ts`, change `server: { port: 5174, host: true }` to `server: { port: 5175, host: true }` (avoid clashing with eloquent-bookings).
 
-- [ ] **Step 4: Write `bizrezzy/index.html`** (same as rezzy-customer but title "Bizrezzy"):
+- [ ] **Step 4: Write `bizrezzy/index.html`** (same as eloquent-bookings but title "Bizrezzy"):
 
 ```html
 <!doctype html>
@@ -153,7 +153,7 @@ Expected: PASS — "No test files found" is acceptable (exit 0 with `--passWithN
 
 ```bash
 git add bizrezzy
-git commit -m "feat(bizrezzy): scaffold provider web app from rezzy-customer"
+git commit -m "feat(bizrezzy): scaffold provider web app from eloquent-bookings"
 ```
 
 ---
@@ -161,7 +161,7 @@ git commit -m "feat(bizrezzy): scaffold provider web app from rezzy-customer"
 ## Task 2: Shared libs (storage, deviceId, date, api)
 
 **Files:**
-- Copy: `bizrezzy/src/lib/{storage.ts,deviceId.ts,date.ts}` (verbatim from rezzy-customer)
+- Copy: `bizrezzy/src/lib/{storage.ts,deviceId.ts,date.ts}` (verbatim from eloquent-bookings)
 - Create: `bizrezzy/src/lib/api.ts`
 - Test: `bizrezzy/src/lib/api.test.ts`
 
@@ -169,9 +169,9 @@ git commit -m "feat(bizrezzy): scaffold provider web app from rezzy-customer"
 
 ```bash
 mkdir -p bizrezzy/src/lib
-cp rezzy-customer/src/lib/storage.ts  bizrezzy/src/lib/storage.ts
-cp rezzy-customer/src/lib/deviceId.ts bizrezzy/src/lib/deviceId.ts
-cp rezzy-customer/src/lib/date.ts     bizrezzy/src/lib/date.ts
+cp eloquent-bookings/src/lib/storage.ts  bizrezzy/src/lib/storage.ts
+cp eloquent-bookings/src/lib/deviceId.ts bizrezzy/src/lib/deviceId.ts
+cp eloquent-bookings/src/lib/date.ts     bizrezzy/src/lib/date.ts
 ```
 
 - [ ] **Step 2: Write the failing test `bizrezzy/src/lib/api.test.ts`.**
@@ -207,7 +207,7 @@ describe('api client', () => {
 Run: `cd bizrezzy && npx vitest run src/lib/api.test.ts`
 Expected: FAIL — cannot resolve `./api`.
 
-- [ ] **Step 4: Write `bizrezzy/src/lib/api.ts`** (rezzy-customer's api.ts but reading `shop_token`):
+- [ ] **Step 4: Write `bizrezzy/src/lib/api.ts`** (eloquent-bookings's api.ts but reading `shop_token`):
 
 ```ts
 import axios from 'axios';
@@ -254,7 +254,7 @@ git commit -m "feat(bizrezzy): add shared libs and shop-token api client"
 **Files:**
 - Create: `bizrezzy/src/types.ts`
 
-- [ ] **Step 1: Write `bizrezzy/src/types.ts`** (extends rezzy-customer types with provider entities):
+- [ ] **Step 1: Write `bizrezzy/src/types.ts`** (extends eloquent-bookings types with provider entities):
 
 ```ts
 export type WorkingHours = {
@@ -660,18 +660,18 @@ git commit -m "feat(bizrezzy): add typed api wrappers for shops, bookings, catal
 ## Task 6: Shared components, layout, route guard
 
 **Files:**
-- Copy: `bizrezzy/src/components/{Icons,Spinner,EmptyState,WhatsAppButton}.tsx` (verbatim from rezzy-customer)
+- Copy: `bizrezzy/src/components/{Icons,Spinner,EmptyState,WhatsAppButton}.tsx` (verbatim from eloquent-bookings)
 - Create: `bizrezzy/src/layout/AppBar.tsx`, `bizrezzy/src/layout/MobileLayout.tsx`, `bizrezzy/src/layout/RequireShop.tsx`
 
 - [ ] **Step 1: Copy components and AppBar.**
 
 ```bash
 mkdir -p bizrezzy/src/components bizrezzy/src/layout
-cp rezzy-customer/src/components/Icons.tsx          bizrezzy/src/components/Icons.tsx
-cp rezzy-customer/src/components/Spinner.tsx        bizrezzy/src/components/Spinner.tsx
-cp rezzy-customer/src/components/EmptyState.tsx     bizrezzy/src/components/EmptyState.tsx
-cp rezzy-customer/src/components/WhatsAppButton.tsx bizrezzy/src/components/WhatsAppButton.tsx
-cp rezzy-customer/src/layout/AppBar.tsx             bizrezzy/src/layout/AppBar.tsx
+cp eloquent-bookings/src/components/Icons.tsx          bizrezzy/src/components/Icons.tsx
+cp eloquent-bookings/src/components/Spinner.tsx        bizrezzy/src/components/Spinner.tsx
+cp eloquent-bookings/src/components/EmptyState.tsx     bizrezzy/src/components/EmptyState.tsx
+cp eloquent-bookings/src/components/WhatsAppButton.tsx bizrezzy/src/components/WhatsAppButton.tsx
+cp eloquent-bookings/src/layout/AppBar.tsx             bizrezzy/src/layout/AppBar.tsx
 ```
 
 - [ ] **Step 2: Verify icon names.** Open `bizrezzy/src/components/Icons.tsx` and note exported keys. The tab bar needs icons for Home, Calendar, Bell/Reminders, Grid/Services, Store/Profile. If `Bell`, `Grid`, or `Store` are missing, add minimal SVG icons following the existing pattern in that file (each icon is a function `({size}) => <svg .../>`).
@@ -838,7 +838,7 @@ git commit -m "feat(bizrezzy): wire app routing with auth guard and page stubs"
 
 ## Tasks 8–20: Pages (port from mobile screens)
 
-Each page task follows the same loop: **(a)** read the source mobile screen, **(b)** port it to a React + react-router page using the API wrappers from Task 5 and rezzy-customer CSS classes, **(c)** write at least one render/interaction test, **(d)** run tests + `tsc -b`, **(e)** commit. Use `<AppBar>` for the header, `<Spinner>` for loading, `<EmptyState>` for empty lists. Show API errors inline (error banner state). On any `401`, call `logoutShop()` and navigate to `/login`.
+Each page task follows the same loop: **(a)** read the source mobile screen, **(b)** port it to a React + react-router page using the API wrappers from Task 5 and eloquent-bookings CSS classes, **(c)** write at least one render/interaction test, **(d)** run tests + `tsc -b`, **(e)** commit. Use `<AppBar>` for the header, `<Spinner>` for loading, `<EmptyState>` for empty lists. Show API errors inline (error banner state). On any `401`, call `logoutShop()` and navigate to `/login`.
 
 For each: replace the stub file from Task 7 Step 2.
 
@@ -1044,15 +1044,15 @@ Run: `cd bizrezzy && npx vitest run src/pages/Login.test.tsx` — Expected: FAIL
 
 **Files:**
 - Copy/adapt: `bizrezzy/scripts/gen-icons.mjs`, `bizrezzy/public/manifest.webmanifest`, `bizrezzy/public/*` icons
-- Source: `rezzy-customer/scripts/gen-icons.mjs`, `rezzy-customer/public/manifest.webmanifest`
+- Source: `eloquent-bookings/scripts/gen-icons.mjs`, `eloquent-bookings/public/manifest.webmanifest`
 
 - [ ] **Step 1: Copy the icon generator and manifest.**
 
 ```bash
 mkdir -p bizrezzy/scripts
-cp rezzy-customer/scripts/gen-icons.mjs       bizrezzy/scripts/gen-icons.mjs
-cp rezzy-customer/public/manifest.webmanifest bizrezzy/public/manifest.webmanifest
-cp rezzy-customer/public/favicon.svg          bizrezzy/public/favicon.svg 2>/dev/null || true
+cp eloquent-bookings/scripts/gen-icons.mjs       bizrezzy/scripts/gen-icons.mjs
+cp eloquent-bookings/public/manifest.webmanifest bizrezzy/public/manifest.webmanifest
+cp eloquent-bookings/public/favicon.svg          bizrezzy/public/favicon.svg 2>/dev/null || true
 ```
 
 - [ ] **Step 2: Rebrand the manifest.** In `bizrezzy/public/manifest.webmanifest` set `"name": "Bizrezzy"`, `"short_name": "Bizrezzy"`, and a distinguishing description (e.g. "Rezzy for service providers"). Keep the mint theme/background colors. Reuse the favicon recipe (SVG monogram on mint tile) — see memory `favicon-recipe.md`; a "B" monogram distinguishes it from the customer app.

@@ -6,7 +6,7 @@
 ## Summary
 
 A fresh, standalone **Vite + React (TypeScript)** single-page PWA living in a new
-top-level repo folder `rezzy-customer/`. It reproduces the **customer-side** flows
+top-level repo folder `eloquent-bookings/`. It reproduces the **customer-side** flows
 from the existing React Native app (`mobile-app/`) and wears the **salesagent
 mobile** dark/mint design language (`salesagent/resources/css/mobile.css` +
 `pulse-styles.css` tokens).
@@ -23,7 +23,7 @@ additions, if any).
 | Decision | Choice |
 |---|---|
 | Stack | Vite + React 18 + react-router-dom, TypeScript (`.tsx`) |
-| Folder | `rezzy-customer/` (new top-level folder in the Rezzy repo) |
+| Folder | `eloquent-bookings/` (new top-level folder in the Rezzy repo) |
 | Scope (this phase) | Customer / guest side only |
 | Backend | Reuse existing Rezzy Laravel API |
 | Styling | Port salesagent `mobile.css` + token block; no Tailwind |
@@ -55,7 +55,7 @@ These become a separate phase-2 spec.
 
 ### Folder structure
 ```
-rezzy-customer/
+eloquent-bookings/
   index.html
   vite.config.ts
   tsconfig.json

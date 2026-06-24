@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Redesign the bizrezzy "All Businesses" master view into a clean rezzy-customer-style card list + per-business detail screen, and add per-shop WhatsApp persona and an active/inactive visibility toggle end-to-end (backend → master UI → live bot, bot change strictly additive).
+**Goal:** Redesign the bizrezzy "All Businesses" master view into a clean eloquent-bookings-style card list + per-business detail screen, and add per-shop WhatsApp persona and an active/inactive visibility toggle end-to-end (backend → master UI → live bot, bot change strictly additive).
 
 **Architecture:** Three repos in rollout order. (1) Laravel backend `Rezzy/backend` gains a nullable `shops.persona` column, a master-guarded `PATCH /master/shops/{shop}` endpoint, and returns `persona` from the master list + `shop-context`. (2) bizrezzy master UI gets a `MasterShopCard`, a new `MasterShopDetail` page at `/master/:id`, and an `updateMasterShop` lib call. (3) The live Node bot `whatsapp-autoreply` uses a shop's persona only when present, otherwise unchanged behavior.
 
 **Tech Stack:** Laravel 12 / PHPUnit + RefreshDatabase; React 18 + TypeScript + Vite + Vitest + Testing Library; Node ESM (whatsapp-autoreply).
 
-**Key reference:** Design spec at `bizrezzy/docs/superpowers/specs/2026-06-10-master-view-redesign-design.md`. Card visual reference: `rezzy-customer/src/components/ShopCard.tsx` + its `.c-shop-card` CSS.
+**Key reference:** Design spec at `bizrezzy/docs/superpowers/specs/2026-06-10-master-view-redesign-design.md`. Card visual reference: `eloquent-bookings/src/components/ShopCard.tsx` + its `.c-shop-card` CSS.
 
 ---
 
@@ -450,7 +450,7 @@ export function MasterShopCard({ shop, onOpen }: {
 - [ ] **Step 4: Append card styles** — add to the end of `src/styles/customer.css`:
 
 ```css
-/* Master — business card (rezzy-customer ShopCard layout, monogram thumb) */
+/* Master — business card (eloquent-bookings ShopCard layout, monogram thumb) */
 .c-msc { display: flex; gap: 14px; width: 100%; box-sizing: border-box; text-align: left; cursor: pointer; margin: 0 16px 12px; padding: 14px; background: var(--surface-1); border: 1px solid var(--border-1); border-radius: var(--r-lg); }
 .c-msc:not(:disabled):active { transform: scale(0.997); }
 .c-msc-thumb { width: 72px; height: 72px; flex-shrink: 0; border-radius: var(--r-md); display: grid; place-items: center; background: var(--mint-soft); border: 1px solid var(--border-mint); color: var(--mint-300); font-size: 28px; font-weight: 800; }
@@ -476,7 +476,7 @@ Expected: PASS.
 
 ```bash
 git add src/components/MasterShopCard.tsx src/components/MasterShopCard.test.tsx src/styles/customer.css
-git commit -m "feat(bizrezzy): MasterShopCard in rezzy-customer style with monogram + status badges"
+git commit -m "feat(bizrezzy): MasterShopCard in eloquent-bookings style with monogram + status badges"
 ```
 
 ---

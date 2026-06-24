@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- App dir: `eloquent-bookings/`. Branch `feat/rezzy-customer-web` — stay on it; do NOT checkout master or `git stash` (unrelated untracked files at repo root must never be committed).
+- App dir: `eloquent-bookings/`. Branch `feat/eloquent-bookings-web` — stay on it; do NOT checkout master or `git stash` (unrelated untracked files at repo root must never be committed).
 - Presentation-only: do NOT change `src/lib/chat.ts`, `src/lib/api.ts`, the backend, recording, polling, or the hero `AiCoreOrb`.
 - `VoiceMessage` props: `{ src: string; onSpeakingChange?: (playing: boolean) => void }`. `VoiceTranscript` props: `{ text: string }`.
 - AI voice reply = player + collapsed transcript (only when caption is non-empty and not `…`). Customer voice note = player only.

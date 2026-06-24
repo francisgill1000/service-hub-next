@@ -4,7 +4,7 @@
 
 **Goal:** Rebrand the customer-facing app from "Rezzy" to "Eloquent Bookings" — display strings, favicon, internal identifiers (folder/package/deploy), customer-facing backend strings — and serve it at `bookings.eloquentservice.com` alongside the existing `rezzy.eloquentservice.com`.
 
-**Architecture:** The customer app (`rezzy-customer/`, a Vite/React SPA) is renamed in place to `eloquent-bookings/`. Display strings and the favicon glyph change to "Eloquent Bookings" / "EB". The shared Laravel backend gets three customer-facing string edits (kept minimal — backend is not renamed). The droplet serves one renamed webroot under two domains via a single nginx site + a SAN cert.
+**Architecture:** The customer app (`eloquent-bookings/`, a Vite/React SPA) is renamed in place to `eloquent-bookings/`. Display strings and the favicon glyph change to "Eloquent Bookings" / "EB". The shared Laravel backend gets three customer-facing string edits (kept minimal — backend is not renamed). The droplet serves one renamed webroot under two domains via a single nginx site + a SAN cert.
 
 **Tech Stack:** Vite, React, TypeScript, vitest, sharp (icon gen), Laravel/Blade, nginx, certbot, PowerShell deploy script.
 
@@ -16,7 +16,7 @@
 - Favicon/app-icon monogram glyph is `EB` on the existing mint tile (gradients unchanged).
 - New domain `bookings.eloquentservice.com`; old `rezzy.eloquentservice.com` stays live (same app, parallel).
 - Provider app (`bizrezzy`) is OUT OF SCOPE — do not edit it.
-- Work stays on branch `feat/rezzy-customer-web`. Do NOT checkout master or `git stash` (tree is normally dirty). Commit only the files each task names.
+- Work stays on branch `feat/eloquent-bookings-web`. Do NOT checkout master or `git stash` (tree is normally dirty). Commit only the files each task names.
 - Droplet: `root@64.227.153.90`, customer nginx site is `sites-enabled/frontend`, `*.eloquentservice.com` is a wildcard A-record (no DNS step).
 - `deploy.ps1` stays ASCII-only (PS 5.1) and keeps the single-tarball upload model.
 
@@ -24,10 +24,10 @@
 
 ### Task 1: Rename the app folder and internal identifiers
 
-Rename `rezzy-customer/` → `eloquent-bookings/` and update every internal identifier (package name, lockfile, README, deploy script) so the app builds from its new path. No display strings yet.
+Rename `eloquent-bookings/` → `eloquent-bookings/` and update every internal identifier (package name, lockfile, README, deploy script) so the app builds from its new path. No display strings yet.
 
 **Files:**
-- Rename: `rezzy-customer/` → `eloquent-bookings/` (git mv)
+- Rename: `eloquent-bookings/` → `eloquent-bookings/` (git mv)
 - Modify: `eloquent-bookings/package.json:2`
 - Modify: `eloquent-bookings/package-lock.json` (top-level + root-package `name`)
 - Modify: `eloquent-bookings/README.md`
@@ -40,7 +40,7 @@ Rename `rezzy-customer/` → `eloquent-bookings/` and update every internal iden
 
 ```bash
 cd "d:/Francis/projects/2026/Eloquent/Solutions/Rezzy"
-git mv rezzy-customer eloquent-bookings
+git mv eloquent-bookings eloquent-bookings
 ```
 
 (If `git mv` reports the tree is dirty with untracked build artifacts that block it, move those aside or use `git mv -k`; `node_modules` and `dist` are gitignored and move with the plain OS rename that `git mv` performs.)
@@ -55,7 +55,7 @@ In `eloquent-bookings/package.json`, line 2:
 
 - [ ] **Step 3: Update `package-lock.json` name fields**
 
-In `eloquent-bookings/package-lock.json`, replace the two `"name": "rezzy-customer"` occurrences (the top-level field and the `"packages": { "": { "name": ... } }` root entry) with:
+In `eloquent-bookings/package-lock.json`, replace the two `"name": "eloquent-bookings"` occurrences (the top-level field and the `"packages": { "": { "name": ... } }` root entry) with:
 
 ```json
   "name": "eloquent-bookings",
@@ -95,7 +95,7 @@ Write-Host "==> Done - https://bookings.eloquentservice.com" -ForegroundColor Gr
 
 - [ ] **Step 5: Update `README.md`**
 
-Replace "Rezzy" / "rezzy-customer" references in `eloquent-bookings/README.md` with "Eloquent Bookings" / "eloquent-bookings". (Title and any path/command examples.)
+Replace "Rezzy" / "eloquent-bookings" references in `eloquent-bookings/README.md` with "Eloquent Bookings" / "eloquent-bookings". (Title and any path/command examples.)
 
 - [ ] **Step 6: Verify the app still builds from its new path**
 
@@ -118,7 +118,7 @@ Expected: PASS (no test asserts the brand string).
 ```bash
 cd "d:/Francis/projects/2026/Eloquent/Solutions/Rezzy"
 git add eloquent-bookings
-git commit -m "refactor(eloquent-bookings): rename rezzy-customer folder + internal identifiers"
+git commit -m "refactor(eloquent-bookings): rename eloquent-bookings folder + internal identifiers"
 ```
 
 ---
@@ -412,7 +412,7 @@ Expected: `HTTP/.. 200`.
 
 Once both domains serve from `/var/www/eloquent-bookings`, the old path is dead. Confirm nothing references it, then:
 ```bash
-ssh -o BatchMode=yes root@64.227.153.90 "rm -rf /var/www/rezzy-customer"
+ssh -o BatchMode=yes root@64.227.153.90 "rm -rf /var/www/eloquent-bookings"
 ```
 Expected: no output. (Skip if you prefer to keep it as a rollback snapshot.)
 

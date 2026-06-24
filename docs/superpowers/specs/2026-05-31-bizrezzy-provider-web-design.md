@@ -7,37 +7,37 @@
 ## Summary
 
 A provider-facing PWA for Rezzy shops, mirroring the **stack and design** of
-`rezzy-customer/` and the **functionality** of the `mobile-app/` shop screens.
+`eloquent-bookings/` and the **functionality** of the `mobile-app/` shop screens.
 Built once at full feature parity with the mobile shop experience, then deployed
 as a static SPA to `bizrezzy.eloquentservice.com`.
 
 - **Functionality reference:** `mobile-app/src/screens/shop/*` + `mobile-app/src/screens/auth/*`
-- **Design reference:** `rezzy-customer/` (Vite + React + TypeScript PWA, dark+mint tokens)
+- **Design reference:** `eloquent-bookings/` (Vite + React + TypeScript PWA, dark+mint tokens)
 - **Backend:** shared Laravel API at `https://api.eloquentservice.com/api`
 
 ## Goals
 
 - Full parity with the mobile app's shop side (all shop screens).
-- Visual and structural consistency with `rezzy-customer`.
+- Visual and structural consistency with `eloquent-bookings`.
 - Deployable static SPA at `bizrezzy.eloquentservice.com`.
 
 ## Non-Goals
 
-- Customer-side features (those live in `rezzy-customer`).
+- Customer-side features (those live in `eloquent-bookings`).
 - Native-only capabilities: biometric unlock (no web equivalent).
 - Backend/API changes — the API already exists and is consumed by the mobile app.
 
 ## Architecture
 
-- **Directory:** `bizrezzy/` alongside `rezzy-customer/`.
+- **Directory:** `bizrezzy/` alongside `eloquent-bookings/`.
 - **Stack:** Vite + React 18 + TypeScript, `react-router-dom`, `axios`.
-  Identical toolchain to `rezzy-customer` (same `vite.config.ts`, `tsconfig`,
+  Identical toolchain to `eloquent-bookings` (same `vite.config.ts`, `tsconfig`,
   Vitest setup, PWA manifest pattern, icon generation script).
 - **Design system:** copy `src/styles/tokens.css`, `customer.css`, `mobile.css`
   verbatim (dark + mint). Reuse `MobileLayout` + `AppBar` shell.
 - **API base:** `VITE_API_URL ?? 'https://api.eloquentservice.com/api'`.
 
-### Reused plumbing (copied from rezzy-customer)
+### Reused plumbing (copied from eloquent-bookings)
 
 - `lib/api.ts` — axios instance + interceptor. **Change:** auth token read from
   `shop_token` (not `customer_token`).
@@ -134,7 +134,7 @@ Each page reproduces the behavior of its source mobile screen.
 
 ## Testing
 
-Vitest + Testing Library (same config as `rezzy-customer`):
+Vitest + Testing Library (same config as `eloquent-bookings`):
 
 - Unit tests for `lib/shops.ts`, `lib/bookings.ts`, `lib/catalogs.ts` wrappers.
 - `ShopContext` login/logout + persistence tests.

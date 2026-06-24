@@ -1,7 +1,7 @@
 # App-aware AI assistant — design
 
 **Date:** 2026-06-24
-**Branch:** feat/rezzy-customer-web
+**Branch:** feat/eloquent-bookings-web
 **App:** eloquent-bookings (customer web SPA)
 
 ## Problem

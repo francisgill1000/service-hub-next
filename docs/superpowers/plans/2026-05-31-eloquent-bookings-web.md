@@ -2,41 +2,41 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a standalone, responsive mobile-friendly **customer-side** web PWA (`rezzy-customer/`) that mirrors the customer flows of the React Native `mobile-app/` and wears the salesagent mobile dark/mint design language, talking to the existing Rezzy Laravel API.
+**Goal:** Build a standalone, responsive mobile-friendly **customer-side** web PWA (`eloquent-bookings/`) that mirrors the customer flows of the React Native `mobile-app/` and wears the salesagent mobile dark/mint design language, talking to the existing Rezzy Laravel API.
 
 **Architecture:** Vite + React 18 + react-router-dom SPA. A single axios instance attaches `X-Device-Id` (persisted UUID) and an optional `customer_token`. A `CustomerContext` holds auth state. A `MobileLayout` renders a bottom tab bar around routed pages. The salesagent `mobile.css` + token block are ported verbatim; customer-specific UI (shop cards, booking date/slot UI, status pills) lives in an additional `customer.css`. Booking is guest-friendly — no forced login.
 
 **Tech Stack:** Vite 5, React 18, TypeScript 5, react-router-dom 6, axios 1.7, Vitest 2 + @testing-library/react + jsdom.
 
-**Spec:** `docs/superpowers/specs/2026-05-31-rezzy-customer-web-design.md`
+**Spec:** `docs/superpowers/specs/2026-05-31-eloquent-bookings-web-design.md`
 
 **Reference sources (read-only, for porting):**
 - Functionality: `mobile-app/src/screens/guest/*`, `mobile-app/src/screens/customer/*`, `mobile-app/src/utils/api.js`, `mobile-app/src/context/CustomerContext.js`, `mobile-app/src/utils/support.js`
 - Design: `D:\Francis\projects\2026\Eloquent\Solutions\salesagent\resources\css\mobile.css`, `...\pulse-styles.css` (`:root` block), `...\resources\js\Layouts\MobileLayout.tsx`
 
-**Conventions for every task:** all commands run from the `rezzy-customer/` directory unless stated. The dev server / tests assume Node 18+. Commit messages end with the Co-Authored-By trailer already configured for this repo.
+**Conventions for every task:** all commands run from the `eloquent-bookings/` directory unless stated. The dev server / tests assume Node 18+. Commit messages end with the Co-Authored-By trailer already configured for this repo.
 
 ---
 
 ## Task 1: Scaffold the Vite + React + TypeScript project
 
 **Files:**
-- Create: `rezzy-customer/package.json`
-- Create: `rezzy-customer/vite.config.ts`
-- Create: `rezzy-customer/tsconfig.json`
-- Create: `rezzy-customer/tsconfig.node.json`
-- Create: `rezzy-customer/index.html`
-- Create: `rezzy-customer/.gitignore`
-- Create: `rezzy-customer/.env.example`
-- Create: `rezzy-customer/src/main.tsx`
-- Create: `rezzy-customer/src/App.tsx`
-- Create: `rezzy-customer/src/vite-env.d.ts`
+- Create: `eloquent-bookings/package.json`
+- Create: `eloquent-bookings/vite.config.ts`
+- Create: `eloquent-bookings/tsconfig.json`
+- Create: `eloquent-bookings/tsconfig.node.json`
+- Create: `eloquent-bookings/index.html`
+- Create: `eloquent-bookings/.gitignore`
+- Create: `eloquent-bookings/.env.example`
+- Create: `eloquent-bookings/src/main.tsx`
+- Create: `eloquent-bookings/src/App.tsx`
+- Create: `eloquent-bookings/src/vite-env.d.ts`
 
 - [ ] **Step 1: Create `package.json`**
 
 ```json
 {
-  "name": "rezzy-customer",
+  "name": "eloquent-bookings",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -229,8 +229,8 @@ Expected: dependencies install with no errors; `node_modules/` created.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add rezzy-customer/package.json rezzy-customer/package-lock.json rezzy-customer/vite.config.ts rezzy-customer/tsconfig.json rezzy-customer/tsconfig.node.json rezzy-customer/index.html rezzy-customer/.gitignore rezzy-customer/.env.example rezzy-customer/src/main.tsx rezzy-customer/src/App.tsx rezzy-customer/src/vite-env.d.ts
-git commit -m "chore(rezzy-customer): scaffold vite + react + ts project"
+git add eloquent-bookings/package.json eloquent-bookings/package-lock.json eloquent-bookings/vite.config.ts eloquent-bookings/tsconfig.json eloquent-bookings/tsconfig.node.json eloquent-bookings/index.html eloquent-bookings/.gitignore eloquent-bookings/.env.example eloquent-bookings/src/main.tsx eloquent-bookings/src/App.tsx eloquent-bookings/src/vite-env.d.ts
+git commit -m "chore(eloquent-bookings): scaffold vite + react + ts project"
 ```
 
 ---
@@ -238,7 +238,7 @@ git commit -m "chore(rezzy-customer): scaffold vite + react + ts project"
 ## Task 2: Test setup harness
 
 **Files:**
-- Create: `rezzy-customer/src/test/setup.ts`
+- Create: `eloquent-bookings/src/test/setup.ts`
 
 - [ ] **Step 1: Create the Vitest setup file**
 
@@ -261,8 +261,8 @@ Expected: Vitest reports "No test files found" (exit 0) — confirms the runner 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add rezzy-customer/src/test/setup.ts
-git commit -m "test(rezzy-customer): add vitest setup harness"
+git add eloquent-bookings/src/test/setup.ts
+git commit -m "test(eloquent-bookings): add vitest setup harness"
 ```
 
 ---
@@ -270,9 +270,9 @@ git commit -m "test(rezzy-customer): add vitest setup harness"
 ## Task 3: Port the design system (CSS)
 
 **Files:**
-- Create: `rezzy-customer/src/styles/tokens.css`
-- Create: `rezzy-customer/src/styles/mobile.css` (copied from salesagent)
-- Create: `rezzy-customer/src/styles/customer.css`
+- Create: `eloquent-bookings/src/styles/tokens.css`
+- Create: `eloquent-bookings/src/styles/mobile.css` (copied from salesagent)
+- Create: `eloquent-bookings/src/styles/customer.css`
 
 - [ ] **Step 1: Create `src/styles/tokens.css`** (the `:root` block + base reset, ported from salesagent `pulse-styles.css`)
 
@@ -349,9 +349,9 @@ button { font-family: inherit; }
 
 Run (PowerShell):
 ```powershell
-Copy-Item "D:\Francis\projects\2026\Eloquent\Solutions\salesagent\resources\css\mobile.css" "rezzy-customer\src\styles\mobile.css"
+Copy-Item "D:\Francis\projects\2026\Eloquent\Solutions\salesagent\resources\css\mobile.css" "eloquent-bookings\src\styles\mobile.css"
 ```
-Expected: `rezzy-customer/src/styles/mobile.css` exists (~51 KB). This provides `.mobile-app`, `.m-tabbar`, `.m-appbar`, `.m-scroll`, `.m-screen`, `.m-empty`, `.m-modal*`, `.m-history-search`, stat/banner classes, etc.
+Expected: `eloquent-bookings/src/styles/mobile.css` exists (~51 KB). This provides `.mobile-app`, `.m-tabbar`, `.m-appbar`, `.m-scroll`, `.m-screen`, `.m-empty`, `.m-modal*`, `.m-history-search`, stat/banner classes, etc.
 
 - [ ] **Step 3: Constrain the app to a centered mobile column for desktop responsiveness — append to `src/styles/customer.css`**
 
@@ -503,8 +503,8 @@ Expected: Vite starts on `http://localhost:5174`; the placeholder "Rezzy" render
 - [ ] **Step 5: Commit**
 
 ```bash
-git add rezzy-customer/src/styles/tokens.css rezzy-customer/src/styles/mobile.css rezzy-customer/src/styles/customer.css
-git commit -m "feat(rezzy-customer): port salesagent mobile design system"
+git add eloquent-bookings/src/styles/tokens.css eloquent-bookings/src/styles/mobile.css eloquent-bookings/src/styles/customer.css
+git commit -m "feat(eloquent-bookings): port salesagent mobile design system"
 ```
 
 ---
@@ -512,9 +512,9 @@ git commit -m "feat(rezzy-customer): port salesagent mobile design system"
 ## Task 4: Storage + device-id utilities
 
 **Files:**
-- Create: `rezzy-customer/src/lib/storage.ts`
-- Create: `rezzy-customer/src/lib/deviceId.ts`
-- Test: `rezzy-customer/src/lib/deviceId.test.ts`
+- Create: `eloquent-bookings/src/lib/storage.ts`
+- Create: `eloquent-bookings/src/lib/deviceId.ts`
+- Test: `eloquent-bookings/src/lib/deviceId.test.ts`
 
 - [ ] **Step 1: Create `src/lib/storage.ts`** (thin localStorage helpers, web equivalent of mobile-app `storage`)
 
@@ -601,8 +601,8 @@ Expected: PASS (2 tests). Note: the module-level `cached` persists within a run;
 - [ ] **Step 6: Commit**
 
 ```bash
-git add rezzy-customer/src/lib/storage.ts rezzy-customer/src/lib/deviceId.ts rezzy-customer/src/lib/deviceId.test.ts
-git commit -m "feat(rezzy-customer): add storage and device-id utilities"
+git add eloquent-bookings/src/lib/storage.ts eloquent-bookings/src/lib/deviceId.ts eloquent-bookings/src/lib/deviceId.test.ts
+git commit -m "feat(eloquent-bookings): add storage and device-id utilities"
 ```
 
 ---
@@ -610,8 +610,8 @@ git commit -m "feat(rezzy-customer): add storage and device-id utilities"
 ## Task 5: API axios instance with interceptors
 
 **Files:**
-- Create: `rezzy-customer/src/lib/api.ts`
-- Test: `rezzy-customer/src/lib/api.test.ts`
+- Create: `eloquent-bookings/src/lib/api.ts`
+- Test: `eloquent-bookings/src/lib/api.test.ts`
 
 - [ ] **Step 1: Write the failing test** (`src/lib/api.test.ts`)
 
@@ -685,8 +685,8 @@ Expected: PASS (4 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add rezzy-customer/src/lib/api.ts rezzy-customer/src/lib/api.test.ts
-git commit -m "feat(rezzy-customer): add axios api instance with device-id and auth interceptors"
+git add eloquent-bookings/src/lib/api.ts eloquent-bookings/src/lib/api.test.ts
+git commit -m "feat(eloquent-bookings): add axios api instance with device-id and auth interceptors"
 ```
 
 ---
@@ -694,8 +694,8 @@ git commit -m "feat(rezzy-customer): add axios api instance with device-id and a
 ## Task 6: CustomerContext (auth state)
 
 **Files:**
-- Create: `rezzy-customer/src/context/CustomerContext.tsx`
-- Test: `rezzy-customer/src/context/CustomerContext.test.tsx`
+- Create: `eloquent-bookings/src/context/CustomerContext.tsx`
+- Test: `eloquent-bookings/src/context/CustomerContext.test.tsx`
 
 - [ ] **Step 1: Write the failing test** (`src/context/CustomerContext.test.tsx`)
 
@@ -816,8 +816,8 @@ Expected: PASS (2 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add rezzy-customer/src/context/CustomerContext.tsx rezzy-customer/src/context/CustomerContext.test.tsx
-git commit -m "feat(rezzy-customer): add CustomerContext auth state"
+git add eloquent-bookings/src/context/CustomerContext.tsx eloquent-bookings/src/context/CustomerContext.test.tsx
+git commit -m "feat(eloquent-bookings): add CustomerContext auth state"
 ```
 
 ---
@@ -825,10 +825,10 @@ git commit -m "feat(rezzy-customer): add CustomerContext auth state"
 ## Task 7: Icon set + small UI primitives
 
 **Files:**
-- Create: `rezzy-customer/src/components/Icons.tsx`
-- Create: `rezzy-customer/src/components/Spinner.tsx`
-- Create: `rezzy-customer/src/components/EmptyState.tsx`
-- Create: `rezzy-customer/src/components/WhatsAppButton.tsx`
+- Create: `eloquent-bookings/src/components/Icons.tsx`
+- Create: `eloquent-bookings/src/components/Spinner.tsx`
+- Create: `eloquent-bookings/src/components/EmptyState.tsx`
+- Create: `eloquent-bookings/src/components/WhatsAppButton.tsx`
 
 - [ ] **Step 1: Create `src/components/Icons.tsx`** (inline SVG set, lucide-style, matching salesagent's stroke conventions)
 
@@ -951,8 +951,8 @@ Expected: completes with no errors.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add rezzy-customer/src/components/Icons.tsx rezzy-customer/src/components/Spinner.tsx rezzy-customer/src/components/EmptyState.tsx rezzy-customer/src/components/WhatsAppButton.tsx
-git commit -m "feat(rezzy-customer): add icon set and ui primitives"
+git add eloquent-bookings/src/components/Icons.tsx eloquent-bookings/src/components/Spinner.tsx eloquent-bookings/src/components/EmptyState.tsx eloquent-bookings/src/components/WhatsAppButton.tsx
+git commit -m "feat(eloquent-bookings): add icon set and ui primitives"
 ```
 
 ---
@@ -960,9 +960,9 @@ git commit -m "feat(rezzy-customer): add icon set and ui primitives"
 ## Task 8: Shared types + ShopCard component
 
 **Files:**
-- Create: `rezzy-customer/src/types.ts`
-- Create: `rezzy-customer/src/components/ShopCard.tsx`
-- Test: `rezzy-customer/src/components/ShopCard.test.tsx`
+- Create: `eloquent-bookings/src/types.ts`
+- Create: `eloquent-bookings/src/components/ShopCard.tsx`
+- Test: `eloquent-bookings/src/components/ShopCard.test.tsx`
 
 - [ ] **Step 1: Create `src/types.ts`** (shapes inferred from the API responses the RN screens consume)
 
@@ -1116,8 +1116,8 @@ Expected: PASS (2 tests).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add rezzy-customer/src/types.ts rezzy-customer/src/components/ShopCard.tsx rezzy-customer/src/components/ShopCard.test.tsx
-git commit -m "feat(rezzy-customer): add shared types and ShopCard"
+git add eloquent-bookings/src/types.ts eloquent-bookings/src/components/ShopCard.tsx eloquent-bookings/src/components/ShopCard.test.tsx
+git commit -m "feat(eloquent-bookings): add shared types and ShopCard"
 ```
 
 ---
@@ -1125,10 +1125,10 @@ git commit -m "feat(rezzy-customer): add shared types and ShopCard"
 ## Task 9: MobileLayout, AppBar, and the router shell
 
 **Files:**
-- Create: `rezzy-customer/src/layout/AppBar.tsx`
-- Create: `rezzy-customer/src/layout/MobileLayout.tsx`
-- Modify: `rezzy-customer/src/App.tsx`
-- Create: stub pages so routes resolve: `rezzy-customer/src/pages/Home.tsx`, `Explore.tsx`, `NearMe.tsx`, `Favourites.tsx`, `Bookings.tsx`, `BookingView.tsx`, `ShopDetail.tsx`, `Login.tsx`, `Register.tsx`, `Account.tsx`
+- Create: `eloquent-bookings/src/layout/AppBar.tsx`
+- Create: `eloquent-bookings/src/layout/MobileLayout.tsx`
+- Modify: `eloquent-bookings/src/App.tsx`
+- Create: stub pages so routes resolve: `eloquent-bookings/src/pages/Home.tsx`, `Explore.tsx`, `NearMe.tsx`, `Favourites.tsx`, `Bookings.tsx`, `BookingView.tsx`, `ShopDetail.tsx`, `Login.tsx`, `Register.tsx`, `Account.tsx`
 
 - [ ] **Step 1: Create `src/layout/AppBar.tsx`**
 
@@ -1256,8 +1256,8 @@ Expected: dark mobile column renders with a bottom tab bar; clicking tabs swaps 
 
 ```bash
 npx tsc -b
-git add rezzy-customer/src/layout rezzy-customer/src/App.tsx rezzy-customer/src/pages
-git commit -m "feat(rezzy-customer): add mobile layout, tab bar, and router shell"
+git add eloquent-bookings/src/layout eloquent-bookings/src/App.tsx eloquent-bookings/src/pages
+git commit -m "feat(eloquent-bookings): add mobile layout, tab bar, and router shell"
 ```
 
 ---
@@ -1265,9 +1265,9 @@ git commit -m "feat(rezzy-customer): add mobile layout, tab bar, and router shel
 ## Task 10: Home page (shop list, search, load-more, favourite)
 
 **Files:**
-- Create: `rezzy-customer/src/lib/shops.ts` (shared shop-list hook)
-- Modify: `rezzy-customer/src/pages/Home.tsx`
-- Test: `rezzy-customer/src/pages/Home.test.tsx`
+- Create: `eloquent-bookings/src/lib/shops.ts` (shared shop-list hook)
+- Modify: `eloquent-bookings/src/pages/Home.tsx`
+- Test: `eloquent-bookings/src/pages/Home.test.tsx`
 
 - [ ] **Step 1: Create `src/lib/shops.ts`** (reusable favourite toggle helper)
 
@@ -1396,8 +1396,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add rezzy-customer/src/lib/shops.ts rezzy-customer/src/pages/Home.tsx rezzy-customer/src/pages/Home.test.tsx
-git commit -m "feat(rezzy-customer): implement Home shop list with search and favourite"
+git add eloquent-bookings/src/lib/shops.ts eloquent-bookings/src/pages/Home.tsx eloquent-bookings/src/pages/Home.test.tsx
+git commit -m "feat(eloquent-bookings): implement Home shop list with search and favourite"
 ```
 
 ---
@@ -1405,7 +1405,7 @@ git commit -m "feat(rezzy-customer): implement Home shop list with search and fa
 ## Task 11: Explore page
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/Explore.tsx`
+- Modify: `eloquent-bookings/src/pages/Explore.tsx`
 
 > Explore behaves like Home (paginated `/shops` list with search) but is reached from the Account quick-links and Bookings empty state rather than a tab. Reuse the same structure.
 
@@ -1487,8 +1487,8 @@ export default function Explore() {
 
 ```bash
 npx tsc -b
-git add rezzy-customer/src/pages/Explore.tsx
-git commit -m "feat(rezzy-customer): implement Explore page"
+git add eloquent-bookings/src/pages/Explore.tsx
+git commit -m "feat(eloquent-bookings): implement Explore page"
 ```
 
 ---
@@ -1496,8 +1496,8 @@ git commit -m "feat(rezzy-customer): implement Explore page"
 ## Task 12: Near Me page (geolocation)
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/NearMe.tsx`
-- Test: `rezzy-customer/src/pages/NearMe.test.tsx`
+- Modify: `eloquent-bookings/src/pages/NearMe.tsx`
+- Test: `eloquent-bookings/src/pages/NearMe.test.tsx`
 
 - [ ] **Step 1: Write the failing test** (`src/pages/NearMe.test.tsx`)
 
@@ -1619,8 +1619,8 @@ Expected: PASS (2 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add rezzy-customer/src/pages/NearMe.tsx rezzy-customer/src/pages/NearMe.test.tsx
-git commit -m "feat(rezzy-customer): implement Near Me with browser geolocation"
+git add eloquent-bookings/src/pages/NearMe.tsx eloquent-bookings/src/pages/NearMe.test.tsx
+git commit -m "feat(eloquent-bookings): implement Near Me with browser geolocation"
 ```
 
 ---
@@ -1628,7 +1628,7 @@ git commit -m "feat(rezzy-customer): implement Near Me with browser geolocation"
 ## Task 13: Favourites page
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/Favourites.tsx`
+- Modify: `eloquent-bookings/src/pages/Favourites.tsx`
 
 - [ ] **Step 1: Implement `src/pages/Favourites.tsx`**
 
@@ -1691,8 +1691,8 @@ export default function Favourites() {
 
 ```bash
 npx tsc -b
-git add rezzy-customer/src/pages/Favourites.tsx
-git commit -m "feat(rezzy-customer): implement Favourites page"
+git add eloquent-bookings/src/pages/Favourites.tsx
+git commit -m "feat(eloquent-bookings): implement Favourites page"
 ```
 
 ---
@@ -1700,10 +1700,10 @@ git commit -m "feat(rezzy-customer): implement Favourites page"
 ## Task 14: Shop Detail + booking flow
 
 **Files:**
-- Create: `rezzy-customer/src/lib/date.ts`
-- Create: `rezzy-customer/src/lib/booking.ts`
-- Modify: `rezzy-customer/src/pages/ShopDetail.tsx`
-- Test: `rezzy-customer/src/lib/booking.test.ts`
+- Create: `eloquent-bookings/src/lib/date.ts`
+- Create: `eloquent-bookings/src/lib/booking.ts`
+- Modify: `eloquent-bookings/src/pages/ShopDetail.tsx`
+- Test: `eloquent-bookings/src/lib/booking.test.ts`
 
 - [ ] **Step 1: Create `src/lib/date.ts`**
 
@@ -1943,8 +1943,8 @@ Run: `npx tsc -b`
 Expected: no errors.
 
 ```bash
-git add rezzy-customer/src/lib/date.ts rezzy-customer/src/lib/booking.ts rezzy-customer/src/lib/booking.test.ts rezzy-customer/src/pages/ShopDetail.tsx
-git commit -m "feat(rezzy-customer): implement shop detail and guest booking flow"
+git add eloquent-bookings/src/lib/date.ts eloquent-bookings/src/lib/booking.ts eloquent-bookings/src/lib/booking.test.ts eloquent-bookings/src/pages/ShopDetail.tsx
+git commit -m "feat(eloquent-bookings): implement shop detail and guest booking flow"
 ```
 
 ---
@@ -1952,7 +1952,7 @@ git commit -m "feat(rezzy-customer): implement shop detail and guest booking flo
 ## Task 15: Booking View page
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/BookingView.tsx`
+- Modify: `eloquent-bookings/src/pages/BookingView.tsx`
 
 - [ ] **Step 1: Implement `src/pages/BookingView.tsx`**
 
@@ -2048,8 +2048,8 @@ export default function BookingView() {
 
 ```bash
 npx tsc -b
-git add rezzy-customer/src/pages/BookingView.tsx
-git commit -m "feat(rezzy-customer): implement booking detail view"
+git add eloquent-bookings/src/pages/BookingView.tsx
+git commit -m "feat(eloquent-bookings): implement booking detail view"
 ```
 
 ---
@@ -2057,7 +2057,7 @@ git commit -m "feat(rezzy-customer): implement booking detail view"
 ## Task 16: Bookings list page
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/Bookings.tsx`
+- Modify: `eloquent-bookings/src/pages/Bookings.tsx`
 
 - [ ] **Step 1: Implement `src/pages/Bookings.tsx`**
 
@@ -2144,8 +2144,8 @@ export default function Bookings() {
 
 ```bash
 npx tsc -b
-git add rezzy-customer/src/pages/Bookings.tsx
-git commit -m "feat(rezzy-customer): implement bookings list"
+git add eloquent-bookings/src/pages/Bookings.tsx
+git commit -m "feat(eloquent-bookings): implement bookings list"
 ```
 
 ---
@@ -2153,8 +2153,8 @@ git commit -m "feat(rezzy-customer): implement bookings list"
 ## Task 17: Login page
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/Login.tsx`
-- Test: `rezzy-customer/src/pages/Login.test.tsx`
+- Modify: `eloquent-bookings/src/pages/Login.tsx`
+- Test: `eloquent-bookings/src/pages/Login.test.tsx`
 
 > Web version drops the RN biometric flow (`expo-local-authentication`) but keeps phone+password login and a "remember me" checkbox persisted to localStorage.
 
@@ -2282,8 +2282,8 @@ Expected: PASS (2 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add rezzy-customer/src/pages/Login.tsx rezzy-customer/src/pages/Login.test.tsx
-git commit -m "feat(rezzy-customer): implement customer login"
+git add eloquent-bookings/src/pages/Login.tsx eloquent-bookings/src/pages/Login.test.tsx
+git commit -m "feat(eloquent-bookings): implement customer login"
 ```
 
 ---
@@ -2291,8 +2291,8 @@ git commit -m "feat(rezzy-customer): implement customer login"
 ## Task 18: Register page
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/Register.tsx`
-- Test: `rezzy-customer/src/pages/Register.test.tsx`
+- Modify: `eloquent-bookings/src/pages/Register.tsx`
+- Test: `eloquent-bookings/src/pages/Register.test.tsx`
 
 - [ ] **Step 1: Write the failing test** (`src/pages/Register.test.tsx`)
 
@@ -2434,8 +2434,8 @@ Expected: PASS (2 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add rezzy-customer/src/pages/Register.tsx rezzy-customer/src/pages/Register.test.tsx
-git commit -m "feat(rezzy-customer): implement customer registration"
+git add eloquent-bookings/src/pages/Register.tsx eloquent-bookings/src/pages/Register.test.tsx
+git commit -m "feat(eloquent-bookings): implement customer registration"
 ```
 
 ---
@@ -2443,7 +2443,7 @@ git commit -m "feat(rezzy-customer): implement customer registration"
 ## Task 19: Account page (profile / guest prompt / logout)
 
 **Files:**
-- Modify: `rezzy-customer/src/pages/Account.tsx`
+- Modify: `eloquent-bookings/src/pages/Account.tsx`
 
 - [ ] **Step 1: Implement `src/pages/Account.tsx`**
 
@@ -2527,8 +2527,8 @@ export default function Account() {
 
 ```bash
 npx tsc -b
-git add rezzy-customer/src/pages/Account.tsx
-git commit -m "feat(rezzy-customer): implement account page with guest prompt and logout"
+git add eloquent-bookings/src/pages/Account.tsx
+git commit -m "feat(eloquent-bookings): implement account page with guest prompt and logout"
 ```
 
 ---
@@ -2536,10 +2536,10 @@ git commit -m "feat(rezzy-customer): implement account page with guest prompt an
 ## Task 20: PWA manifest + final verification
 
 **Files:**
-- Create: `rezzy-customer/public/manifest.webmanifest`
-- Create: `rezzy-customer/public/icons/icon-192.png` (copy from mobile-app assets)
-- Create: `rezzy-customer/public/icons/icon-512.png` (copy from mobile-app assets)
-- Create: `rezzy-customer/README.md`
+- Create: `eloquent-bookings/public/manifest.webmanifest`
+- Create: `eloquent-bookings/public/icons/icon-192.png` (copy from mobile-app assets)
+- Create: `eloquent-bookings/public/icons/icon-512.png` (copy from mobile-app assets)
+- Create: `eloquent-bookings/README.md`
 
 - [ ] **Step 1: Create `public/manifest.webmanifest`**
 
@@ -2563,9 +2563,9 @@ git commit -m "feat(rezzy-customer): implement account page with guest prompt an
 
 Run (PowerShell):
 ```powershell
-New-Item -ItemType Directory -Force "rezzy-customer\public\icons" | Out-Null
-Copy-Item "mobile-app\assets\icon.png" "rezzy-customer\public\icons\icon-512.png"
-Copy-Item "mobile-app\assets\adaptive-icon.png" "rezzy-customer\public\icons\icon-192.png"
+New-Item -ItemType Directory -Force "eloquent-bookings\public\icons" | Out-Null
+Copy-Item "mobile-app\assets\icon.png" "eloquent-bookings\public\icons\icon-512.png"
+Copy-Item "mobile-app\assets\adaptive-icon.png" "eloquent-bookings\public\icons\icon-192.png"
 ```
 Expected: both PNGs exist under `public/icons/`.
 
@@ -2609,8 +2609,8 @@ Set `VITE_API_URL` to a reachable backend (local Laravel `http://127.0.0.1:8000/
 - [ ] **Step 7: Commit**
 
 ```bash
-git add rezzy-customer/public rezzy-customer/README.md
-git commit -m "feat(rezzy-customer): add PWA manifest, icons, and readme"
+git add eloquent-bookings/public eloquent-bookings/README.md
+git commit -m "feat(eloquent-bookings): add PWA manifest, icons, and readme"
 ```
 
 ---

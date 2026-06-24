@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 # Build admin and deploy the static SPA to admin.eloquentservice.com.
-# Mirrors the rezzy-customer static-SPA serving model on the shared droplet.
+# Mirrors the eloquent-bookings static-SPA serving model on the shared droplet.
 # Usage: ./deploy.ps1
 
 $ErrorActionPreference = "Stop"

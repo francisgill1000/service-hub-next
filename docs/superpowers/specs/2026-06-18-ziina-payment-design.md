@@ -12,7 +12,7 @@ mode** first (no real charges).
 
 ## Decisions
 
-- **Surface:** rezzy-customer app — a *Pay now* button on the booking/invoice view.
+- **Surface:** eloquent-bookings app — a *Pay now* button on the booking/invoice view.
 - **Amount:** full invoice `total`, in AED.
 - **Confirmation:** webhook is authoritative; redirect is UX only. Test mode first.
 - **Account:** single platform-level Ziina account (one API key). Per-shop wallets
@@ -71,7 +71,7 @@ Wraps `Http::withToken(config('services.ziina.api_key'))`.
 Calls `Ziina::registerWebhook(config app_url + /api/ziina/webhook, webhook_secret)`.
 One-time setup; prints the result.
 
-### rezzy-customer — BookingView.tsx
+### eloquent-bookings — BookingView.tsx
 - Fetch the invoice; if `status === issued`, show **Pay now** → `POST .../invoice/pay`
   → `window.location = redirect_url`.
 - On return, read `?pay=` query param → show a success/cancelled/failed banner and

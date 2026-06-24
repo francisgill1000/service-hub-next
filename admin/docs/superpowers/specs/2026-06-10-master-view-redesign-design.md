@@ -8,7 +8,7 @@
 The bizrezzy "All Businesses" master view (`/master`) renders every business as a dense
 card with the ID/PIN credentials and a row of metadata crammed inline. Francis dislikes
 this display style and wants it to follow the cleaner card → detail pattern used in the
-customer app (`rezzy-customer`).
+customer app (`eloquent-bookings`).
 
 Two capabilities are also missing from the master view:
 
@@ -20,7 +20,7 @@ Two capabilities are also missing from the master view:
 
 ## Goals
 
-- Redesign the master list to use the `rezzy-customer` horizontal card layout, adapted
+- Redesign the master list to use the `eloquent-bookings` horizontal card layout, adapted
   for the master context.
 - Add a per-business **detail screen** holding credentials, activity, the persona editor,
   and the visibility toggle.
@@ -52,7 +52,7 @@ Two capabilities are also missing from the master view:
 
 ### `MasterShopCard` (new component)
 
-Adopts the `rezzy-customer` `ShopCard` horizontal layout: square thumbnail on the left,
+Adopts the `eloquent-bookings` `ShopCard` horizontal layout: square thumbnail on the left,
 body on the right. `MasterShop` has **no logo field**, so the thumbnail is a **monogram
 avatar** — the business's first initial on a mint tile (same visual recipe as the project
 favicons).
@@ -79,7 +79,7 @@ redirect guard. The only change is swapping the inline credential card markup fo
 
 ## B. Detail screen — `/master/:id` (`bizrezzy`)
 
-New page `MasterShopDetail.tsx`, modeled on `rezzy-customer` `ShopDetail`'s visual
+New page `MasterShopDetail.tsx`, modeled on `eloquent-bookings` `ShopDetail`'s visual
 structure (appbar with Back, hero, sectioned vertical scroll).
 
 **Data source:** read the shop from router navigation state when arriving from the list;
@@ -119,7 +119,7 @@ Add `<Route path="/master/:id" element={<MasterShopDetail />} />` inside the exi
 
 ### CSS (`src/styles/customer.css`)
 
-Port the `rezzy-customer` `.c-shop-card` family (adapted; monogram thumb instead of image)
+Port the `eloquent-bookings` `.c-shop-card` family (adapted; monogram thumb instead of image)
 and add detail-screen styles (hero, credentials block, toggle, persona editor). bizrezzy
 shares the same mint token palette (`tokens.css`), so colours carry over directly.
 
@@ -197,7 +197,7 @@ Customer messages a business's WhatsApp number
 ## Error handling
 
 - **Detail data missing** (direct nav, shop not found after refetch): show a "Business not
-  found" state with a Back button (mirrors `rezzy-customer` ShopDetail).
+  found" state with a Back button (mirrors `eloquent-bookings` ShopDetail).
 - **Update failures** (status toggle / persona save): surface an inline error; revert the
   optimistic UI state for the toggle.
 - **No phone** for "Send login to owner": hide/disable that action.

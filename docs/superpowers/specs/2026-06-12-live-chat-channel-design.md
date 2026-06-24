@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Stop relying on WhatsApp as the only chat channel. Customers in rezzy-customer get a native
+Stop relying on WhatsApp as the only chat channel. Customers in eloquent-bookings get a native
 **Live Chat** with each shop, answered by the same AI agent that already powers WhatsApp
 auto-replies (`ProcessWaReply` → Claude + per-shop persona). Shop owners see live-chat threads
 in the same bizrezzy Chats inbox, alongside WhatsApp, and may reply manually (optional —
@@ -46,7 +46,7 @@ contact when available. No auth required (same guest-first model as favourites/b
 - `requireOwnedContact` accepts contacts owned via `shop_id` (app) as well as via account.
 - `send()` on an app contact stores the outbound row only (no Graph call, no 24h limit).
 
-## rezzy-customer
+## eloquent-bookings
 
 - `lib/chat.ts`: `getShopMessages(shopId, sinceId?)`, `sendShopMessage(shopId, text)`.
 - New page `ShopChat` (`/shops/:id/chat`): thread view in the existing customer style —

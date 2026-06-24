@@ -8,7 +8,7 @@ import { useShop } from '@/context/ShopContext';
 import { updateShop, reverseGeocode } from '@/lib/shops';
 import { fileToCompressedDataUrl } from '@/lib/image';
 
-const CUSTOMER_WEB = 'https://rezzy.eloquentservice.com';
+const CUSTOMER_WEB = 'https://bookings.eloquentservice.com';
 
 type Form = {
   name: string;
@@ -136,7 +136,7 @@ export default function Profile() {
     ctx.fillText('Scan to book on Rezzy', W / 2, qr + pad * 2 + Math.round(footer * 0.78));
     const link = document.createElement('a');
     link.href = c.toDataURL('image/png');
-    link.download = `${shopCode || shop?.name || 'rezzy'}-qr.png`.replace(/\s+/g, '-').toLowerCase();
+    link.download = `${shopCode || shop?.name || 'admin'}-qr.png`.replace(/\s+/g, '-').toLowerCase();
     link.click();
   };
 

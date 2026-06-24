@@ -1032,7 +1032,7 @@ const SUB_VIEWS = [
   { value: "day",   label: "Day" },
 ];
 
-const SUBVIEW_KEY = "rezzy.bookings.calendarSubView";
+const SUBVIEW_KEY = "admin.bookings.calendarSubView";
 
 export default function BookingsCalendarView({ bookings, shopId, onCreated, onUpdated }) {
   const [subView, setSubView] = useState("month");
@@ -1188,14 +1188,14 @@ const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
 // Load persisted view-mode on mount.
 useEffect(() => {
   try {
-    const saved = localStorage.getItem('rezzy.bookings.viewMode');
+    const saved = localStorage.getItem('admin.bookings.viewMode');
     if (saved === 'list' || saved === 'calendar') setViewMode(saved);
   } catch {}
 }, []);
 
 // Persist view-mode.
 useEffect(() => {
-  try { localStorage.setItem('rezzy.bookings.viewMode', viewMode); } catch {}
+  try { localStorage.setItem('admin.bookings.viewMode', viewMode); } catch {}
 }, [viewMode]);
 ```
 

@@ -18,7 +18,7 @@
       // Defaults to light when nothing is saved.
       (function () {
         try {
-          var t = localStorage.getItem('rezzy-theme');
+          var t = localStorage.getItem('admin-theme');
           var theme = (t === 'light' || t === 'dark') ? t : 'light';
           document.documentElement.setAttribute('data-theme', theme);
           var m = document.querySelector('meta[name="theme-color"]');

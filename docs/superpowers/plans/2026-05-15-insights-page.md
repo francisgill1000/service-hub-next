@@ -67,7 +67,7 @@ const TABS = [
   { key: "report",    label: "Report",    icon: "analytics" },
 ];
 
-const STORAGE_KEY = "rezzy.insights.activeTab";
+const STORAGE_KEY = "admin.insights.activeTab";
 
 export default function InsightsPage() {
   const { shop } = useShop();
@@ -178,8 +178,8 @@ export const DEFAULT_TEMPLATE =
   "Hi {name}, it's been a while since your last visit at {shop_name}. " +
   "We'd love to see you again — book your slot here: {shop_url}";
 
-const templateKey  = (shopId) => `rezzy.insights.reminderTemplate.${shopId}`;
-const contactedKey = (shopId) => `rezzy.insights.contactedToday.${shopId}`;
+const templateKey  = (shopId) => `admin.insights.reminderTemplate.${shopId}`;
+const contactedKey = (shopId) => `admin.insights.contactedToday.${shopId}`;
 
 export function loadTemplate(shopId) {
   if (!shopId) return DEFAULT_TEMPLATE;
@@ -1515,7 +1515,7 @@ If everything passed without fixes, no additional commit is needed. Otherwise th
 git status
 ```
 
-Expected: `nothing to commit, working tree clean` (or only the existing pre-task uncommitted files: `frontend/src/components/Shop/StaffList.jsx`, `backend/`, `frontend-build/`, `rezzy-release.keystore`).
+Expected: `nothing to commit, working tree clean` (or only the existing pre-task uncommitted files: `frontend/src/components/Shop/StaffList.jsx`, `backend/`, `frontend-build/`, `admin-release.keystore`).
 
 ---
 

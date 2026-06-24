@@ -54,8 +54,8 @@ const [dateTo, setDateTo] = useState('');                           // disabled 
 ```
 
 **Persistence (localStorage):**
-- `rezzy.bookings.viewMode` → `list` (default) | `calendar`
-- `rezzy.bookings.calendarSubView` → `month` (default) | `week` | `day`
+- `admin.bookings.viewMode` → `list` (default) | `calendar`
+- `admin.bookings.calendarSubView` → `month` (default) | `week` | `day`
 
 **Filter behavior:**
 - Search and status filter apply to both views.

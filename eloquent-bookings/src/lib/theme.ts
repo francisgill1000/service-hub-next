@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export type Theme = 'dark' | 'light';
 
-const STORAGE_KEY = 'rezzy-theme';
+const STORAGE_KEY = 'admin-theme';
 const THEME_COLORS: Record<Theme, string> = { dark: '#0a0e0c', light: '#ffffff' };
 
 export function getStoredTheme(): Theme {

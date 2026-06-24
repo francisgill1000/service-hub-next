@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebrand the customer-facing app from "Rezzy" to "Eloquent Bookings" — display strings, favicon, internal identifiers (folder/package/deploy), customer-facing backend strings — and serve it at `bookings.eloquentservice.com` alongside the existing `rezzy.eloquentservice.com`.
+**Goal:** Rebrand the customer-facing app from "Rezzy" to "Eloquent Bookings" — display strings, favicon, internal identifiers (folder/package/deploy), customer-facing backend strings — and serve it at `bookings.eloquentservice.com` alongside the existing `admin.eloquentservice.com`.
 
 **Architecture:** The customer app (`eloquent-bookings/`, a Vite/React SPA) is renamed in place to `eloquent-bookings/`. Display strings and the favicon glyph change to "Eloquent Bookings" / "EB". The shared Laravel backend gets three customer-facing string edits (kept minimal — backend is not renamed). The droplet serves one renamed webroot under two domains via a single nginx site + a SAN cert.
 
@@ -14,7 +14,7 @@
 - PWA `short_name` is exactly `Bookings`.
 - Internal folder + package name is exactly `eloquent-bookings`.
 - Favicon/app-icon monogram glyph is `EB` on the existing mint tile (gradients unchanged).
-- New domain `bookings.eloquentservice.com`; old `rezzy.eloquentservice.com` stays live (same app, parallel).
+- New domain `bookings.eloquentservice.com`; old `admin.eloquentservice.com` stays live (same app, parallel).
 - Provider app (`admin`) is OUT OF SCOPE — do not edit it.
 - Work stays on branch `feat/eloquent-bookings-web`. Do NOT checkout master or `git stash` (tree is normally dirty). Commit only the files each task names.
 - Droplet: `root@64.227.153.90`, customer nginx site is `sites-enabled/frontend`, `*.eloquentservice.com` is a wildcard A-record (no DNS step).
@@ -342,7 +342,7 @@ git commit -m "feat(backend): customer-facing brand strings Rezzy -> Eloquent Bo
 
 ---
 
-### Task 5: Domain migration — serve at bookings.eloquentservice.com (parallel with rezzy)
+### Task 5: Domain migration — serve at bookings.eloquentservice.com (parallel with admin)
 
 Point one renamed webroot at both domains via a single nginx site + SAN cert, then deploy the built app there. Requires SSH to the droplet (key already configured, BatchMode works).
 
@@ -361,13 +361,13 @@ Run:
 ```bash
 ssh -o BatchMode=yes root@64.227.153.90 "cat /etc/nginx/sites-available/frontend"
 ```
-Note the current `server_name` (expected `rezzy.eloquentservice.com`), the `root` directive, the `/assets/` cache block, and the `location / { try_files $uri /index.html; }` SPA fallback. Confirm any `listen 443`/`ssl_certificate` lines certbot previously injected.
+Note the current `server_name` (expected `admin.eloquentservice.com`), the `root` directive, the `/assets/` cache block, and the `location / { try_files $uri /index.html; }` SPA fallback. Confirm any `listen 443`/`ssl_certificate` lines certbot previously injected.
 
 - [ ] **Step 2: Update `server_name` and `root` to cover both domains and the new webroot**
 
 Edit `/etc/nginx/sites-available/frontend` on the droplet so that **every** server block (the `:80` block and, if present, the certbot `:443` block) has:
 ```nginx
-    server_name bookings.eloquentservice.com rezzy.eloquentservice.com;
+    server_name bookings.eloquentservice.com admin.eloquentservice.com;
     root /var/www/eloquent-bookings;
 ```
 Leave the `/assets/` immutable-cache block, static-file cache, gzip, and `location / { try_files $uri /index.html; }` fallback unchanged. (Edit with `sed`/`vi` over SSH, e.g. a heredoc-driven `sed -i` for the two directives — verify with a re-`cat` afterward.)
@@ -384,9 +384,9 @@ Expected: build succeeds, upload + extract succeed. The verify `curl` near the e
 
 Run:
 ```bash
-ssh -o BatchMode=yes root@64.227.153.90 "certbot --nginx -d bookings.eloquentservice.com -d rezzy.eloquentservice.com --non-interactive --agree-tos -m francisgill1000@gmail.com --redirect --expand"
+ssh -o BatchMode=yes root@64.227.153.90 "certbot --nginx -d bookings.eloquentservice.com -d admin.eloquentservice.com --non-interactive --agree-tos -m francisgill1000@gmail.com --redirect --expand"
 ```
-Expected: certbot issues/expands a SAN cert covering both names and injects/keeps the HTTP→HTTPS redirect. (`--expand` because `rezzy` already had a cert.)
+Expected: certbot issues/expands a SAN cert covering both names and injects/keeps the HTTP→HTTPS redirect. (`--expand` because `admin` already had a cert.)
 
 - [ ] **Step 5: Test and reload nginx**
 
@@ -400,7 +400,7 @@ Expected: `nginx -t` reports syntax OK + test successful; reload returns no outp
 
 Run:
 ```bash
-ssh -o BatchMode=yes root@64.227.153.90 "for h in bookings.eloquentservice.com rezzy.eloquentservice.com; do echo \"== \$h ==\"; curl -sI https://\$h/ | head -1; curl -sI http://\$h/ | head -1; curl -s https://\$h/ | grep -o '<title>[^<]*</title>'; done"
+ssh -o BatchMode=yes root@64.227.153.90 "for h in bookings.eloquentservice.com admin.eloquentservice.com; do echo \"== \$h ==\"; curl -sI https://\$h/ | head -1; curl -sI http://\$h/ | head -1; curl -s https://\$h/ | grep -o '<title>[^<]*</title>'; done"
 ```
 Expected per host: HTTPS `HTTP/.. 200`, HTTP `HTTP/.. 301`, title `<title>Eloquent Bookings</title>`. Also spot-check a deep route returns 200 (SPA fallback):
 ```bash
@@ -424,4 +424,4 @@ Step 1's deploy-script change was already committed in Task 1; the nginx/webroot
 
 ## Post-implementation: update memory
 
-After Task 5 verifies green, update the `eloquent-static-spa-deploy` memory: the customer app is now `eloquent-bookings/` → `/var/www/eloquent-bookings`, served at both `bookings.eloquentservice.com` and `rezzy.eloquentservice.com` (nginx site still file-named `frontend`). This is housekeeping, not a plan task.
+After Task 5 verifies green, update the `eloquent-static-spa-deploy` memory: the customer app is now `eloquent-bookings/` → `/var/www/eloquent-bookings`, served at both `bookings.eloquentservice.com` and `admin.eloquentservice.com` (nginx site still file-named `frontend`). This is housekeeping, not a plan task.

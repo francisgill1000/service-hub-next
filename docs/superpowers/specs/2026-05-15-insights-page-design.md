@@ -27,7 +27,7 @@ Three tabs across the top, sticky on scroll:
 2. **Reminders** — auto buckets + manual WhatsApp blast
 3. **Report** — date-range revenue analytics (embeds existing `RevenueReport`)
 
-Active tab persisted in `localStorage` key `rezzy.insights.activeTab`.
+Active tab persisted in `localStorage` key `admin.insights.activeTab`.
 
 ## Tab 1: Customers
 
@@ -69,7 +69,7 @@ Same columns as existing Customers page plus a per-row **"Send reminder"** butto
 
 ### Reminder template
 
-- Stored in `localStorage` under `rezzy.insights.reminderTemplate.<shop_id>`
+- Stored in `localStorage` under `admin.insights.reminderTemplate.<shop_id>`
 - Default: `"Hi {name}, it's been a while since your last visit at {shop_name}. We'd love to see you again — book your slot here: {shop_url}"`
 - Tokens: `{name}`, `{shop_name}`, `{shop_url}`, `{last_visit}`, `{total_visits}` — substituted at click time
 - Template editor lives in Reminders tab (Tab 2); referenced from Tab 1
@@ -108,7 +108,7 @@ Filter card with controls:
 - **Last visit range** — date range picker (defaults: empty = all time)
 - **Total spent range** — min/max numeric inputs
 - **Bookings count range** — min/max numeric inputs
-- **Exclude customers contacted today** — checkbox (defaults to off; checks `localStorage.rezzy.insights.contactedToday.<shop_id>` which is a `{ [customer_id]: iso_date }` map auto-cleared after 24h)
+- **Exclude customers contacted today** — checkbox (defaults to off; checks `localStorage.admin.insights.contactedToday.<shop_id>` which is a `{ [customer_id]: iso_date }` map auto-cleared after 24h)
 
 Result table below with same checkbox pattern as Section A. Footer: "Send WhatsApp to N selected".
 
@@ -123,7 +123,7 @@ When "Send WhatsApp to N selected" is clicked:
    - Resolve template tokens (`{name}`, `{shop_name}`, `{shop_url}`, `{last_visit}`, `{total_visits}`)
    - `window.open(\`https://wa.me/${whatsapp_normalized}?text=${encodeURIComponent(message)}\`, '_blank')`
    - Wait 400ms before next open (avoids popup blocker)
-   - Record `localStorage.rezzy.insights.contactedToday.<shop_id>[customer_id] = today_iso`
+   - Record `localStorage.admin.insights.contactedToday.<shop_id>[customer_id] = today_iso`
 2. On completion, toast notification + an info banner: "WhatsApp opened in N tabs. You need to press Send in each one."
 
 **Edge cases:**

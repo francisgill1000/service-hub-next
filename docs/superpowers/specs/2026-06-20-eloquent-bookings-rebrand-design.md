@@ -9,7 +9,7 @@ are included; the shared backend itself is not renamed.
 
 Rebrand the public booking app from "Rezzy" to **Eloquent Bookings**, including
 its internal identifiers, and migrate it onto `bookings.eloquentservice.com`
-while keeping the existing `rezzy.eloquentservice.com` live in parallel.
+while keeping the existing `admin.eloquentservice.com` live in parallel.
 
 ## Naming decisions (locked)
 
@@ -20,7 +20,7 @@ while keeping the existing `rezzy.eloquentservice.com` live in parallel.
 | PWA `short_name` | `Bookings` |
 | Favicon / app-icon monogram | `EB` on the existing mint tile |
 | New domain | `bookings.eloquentservice.com` |
-| Old domain | `rezzy.eloquentservice.com` — kept live in parallel (same app) |
+| Old domain | `admin.eloquentservice.com` — kept live in parallel (same app) |
 
 ## Work breakdown
 
@@ -69,10 +69,10 @@ Parallel-serve model — one app, one webroot, two domains:
    uploads `dist/` here. The old `/var/www/eloquent-bookings` can be removed once
    the new path serves both domains.
 2. nginx: edit the customer site (`sites-enabled/frontend`) so its `server_name`
-   lists **both** `bookings.eloquentservice.com rezzy.eloquentservice.com`, and
+   lists **both** `bookings.eloquentservice.com admin.eloquentservice.com`, and
    `root` points at `/var/www/eloquent-bookings`. (Or a fresh site block copied
    from the existing one — same effect.)
-3. `certbot --nginx -d bookings.eloquentservice.com -d rezzy.eloquentservice.com
+3. `certbot --nginx -d bookings.eloquentservice.com -d admin.eloquentservice.com
    --non-interactive --agree-tos -m francisgill1000@gmail.com --redirect`
    so the cert covers both names and HTTP→HTTPS redirect is in place.
 4. `nginx -t && systemctl reload nginx`.
@@ -97,7 +97,7 @@ Parallel-serve model — one app, one webroot, two domains:
   reinstall needed. Restart any running `npm run dev` after the move.
 - **Branch state:** work continues on `feat/eloquent-bookings-web`; tree is normally
   dirty — do not checkout master or stash.
-- **Parallel domain:** keeping `rezzy.*` live means existing printed QR codes and
+- **Parallel domain:** keeping `admin.*` live means existing printed QR codes and
   shared links keep working; both names resolve to the same renamed app.
 
 ## Verification

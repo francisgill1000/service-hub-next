@@ -7,7 +7,7 @@
 Stop relying on WhatsApp as the only chat channel. Customers in eloquent-bookings get a native
 **Live Chat** with each shop, answered by the same AI agent that already powers WhatsApp
 auto-replies (`ProcessWaReply` → Claude + per-shop persona). Shop owners see live-chat threads
-in the same bizrezzy Chats inbox, alongside WhatsApp, and may reply manually (optional —
+in the same admin Chats inbox, alongside WhatsApp, and may reply manually (optional —
 the AI always answers first). On the shop page the customer chooses **WhatsApp** or **Live Chat**.
 
 ## Approach (chosen: channel column on the existing pipeline)
@@ -50,12 +50,12 @@ contact when available. No auth required (same guest-first model as favourites/b
 
 - `lib/chat.ts`: `getShopMessages(shopId, sinceId?)`, `sendShopMessage(shopId, text)`.
 - New page `ShopChat` (`/shops/:id/chat`): thread view in the existing customer style —
-  4s polling (same pattern as bizrezzy ChatThread), bubbles (customer's `in` messages on the
+  4s polling (same pattern as admin ChatThread), bubbles (customer's `in` messages on the
   right), composer. Header shows shop name + "AI assistant · replies instantly".
 - `ShopDetail`: a chat row with two options — **Live Chat** (→ `/shops/:id/chat`) and
   **WhatsApp** (`wa.me/<shop.phone>`, only when the shop has a phone).
 
-## bizrezzy
+## admin
 
 - `WaContact` type gains `channel`; `wa_number` nullable.
 - Chats list: renders when WA is not connected but app chats exist; **Live** badge on

@@ -1,15 +1,15 @@
-# Bizrezzy — Service Provider Web App
+# admin — Service Provider Web App
 
 **Date:** 2026-05-31
 **Status:** Approved design, pending implementation plan
-**Deploy target:** `bizrezzy.eloquentservice.com`
+**Deploy target:** `admin.eloquentservice.com`
 
 ## Summary
 
 A provider-facing PWA for Rezzy shops, mirroring the **stack and design** of
 `eloquent-bookings/` and the **functionality** of the `mobile-app/` shop screens.
 Built once at full feature parity with the mobile shop experience, then deployed
-as a static SPA to `bizrezzy.eloquentservice.com`.
+as a static SPA to `admin.eloquentservice.com`.
 
 - **Functionality reference:** `mobile-app/src/screens/shop/*` + `mobile-app/src/screens/auth/*`
 - **Design reference:** `eloquent-bookings/` (Vite + React + TypeScript PWA, dark+mint tokens)
@@ -19,7 +19,7 @@ as a static SPA to `bizrezzy.eloquentservice.com`.
 
 - Full parity with the mobile app's shop side (all shop screens).
 - Visual and structural consistency with `eloquent-bookings`.
-- Deployable static SPA at `bizrezzy.eloquentservice.com`.
+- Deployable static SPA at `admin.eloquentservice.com`.
 
 ## Non-Goals
 
@@ -29,7 +29,7 @@ as a static SPA to `bizrezzy.eloquentservice.com`.
 
 ## Architecture
 
-- **Directory:** `bizrezzy/` alongside `eloquent-bookings/`.
+- **Directory:** `admin/` alongside `eloquent-bookings/`.
 - **Stack:** Vite + React 18 + TypeScript, `react-router-dom`, `axios`.
   Identical toolchain to `eloquent-bookings` (same `vite.config.ts`, `tsconfig`,
   Vitest setup, PWA manifest pattern, icon generation script).
@@ -145,17 +145,17 @@ Vitest + Testing Library (same config as `eloquent-bookings`):
 
 - `npm run build` → static `dist/`.
 - Served by nginx on the shared droplet (`64.227.153.90`) at
-  `bizrezzy.eloquentservice.com`, with SPA fallback (`try_files ... /index.html`).
-- DNS: A-record `bizrezzy` → `64.227.153.90`; Let's Encrypt TLS cert.
+  `admin.eloquentservice.com`, with SPA fallback (`try_files ... /index.html`).
+- DNS: A-record `admin` → `64.227.153.90`; Let's Encrypt TLS cert.
 - The existing `deploy-eloquent-app` skill targets Laravel + Inertia apps; the
   static-SPA nginx server block and deploy steps will be adapted from it during
   the deploy phase. Exact steps confirmed against the skill at deploy time.
 
 ## Build phasing (single app)
 
-1. Scaffold (`bizrezzy/`) + tokens + `MobileLayout` + `ShopContext` + auth
+1. Scaffold (`admin/`) + tokens + `MobileLayout` + `ShopContext` + auth
    (Login, Register, Forgot PIN, route guard).
 2. Dashboard + Bookings + Booking Action.
 3. Services + Service Edit + Staff.
 4. Reminders + Working Hours + Profile + Scan Approve.
-5. PWA manifest + icons + deploy to `bizrezzy.eloquentservice.com`.
+5. PWA manifest + icons + deploy to `admin.eloquentservice.com`.

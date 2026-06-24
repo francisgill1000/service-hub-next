@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-20
 **Scope:** The customer-facing app only (`eloquent-bookings`). The provider app
-(`bizrezzy`) keeps its current "Rezzy" identity. Backend customer-facing strings
+(`admin`) keeps its current "Rezzy" identity. Backend customer-facing strings
 are included; the shared backend itself is not renamed.
 
 ## Goal
@@ -82,15 +82,15 @@ Parallel-serve model — one app, one webroot, two domains:
 
 ## Out of scope
 
-- Provider app (`bizrezzy`) branding — stays "Rezzy" for now
-- Renaming the backend repo, the `bizrezzy` folder, or `/var/www/bizrezzy`
+- Provider app (`admin`) branding — stays "Rezzy" for now
+- Renaming the backend repo, the `admin` folder, or `/var/www/admin`
 - Historical `docs/superpowers/specs|plans/*` files (point-in-time records — left as-is)
 - Vendor / lockfile dependency names
 
 ## Risks & notes
 
 - **Folder rename churn:** `eloquent-bookings/` is referenced only in its own files,
-  two backend *comments*, one `bizrezzy` CSS comment, and historical docs — no
+  two backend *comments*, one `admin` CSS comment, and historical docs — no
   runtime/data dependency (the live-chat `channel` value is not the folder name).
   Comments may be updated opportunistically but are non-blocking.
 - **Dev server / node_modules:** `node_modules` moves with the `git mv`; no

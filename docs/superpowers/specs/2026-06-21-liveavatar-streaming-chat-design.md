@@ -96,7 +96,7 @@ ShopChat unmount / error ─► handle.stop() / fallback to static orb + TTS
 ## Out of scope
 
 - WhatsApp (no video surface).
-- The provider app (`bizrezzy`).
+- The provider app (`admin`).
 - Recording a custom Instant Avatar (using stock for now).
 - Changing the AI brain — it still produces the reply text; the avatar only voices it.
 

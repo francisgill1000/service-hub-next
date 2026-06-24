@@ -12,7 +12,7 @@ the Laravel backend (`backend/`). The Meta-registered webhook URL stays
 migration the Node app is decommissioned (process stopped; repo not deleted).
 
 Laravel today only **stores** inbound messages (`WaWebhookController::receive`)
-as a passive mirror for bizrezzy chats. It must absorb the full reply brain.
+as a passive mirror for admin chats. It must absorb the full reply brain.
 
 ## Non-goals (out of scope)
 
@@ -21,7 +21,7 @@ as a passive mirror for bizrezzy chats. It must absorb the full reply brain.
   logic is a separate later spec ("phase 2").
 - **Operator tooling:** the Node dashboard, SSE live log, web-push, PWA, manual
   send/template testers, model-switch UI, and runtime credential editing are all
-  dropped. bizrezzy already shows chat threads; notifications are a later,
+  dropped. admin already shows chat threads; notifications are a later,
   separate effort.
 - **Voice replies (TTS):** dropped for now. Inbound voice notes are still
   transcribed (Whisper) and answered, but every reply goes out as **text** —

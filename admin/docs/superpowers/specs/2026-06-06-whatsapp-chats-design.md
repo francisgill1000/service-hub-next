@@ -1,4 +1,4 @@
-# WhatsApp Chats in BizRezzy — Design
+# WhatsApp Chats in admin — Design
 
 Date: 2026-06-06
 Status: Approved (Francis: "i trust you. just do it")
@@ -6,7 +6,7 @@ Status: Approved (Francis: "i trust you. just do it")
 ## Goal
 
 Port the chat functionality from the standalone `whatsapp-autoreply` Node app into the
-Rezzy stack: Laravel backend (`Rezzy/backend`) + BizRezzy PWA. Multi-account: each shop
+Rezzy stack: Laravel backend (`Rezzy/backend`) + admin PWA. Multi-account: each shop
 connects its own WhatsApp Business number. Chat only — no Claude auto-reply for now.
 
 ## Architecture
@@ -55,7 +55,7 @@ Authed (`auth:sanctum`, shop = `$request->user()`):
 - Controllers: `WaWebhookController`, `WaChatController`.
 - Ownership checks via `abort_unless(...)` matching existing controller style.
 
-## Frontend (bizrezzy)
+## Frontend (admin)
 
 - Nav: 6th bottom tab `Chats` (chat-bubble icon) in `MobileLayout.tsx`.
 - `src/lib/chats.ts` — API module; types in `types.ts` (`WaAccountInfo`, `WaContact`, `WaMessage`).
@@ -74,6 +74,6 @@ Authed (`auth:sanctum`, shop = `$request->user()`):
 ## Deploy
 
 1. Backend: push + `php artisan migrate` on droplet (deploy-eloquent-app flow).
-2. bizrezzy: `deploy.ps1` static SPA deploy.
+2. admin: `deploy.ps1` static SPA deploy.
 3. Manual (Francis): point Meta app webhook to
    `https://api.eloquentservice.com/api/wa/webhook` with the verify token.

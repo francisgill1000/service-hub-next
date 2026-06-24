@@ -1,14 +1,14 @@
-# Bizrezzy Provider Web App — Implementation Plan
+# admin Provider Web App — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build `bizrezzy/`, a provider-facing PWA at full parity with the mobile app's shop screens, mirroring the `eloquent-bookings` stack and design, deployed to `bizrezzy.eloquentservice.com`.
+**Goal:** Build `admin/`, a provider-facing PWA at full parity with the mobile app's shop screens, mirroring the `eloquent-bookings` stack and design, deployed to `admin.eloquentservice.com`.
 
 **Architecture:** Clone the `eloquent-bookings` Vite + React + TypeScript scaffold (design tokens, `MobileLayout`, shared libs). Swap `CustomerContext`→`ShopContext` (auth token `shop_token`). Each page is a direct port of a named `mobile-app/src/screens/shop` or `auth` screen, calling the shared Laravel API. Ship as a static SPA behind nginx.
 
 **Tech Stack:** Vite 5, React 18, TypeScript 5, react-router-dom 6, axios, Vitest + Testing Library.
 
-**Spec:** `docs/superpowers/specs/2026-05-31-bizrezzy-provider-web-design.md`
+**Spec:** `docs/superpowers/specs/2026-05-31-admin-provider-web-design.md`
 
 **Source-of-truth screens** (read these when porting a page):
 - Auth: `mobile-app/src/screens/auth/{LoginScreen,RegisterScreen,ForgotPinScreen}.js`
@@ -19,33 +19,33 @@
 
 ---
 
-## Task 1: Scaffold the bizrezzy project
+## Task 1: Scaffold the admin project
 
 **Files:**
-- Create: `bizrezzy/package.json`, `bizrezzy/vite.config.ts`, `bizrezzy/tsconfig.json`, `bizrezzy/tsconfig.node.json`, `bizrezzy/index.html`, `bizrezzy/.gitignore`, `bizrezzy/.env.example`
-- Create: `bizrezzy/src/main.tsx`, `bizrezzy/src/vite-env.d.ts`, `bizrezzy/src/test/setup.ts`
-- Copy: `bizrezzy/src/styles/{tokens,mobile,customer}.css` (verbatim from `eloquent-bookings/src/styles/`)
+- Create: `admin/package.json`, `admin/vite.config.ts`, `admin/tsconfig.json`, `admin/tsconfig.node.json`, `admin/index.html`, `admin/.gitignore`, `admin/.env.example`
+- Create: `admin/src/main.tsx`, `admin/src/vite-env.d.ts`, `admin/src/test/setup.ts`
+- Copy: `admin/src/styles/{tokens,mobile,customer}.css` (verbatim from `eloquent-bookings/src/styles/`)
 
 - [ ] **Step 1: Copy the project skeleton.** From repo root:
 
 ```bash
-mkdir -p bizrezzy/src/styles bizrezzy/src/test bizrezzy/public
-cp eloquent-bookings/vite.config.ts        bizrezzy/vite.config.ts
-cp eloquent-bookings/tsconfig.json         bizrezzy/tsconfig.json
-cp eloquent-bookings/tsconfig.node.json    bizrezzy/tsconfig.node.json
-cp eloquent-bookings/src/vite-env.d.ts     bizrezzy/src/vite-env.d.ts
-cp eloquent-bookings/src/test/setup.ts     bizrezzy/src/test/setup.ts
-cp eloquent-bookings/src/styles/tokens.css   bizrezzy/src/styles/tokens.css
-cp eloquent-bookings/src/styles/mobile.css   bizrezzy/src/styles/mobile.css
-cp eloquent-bookings/src/styles/customer.css bizrezzy/src/styles/customer.css
-cp eloquent-bookings/.gitignore            bizrezzy/.gitignore 2>/dev/null || printf "node_modules\ndist\n*.tsbuildinfo\n.env\n" > bizrezzy/.gitignore
+mkdir -p admin/src/styles admin/src/test admin/public
+cp eloquent-bookings/vite.config.ts        admin/vite.config.ts
+cp eloquent-bookings/tsconfig.json         admin/tsconfig.json
+cp eloquent-bookings/tsconfig.node.json    admin/tsconfig.node.json
+cp eloquent-bookings/src/vite-env.d.ts     admin/src/vite-env.d.ts
+cp eloquent-bookings/src/test/setup.ts     admin/src/test/setup.ts
+cp eloquent-bookings/src/styles/tokens.css   admin/src/styles/tokens.css
+cp eloquent-bookings/src/styles/mobile.css   admin/src/styles/mobile.css
+cp eloquent-bookings/src/styles/customer.css admin/src/styles/customer.css
+cp eloquent-bookings/.gitignore            admin/.gitignore 2>/dev/null || printf "node_modules\ndist\n*.tsbuildinfo\n.env\n" > admin/.gitignore
 ```
 
-- [ ] **Step 2: Write `bizrezzy/package.json`.**
+- [ ] **Step 2: Write `admin/package.json`.**
 
 ```json
 {
-  "name": "bizrezzy",
+  "name": "admin",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -80,9 +80,9 @@ cp eloquent-bookings/.gitignore            bizrezzy/.gitignore 2>/dev/null || pr
 }
 ```
 
-- [ ] **Step 3: Change the dev port.** In `bizrezzy/vite.config.ts`, change `server: { port: 5174, host: true }` to `server: { port: 5175, host: true }` (avoid clashing with eloquent-bookings).
+- [ ] **Step 3: Change the dev port.** In `admin/vite.config.ts`, change `server: { port: 5174, host: true }` to `server: { port: 5175, host: true }` (avoid clashing with eloquent-bookings).
 
-- [ ] **Step 4: Write `bizrezzy/index.html`** (same as eloquent-bookings but title "Bizrezzy"):
+- [ ] **Step 4: Write `admin/index.html`** (same as eloquent-bookings but title "admin"):
 
 ```html
 <!doctype html>
@@ -96,7 +96,7 @@ cp eloquent-bookings/.gitignore            bizrezzy/.gitignore 2>/dev/null || pr
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-    <title>Bizrezzy</title>
+    <title>admin</title>
   </head>
   <body>
     <div id="root"></div>
@@ -105,13 +105,13 @@ cp eloquent-bookings/.gitignore            bizrezzy/.gitignore 2>/dev/null || pr
 </html>
 ```
 
-- [ ] **Step 5: Write `bizrezzy/.env.example`.**
+- [ ] **Step 5: Write `admin/.env.example`.**
 
 ```
 VITE_API_URL=https://api.eloquentservice.com/api
 ```
 
-- [ ] **Step 6: Write `bizrezzy/src/main.tsx`.**
+- [ ] **Step 6: Write `admin/src/main.tsx`.**
 
 ```tsx
 import React from 'react';
@@ -131,29 +131,29 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 ```
 
-- [ ] **Step 7: Create a placeholder `bizrezzy/src/App.tsx`** so install/typecheck works (replaced in Task 7):
+- [ ] **Step 7: Create a placeholder `admin/src/App.tsx`** so install/typecheck works (replaced in Task 7):
 
 ```tsx
 export default function App() {
-  return <div>bizrezzy</div>;
+  return <div>admin</div>;
 }
 ```
 
 - [ ] **Step 8: Install dependencies.**
 
-Run: `cd bizrezzy && npm install`
+Run: `cd admin && npm install`
 Expected: completes; `node_modules` created.
 
 - [ ] **Step 9: Verify dev/test toolchain boots.**
 
-Run: `cd bizrezzy && npm run test`
+Run: `cd admin && npm run test`
 Expected: PASS — "No test files found" is acceptable (exit 0 with `--passWithNoTests` is not set; if it errors on no tests, that's fine to ignore until Task 4 adds the first test).
 
 - [ ] **Step 10: Commit.**
 
 ```bash
-git add bizrezzy
-git commit -m "feat(bizrezzy): scaffold provider web app from eloquent-bookings"
+git add admin
+git commit -m "feat(admin): scaffold provider web app from eloquent-bookings"
 ```
 
 ---
@@ -161,20 +161,20 @@ git commit -m "feat(bizrezzy): scaffold provider web app from eloquent-bookings"
 ## Task 2: Shared libs (storage, deviceId, date, api)
 
 **Files:**
-- Copy: `bizrezzy/src/lib/{storage.ts,deviceId.ts,date.ts}` (verbatim from eloquent-bookings)
-- Create: `bizrezzy/src/lib/api.ts`
-- Test: `bizrezzy/src/lib/api.test.ts`
+- Copy: `admin/src/lib/{storage.ts,deviceId.ts,date.ts}` (verbatim from eloquent-bookings)
+- Create: `admin/src/lib/api.ts`
+- Test: `admin/src/lib/api.test.ts`
 
 - [ ] **Step 1: Copy the verbatim libs.**
 
 ```bash
-mkdir -p bizrezzy/src/lib
-cp eloquent-bookings/src/lib/storage.ts  bizrezzy/src/lib/storage.ts
-cp eloquent-bookings/src/lib/deviceId.ts bizrezzy/src/lib/deviceId.ts
-cp eloquent-bookings/src/lib/date.ts     bizrezzy/src/lib/date.ts
+mkdir -p admin/src/lib
+cp eloquent-bookings/src/lib/storage.ts  admin/src/lib/storage.ts
+cp eloquent-bookings/src/lib/deviceId.ts admin/src/lib/deviceId.ts
+cp eloquent-bookings/src/lib/date.ts     admin/src/lib/date.ts
 ```
 
-- [ ] **Step 2: Write the failing test `bizrezzy/src/lib/api.test.ts`.**
+- [ ] **Step 2: Write the failing test `admin/src/lib/api.test.ts`.**
 
 ```ts
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -204,10 +204,10 @@ describe('api client', () => {
 
 - [ ] **Step 3: Run test to verify it fails.**
 
-Run: `cd bizrezzy && npx vitest run src/lib/api.test.ts`
+Run: `cd admin && npx vitest run src/lib/api.test.ts`
 Expected: FAIL — cannot resolve `./api`.
 
-- [ ] **Step 4: Write `bizrezzy/src/lib/api.ts`** (eloquent-bookings's api.ts but reading `shop_token`):
+- [ ] **Step 4: Write `admin/src/lib/api.ts`** (eloquent-bookings's api.ts but reading `shop_token`):
 
 ```ts
 import axios from 'axios';
@@ -237,14 +237,14 @@ export default api;
 
 - [ ] **Step 5: Run test to verify it passes.**
 
-Run: `cd bizrezzy && npx vitest run src/lib/api.test.ts`
+Run: `cd admin && npx vitest run src/lib/api.test.ts`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add bizrezzy/src/lib
-git commit -m "feat(bizrezzy): add shared libs and shop-token api client"
+git add admin/src/lib
+git commit -m "feat(admin): add shared libs and shop-token api client"
 ```
 
 ---
@@ -252,9 +252,9 @@ git commit -m "feat(bizrezzy): add shared libs and shop-token api client"
 ## Task 3: Types
 
 **Files:**
-- Create: `bizrezzy/src/types.ts`
+- Create: `admin/src/types.ts`
 
-- [ ] **Step 1: Write `bizrezzy/src/types.ts`** (extends eloquent-bookings types with provider entities):
+- [ ] **Step 1: Write `admin/src/types.ts`** (extends eloquent-bookings types with provider entities):
 
 ```ts
 export type WorkingHours = {
@@ -343,14 +343,14 @@ export type Paginated<T> = {
 
 - [ ] **Step 2: Typecheck.**
 
-Run: `cd bizrezzy && npx tsc -b`
+Run: `cd admin && npx tsc -b`
 Expected: no errors.
 
 - [ ] **Step 3: Commit.**
 
 ```bash
-git add bizrezzy/src/types.ts
-git commit -m "feat(bizrezzy): add domain types"
+git add admin/src/types.ts
+git commit -m "feat(admin): add domain types"
 ```
 
 ---
@@ -358,10 +358,10 @@ git commit -m "feat(bizrezzy): add domain types"
 ## Task 4: ShopContext
 
 **Files:**
-- Create: `bizrezzy/src/context/ShopContext.tsx`
-- Test: `bizrezzy/src/context/ShopContext.test.tsx`
+- Create: `admin/src/context/ShopContext.tsx`
+- Test: `admin/src/context/ShopContext.test.tsx`
 
-- [ ] **Step 1: Write the failing test `bizrezzy/src/context/ShopContext.test.tsx`.**
+- [ ] **Step 1: Write the failing test `admin/src/context/ShopContext.test.tsx`.**
 
 ```tsx
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -406,10 +406,10 @@ describe('ShopContext', () => {
 
 - [ ] **Step 2: Run test to verify it fails.**
 
-Run: `cd bizrezzy && npx vitest run src/context/ShopContext.test.tsx`
+Run: `cd admin && npx vitest run src/context/ShopContext.test.tsx`
 Expected: FAIL — cannot resolve `./ShopContext`.
 
-- [ ] **Step 3: Write `bizrezzy/src/context/ShopContext.tsx`.**
+- [ ] **Step 3: Write `admin/src/context/ShopContext.tsx`.**
 
 ```tsx
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
@@ -471,14 +471,14 @@ export function useShop(): ShopContextValue {
 
 - [ ] **Step 4: Run test to verify it passes.**
 
-Run: `cd bizrezzy && npx vitest run src/context/ShopContext.test.tsx`
+Run: `cd admin && npx vitest run src/context/ShopContext.test.tsx`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Commit.**
 
 ```bash
-git add bizrezzy/src/context
-git commit -m "feat(bizrezzy): add ShopContext auth state"
+git add admin/src/context
+git commit -m "feat(admin): add ShopContext auth state"
 ```
 
 ---
@@ -486,10 +486,10 @@ git commit -m "feat(bizrezzy): add ShopContext auth state"
 ## Task 5: Typed API wrappers
 
 **Files:**
-- Create: `bizrezzy/src/lib/shops.ts`, `bizrezzy/src/lib/bookings.ts`, `bizrezzy/src/lib/catalogs.ts`
-- Test: `bizrezzy/src/lib/bookings.test.ts`
+- Create: `admin/src/lib/shops.ts`, `admin/src/lib/bookings.ts`, `admin/src/lib/catalogs.ts`
+- Test: `admin/src/lib/bookings.test.ts`
 
-- [ ] **Step 1: Write `bizrezzy/src/lib/bookings.ts`.**
+- [ ] **Step 1: Write `admin/src/lib/bookings.ts`.**
 
 ```ts
 import api from './api';
@@ -528,7 +528,7 @@ export async function markInvoicePaid(invoiceId: number): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Write `bizrezzy/src/lib/catalogs.ts`.**
+- [ ] **Step 2: Write `admin/src/lib/catalogs.ts`.**
 
 ```ts
 import api from './api';
@@ -559,7 +559,7 @@ export async function deleteCatalog(id: number): Promise<void> {
 }
 ```
 
-- [ ] **Step 3: Write `bizrezzy/src/lib/shops.ts`.**
+- [ ] **Step 3: Write `admin/src/lib/shops.ts`.**
 
 ```ts
 import api from './api';
@@ -611,7 +611,7 @@ export async function approveQrLogin(token: string): Promise<unknown> {
 }
 ```
 
-- [ ] **Step 4: Write the test `bizrezzy/src/lib/bookings.test.ts`.**
+- [ ] **Step 4: Write the test `admin/src/lib/bookings.test.ts`.**
 
 ```ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -645,14 +645,14 @@ describe('bookings wrappers', () => {
 
 - [ ] **Step 5: Run tests.**
 
-Run: `cd bizrezzy && npx vitest run src/lib/bookings.test.ts`
+Run: `cd admin && npx vitest run src/lib/bookings.test.ts`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add bizrezzy/src/lib
-git commit -m "feat(bizrezzy): add typed api wrappers for shops, bookings, catalogs"
+git add admin/src/lib
+git commit -m "feat(admin): add typed api wrappers for shops, bookings, catalogs"
 ```
 
 ---
@@ -660,23 +660,23 @@ git commit -m "feat(bizrezzy): add typed api wrappers for shops, bookings, catal
 ## Task 6: Shared components, layout, route guard
 
 **Files:**
-- Copy: `bizrezzy/src/components/{Icons,Spinner,EmptyState,WhatsAppButton}.tsx` (verbatim from eloquent-bookings)
-- Create: `bizrezzy/src/layout/AppBar.tsx`, `bizrezzy/src/layout/MobileLayout.tsx`, `bizrezzy/src/layout/RequireShop.tsx`
+- Copy: `admin/src/components/{Icons,Spinner,EmptyState,WhatsAppButton}.tsx` (verbatim from eloquent-bookings)
+- Create: `admin/src/layout/AppBar.tsx`, `admin/src/layout/MobileLayout.tsx`, `admin/src/layout/RequireShop.tsx`
 
 - [ ] **Step 1: Copy components and AppBar.**
 
 ```bash
-mkdir -p bizrezzy/src/components bizrezzy/src/layout
-cp eloquent-bookings/src/components/Icons.tsx          bizrezzy/src/components/Icons.tsx
-cp eloquent-bookings/src/components/Spinner.tsx        bizrezzy/src/components/Spinner.tsx
-cp eloquent-bookings/src/components/EmptyState.tsx     bizrezzy/src/components/EmptyState.tsx
-cp eloquent-bookings/src/components/WhatsAppButton.tsx bizrezzy/src/components/WhatsAppButton.tsx
-cp eloquent-bookings/src/layout/AppBar.tsx             bizrezzy/src/layout/AppBar.tsx
+mkdir -p admin/src/components admin/src/layout
+cp eloquent-bookings/src/components/Icons.tsx          admin/src/components/Icons.tsx
+cp eloquent-bookings/src/components/Spinner.tsx        admin/src/components/Spinner.tsx
+cp eloquent-bookings/src/components/EmptyState.tsx     admin/src/components/EmptyState.tsx
+cp eloquent-bookings/src/components/WhatsAppButton.tsx admin/src/components/WhatsAppButton.tsx
+cp eloquent-bookings/src/layout/AppBar.tsx             admin/src/layout/AppBar.tsx
 ```
 
-- [ ] **Step 2: Verify icon names.** Open `bizrezzy/src/components/Icons.tsx` and note exported keys. The tab bar needs icons for Home, Calendar, Bell/Reminders, Grid/Services, Store/Profile. If `Bell`, `Grid`, or `Store` are missing, add minimal SVG icons following the existing pattern in that file (each icon is a function `({size}) => <svg .../>`).
+- [ ] **Step 2: Verify icon names.** Open `admin/src/components/Icons.tsx` and note exported keys. The tab bar needs icons for Home, Calendar, Bell/Reminders, Grid/Services, Store/Profile. If `Bell`, `Grid`, or `Store` are missing, add minimal SVG icons following the existing pattern in that file (each icon is a function `({size}) => <svg .../>`).
 
-- [ ] **Step 3: Write `bizrezzy/src/layout/MobileLayout.tsx`** (5 provider tabs):
+- [ ] **Step 3: Write `admin/src/layout/MobileLayout.tsx`** (5 provider tabs):
 
 ```tsx
 import { Link, Outlet, useLocation } from 'react-router-dom';
@@ -725,7 +725,7 @@ export function MobileLayout() {
 
 > Use whatever icon keys actually exist after Step 2 — adjust the `icon:` values to match.
 
-- [ ] **Step 4: Write `bizrezzy/src/layout/RequireShop.tsx`** (route guard):
+- [ ] **Step 4: Write `admin/src/layout/RequireShop.tsx`** (route guard):
 
 ```tsx
 import { Navigate, Outlet } from 'react-router-dom';
@@ -741,14 +741,14 @@ export function RequireShop() {
 
 - [ ] **Step 5: Typecheck.**
 
-Run: `cd bizrezzy && npx tsc -b`
+Run: `cd admin && npx tsc -b`
 Expected: no errors (fix any icon-key typing issues from Step 3).
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add bizrezzy/src/components bizrezzy/src/layout
-git commit -m "feat(bizrezzy): add shared components, provider layout, route guard"
+git add admin/src/components admin/src/layout
+git commit -m "feat(admin): add shared components, provider layout, route guard"
 ```
 
 ---
@@ -756,9 +756,9 @@ git commit -m "feat(bizrezzy): add shared components, provider layout, route gua
 ## Task 7: App routing
 
 **Files:**
-- Modify: `bizrezzy/src/App.tsx` (replace placeholder)
+- Modify: `admin/src/App.tsx` (replace placeholder)
 
-- [ ] **Step 1: Write `bizrezzy/src/App.tsx`.** Import the page components created in later tasks; create thin placeholder page stubs now (each exporting `export default function X(){return <div/>}`) so routing compiles, then flesh out per task. Recommended: create stub files first so this task compiles independently.
+- [ ] **Step 1: Write `admin/src/App.tsx`.** Import the page components created in later tasks; create thin placeholder page stubs now (each exporting `export default function X(){return <div/>}`) so routing compiles, then flesh out per task. Recommended: create stub files first so this task compiles independently.
 
 ```tsx
 import { Routes, Route } from 'react-router-dom';
@@ -812,7 +812,7 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 2: Create stub page files** so the app compiles. For each of the 13 page modules referenced above, create `bizrezzy/src/pages/<Name>.tsx` with:
+- [ ] **Step 2: Create stub page files** so the app compiles. For each of the 13 page modules referenced above, create `admin/src/pages/<Name>.tsx` with:
 
 ```tsx
 export default function Name() {
@@ -824,14 +824,14 @@ export default function Name() {
 
 - [ ] **Step 3: Typecheck + dev boot.**
 
-Run: `cd bizrezzy && npx tsc -b && npm run build`
+Run: `cd admin && npx tsc -b && npm run build`
 Expected: build succeeds.
 
 - [ ] **Step 4: Commit.**
 
 ```bash
-git add bizrezzy/src/App.tsx bizrezzy/src/pages
-git commit -m "feat(bizrezzy): wire app routing with auth guard and page stubs"
+git add admin/src/App.tsx admin/src/pages
+git commit -m "feat(admin): wire app routing with auth guard and page stubs"
 ```
 
 ---
@@ -846,7 +846,7 @@ For each: replace the stub file from Task 7 Step 2.
 
 ### Task 8: Login page
 
-**Files:** `bizrezzy/src/pages/Login.tsx`, test `bizrezzy/src/pages/Login.test.tsx`
+**Files:** `admin/src/pages/Login.tsx`, test `admin/src/pages/Login.test.tsx`
 **Source:** `mobile-app/src/screens/auth/LoginScreen.js`
 
 - [ ] **Step 1: Port behavior.** Two-step form: step `code` (enter `shop_code`) → step `pin` (enter PIN). Submit PIN calls `shopLogin(shopCode, pin)` from `@/lib/shops`. On success call `loginShop(shop, token)` from `useShop()` and `navigate('/')`. "Remember me" checkbox persists `remember_shop_login=true` + `remember_shop_code` (and PIN) via `storage`; prefill on mount. Drop all biometric / `expo-local-authentication` code. Links: "Forgot PIN?" → `/forgot-pin`, "Register" → `/register`. Show error text on failed login.
@@ -898,185 +898,185 @@ describe('Login', () => {
 ```
 
 - [ ] **Step 3: Run test, verify it fails** (stub renders empty `div`).
-Run: `cd bizrezzy && npx vitest run src/pages/Login.test.tsx` — Expected: FAIL.
+Run: `cd admin && npx vitest run src/pages/Login.test.tsx` — Expected: FAIL.
 
 - [ ] **Step 4: Implement `Login.tsx`** per Step 1. Ensure inputs have accessible labels (`<label htmlFor>` or `aria-label`) matching the test regexes (`shop code`, `pin`), and buttons labelled "Continue"/"Log in".
 
 - [ ] **Step 5: Run test, verify PASS.** Run the same command. Expected: PASS (2 tests).
 
-- [ ] **Step 6: Commit.** `git add bizrezzy/src/pages/Login.tsx bizrezzy/src/pages/Login.test.tsx && git commit -m "feat(bizrezzy): login page"`
+- [ ] **Step 6: Commit.** `git add admin/src/pages/Login.tsx admin/src/pages/Login.test.tsx && git commit -m "feat(admin): login page"`
 
 ---
 
 ### Task 9: Register page
 
-**Files:** `bizrezzy/src/pages/Register.tsx`, test `Register.test.tsx`
+**Files:** `admin/src/pages/Register.tsx`, test `Register.test.tsx`
 **Source:** `mobile-app/src/screens/auth/RegisterScreen.js`
 
 - [ ] **Step 1: Port behavior.** Form to create a shop via `registerShop(form)`. Optional "use my location" button calls `navigator.geolocation.getCurrentPosition` → `reverseGeocode(lat, lon)` to prefill address/location. On success, if response includes token+shop, `loginShop(...)` + `navigate('/')`; else navigate to `/login`. Validate required fields; show errors inline. Use `navigator.geolocation` (not expo-location).
 - [ ] **Step 2: Test** — render the form, fill required fields, mock `registerShop` resolved, submit, assert it was called with the entered values.
-- [ ] **Step 3:** run/verify fail → **Step 4:** implement → **Step 5:** verify pass → **Step 6:** commit `"feat(bizrezzy): shop registration page"`.
+- [ ] **Step 3:** run/verify fail → **Step 4:** implement → **Step 5:** verify pass → **Step 6:** commit `"feat(admin): shop registration page"`.
 
 ---
 
 ### Task 10: Forgot PIN page
 
-**Files:** `bizrezzy/src/pages/ForgotPin.tsx`, test `ForgotPin.test.tsx`
+**Files:** `admin/src/pages/ForgotPin.tsx`, test `ForgotPin.test.tsx`
 **Source:** `mobile-app/src/screens/auth/ForgotPinScreen.js`
 
 - [ ] **Step 1: Port behavior.** Enter `shop_code` → `resetPin(shopCode)`. On success show confirmation message (PIN reset instructions sent) and a link back to `/login`. Mirror any prefill behavior the source uses (e.g., `post_reset_login_prefill`).
 - [ ] **Step 2: Test** — mock `resetPin` resolved, submit, assert called with code and a success message appears.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): forgot-pin page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): forgot-pin page"`.
 
 ---
 
 ### Task 11: Dashboard page
 
-**Files:** `bizrezzy/src/pages/Dashboard.tsx`, test `Dashboard.test.tsx`
+**Files:** `admin/src/pages/Dashboard.tsx`, test `Dashboard.test.tsx`
 **Source:** `mobile-app/src/screens/shop/DashboardScreen.js`
 
 - [ ] **Step 1: Port behavior.** On mount (when `shop?.id`), `getShopBookings(shop.id)`. Show stat cards: total bookings (`total_bookings`) and total revenue (`total_revenue`, fallback to summing `charges`). List **today's** bookings (filter `date`/`show_date` === today's ISO from `formatLocalDate(new Date())`). Each booking row links to `/booking/:id`. Refresh button re-fetches. `<AppBar title={shop.name}>`. Empty + loading states.
 - [ ] **Step 2: Test** — mock `getShopBookings` (via `vi.spyOn(bookingsLib,'getShopBookings')`) returning stats + one today booking; render inside `ShopProvider` seeded with `shop_data`/`shop_token` in localStorage; assert the revenue and booking reference render.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): dashboard page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): dashboard page"`.
 
 ---
 
 ### Task 12: Bookings list page
 
-**Files:** `bizrezzy/src/pages/Bookings.tsx`, test `Bookings.test.tsx`
+**Files:** `admin/src/pages/Bookings.tsx`, test `Bookings.test.tsx`
 **Source:** `mobile-app/src/screens/shop/ShopBookingsScreen.js`
 
 - [ ] **Step 1: Port behavior.** `getShopBookings(shop.id)`; render full list (the source's grouping/filters/tabs by status or date — replicate them). Each row → `/booking/:id`. Loading/empty states. `<AppBar title="Bookings">`.
 - [ ] **Step 2: Test** — mock the wrapper with 2 bookings, assert both render and a row links to `/booking/<id>`.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): bookings list page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): bookings list page"`.
 
 ---
 
 ### Task 13: Booking Action page
 
-**Files:** `bizrezzy/src/pages/BookingAction.tsx`, test `BookingAction.test.tsx`
+**Files:** `admin/src/pages/BookingAction.tsx`, test `BookingAction.test.tsx`
 **Source:** `mobile-app/src/screens/shop/BookingActionScreen.js`
 
 - [ ] **Step 1: Port behavior.** `useParams()` → `id`. `getBooking(id)` for detail; `getStaff(shop.id)` for reassignment options. Actions: confirm/cancel/complete via `setBookingStatus(id, status)`; reassign via `reassignBooking(id, staffId)`; mark invoice paid via `markInvoicePaid(booking.invoice.id)` (only when an invoice exists). After an action, re-fetch or update local state, and show success/error feedback. Back button → `navigate(-1)`.
 - [ ] **Step 2: Test** — mock `getBooking` returning a pending booking + `getStaff` returning `[]`; render; click "Confirm"; assert `setBookingStatus` called with `(id,'confirmed')`.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): booking action page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): booking action page"`.
 
 ---
 
 ### Task 14: Reminders page
 
-**Files:** `bizrezzy/src/pages/Reminders.tsx`, test `Reminders.test.tsx`
+**Files:** `admin/src/pages/Reminders.tsx`, test `Reminders.test.tsx`
 **Source:** `mobile-app/src/screens/shop/RemindersScreen.js`
 
 - [ ] **Step 1: Port behavior.** `getShopBookings(shop.id)`, filter to bookings needing reminders (replicate the source's filter — typically upcoming + not `reminder_sent`). "Mark reminder sent" → `markReminderSent(booking.id)`, then update local state. A WhatsApp/contact affordance may exist in source — port using `WhatsAppButton` if present. Loading/empty states.
 - [ ] **Step 2: Test** — mock wrapper returning one reminder-eligible booking; click "Mark sent"; assert `markReminderSent` called with its id.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): reminders page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): reminders page"`.
 
 ---
 
 ### Task 15: Services list page
 
-**Files:** `bizrezzy/src/pages/Services.tsx`, test `Services.test.tsx`
+**Files:** `admin/src/pages/Services.tsx`, test `Services.test.tsx`
 **Source:** `mobile-app/src/screens/shop/CatalogsScreen.js`
 
 - [ ] **Step 1: Port behavior.** `listCatalogs()` on mount. Render each service (title/name, price). "Add" button → `/services/new`. Each row → `/services/:id/edit`. Delete (with confirm) → `deleteCatalog(id)` then refresh. Loading/empty states.
 - [ ] **Step 2: Test** — mock `listCatalogs` with 2 services; assert both render; assert "Add" links to `/services/new`.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): services list page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): services list page"`.
 
 ---
 
 ### Task 16: Service Edit page
 
-**Files:** `bizrezzy/src/pages/ServiceEdit.tsx`, test `ServiceEdit.test.tsx`
+**Files:** `admin/src/pages/ServiceEdit.tsx`, test `ServiceEdit.test.tsx`
 **Source:** `mobile-app/src/screens/shop/CatalogEditScreen.js`
 
 - [ ] **Step 1: Port behavior.** `useParams()` → `id` (absent ⇒ create mode at `/services/new`). In edit mode, `getCatalog(id)` to prefill. Form fields per source (title/name, price, duration, description). Save: create ⇒ `createCatalog(payload)`, edit ⇒ `updateCatalog(id, payload)`, then `navigate('/services')`. Validate required fields; inline errors.
 - [ ] **Step 2: Test** — render at create mode, fill title + price, mock `createCatalog` resolved, submit, assert called with the payload.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): service edit page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): service edit page"`.
 
 ---
 
 ### Task 17: Staff page
 
-**Files:** `bizrezzy/src/pages/Staff.tsx`, test `Staff.test.tsx`
+**Files:** `admin/src/pages/Staff.tsx`, test `Staff.test.tsx`
 **Source:** `mobile-app/src/screens/shop/StaffScreen.js`
 
 - [ ] **Step 1: Port behavior.** `getStaff(shop.id)` on mount. Add staff: input + `addStaff(shop.id, name)` then refresh/append. Rename / toggle active: `updateStaff(shop.id, member.id, payload)`. Back button. Loading/empty states.
 - [ ] **Step 2: Test** — mock `getStaff` with one member; type a new name; click Add; assert `addStaff` called with `(shopId, name)`.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): staff page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): staff page"`.
 
 ---
 
 ### Task 18: Working Hours page
 
-**Files:** `bizrezzy/src/pages/WorkingHours.tsx`, test `WorkingHours.test.tsx`
+**Files:** `admin/src/pages/WorkingHours.tsx`, test `WorkingHours.test.tsx`
 **Source:** `mobile-app/src/screens/shop/WorkingHoursScreen.js`
 
 - [ ] **Step 1: Port behavior.** Editable per-day rows (start/end time, closed toggle), seeded from `shop.working_hours`. Save → `updateShop(shop.id, { working_hours })`; on success update the shop in `ShopContext` (re-call `loginShop(updatedShop, token)` to persist) and show confirmation. Build the `working_hours` array shape the source PUTs.
 - [ ] **Step 2: Test** — render seeded with a shop having one day; change a time; click Save; assert `updateShop` called with `(shopId, { working_hours: [...] })`.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): working hours page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): working hours page"`.
 
 ---
 
 ### Task 19: Profile page
 
-**Files:** `bizrezzy/src/pages/Profile.tsx`, test `Profile.test.tsx`
+**Files:** `admin/src/pages/Profile.tsx`, test `Profile.test.tsx`
 **Source:** `mobile-app/src/screens/shop/ProfileScreen.js`
 
 - [ ] **Step 1: Port behavior.** Editable shop profile (name, phone, email, location/address, description) seeded from `shop`. "Use my location" → `navigator.geolocation` + `reverseGeocode`. Save → `updateShop(shop.id, payload)` then update `ShopContext` (`loginShop(updated, token)`). Navigation links: Staff (`/staff`), Working Hours (`/working-hours`), Scan login (open camera/QR or manual token entry — see Task 20). Logout button → `logoutShop()` + `navigate('/login')`. `<AppBar title="Profile">`.
 - [ ] **Step 2: Test** — render seeded shop; click Logout; assert `shop_token` removed from localStorage. Also: edit name, mock `updateShop`, save, assert called.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): profile page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): profile page"`.
 
 ---
 
 ### Task 20: Scan Approve page
 
-**Files:** `bizrezzy/src/pages/ScanApprove.tsx`, test `ScanApprove.test.tsx`
+**Files:** `admin/src/pages/ScanApprove.tsx`, test `ScanApprove.test.tsx`
 **Source:** `mobile-app/src/screens/shop/ScanLoginScreen.js`
 
 - [ ] **Step 1: Port behavior.** `useParams()` → `token`. On mount (or on a confirm button) call `approveQrLogin(token)`. Show pending → success/failure states. (The mobile screen scans a QR to obtain the token; on web the token arrives via the `/scan/:token` URL — no camera needed. If unauthenticated, `RequireShop` is bypassed for this public route, so prompt login first if `!shop`, then approve.)
 - [ ] **Step 2: Test** — render at `/scan/abc` via `MemoryRouter initialEntries={['/scan/abc']}` with a route; mock `approveQrLogin` resolved; assert it's called with `'abc'` and a success message shows.
-- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(bizrezzy): scan-approve page"`.
+- [ ] **Step 3–6:** fail → implement → pass → commit `"feat(admin): scan-approve page"`.
 
 ---
 
 ## Task 21: PWA manifest + icons
 
 **Files:**
-- Copy/adapt: `bizrezzy/scripts/gen-icons.mjs`, `bizrezzy/public/manifest.webmanifest`, `bizrezzy/public/*` icons
+- Copy/adapt: `admin/scripts/gen-icons.mjs`, `admin/public/manifest.webmanifest`, `admin/public/*` icons
 - Source: `eloquent-bookings/scripts/gen-icons.mjs`, `eloquent-bookings/public/manifest.webmanifest`
 
 - [ ] **Step 1: Copy the icon generator and manifest.**
 
 ```bash
-mkdir -p bizrezzy/scripts
-cp eloquent-bookings/scripts/gen-icons.mjs       bizrezzy/scripts/gen-icons.mjs
-cp eloquent-bookings/public/manifest.webmanifest bizrezzy/public/manifest.webmanifest
-cp eloquent-bookings/public/favicon.svg          bizrezzy/public/favicon.svg 2>/dev/null || true
+mkdir -p admin/scripts
+cp eloquent-bookings/scripts/gen-icons.mjs       admin/scripts/gen-icons.mjs
+cp eloquent-bookings/public/manifest.webmanifest admin/public/manifest.webmanifest
+cp eloquent-bookings/public/favicon.svg          admin/public/favicon.svg 2>/dev/null || true
 ```
 
-- [ ] **Step 2: Rebrand the manifest.** In `bizrezzy/public/manifest.webmanifest` set `"name": "Bizrezzy"`, `"short_name": "Bizrezzy"`, and a distinguishing description (e.g. "Rezzy for service providers"). Keep the mint theme/background colors. Reuse the favicon recipe (SVG monogram on mint tile) — see memory `favicon-recipe.md`; a "B" monogram distinguishes it from the customer app.
+- [ ] **Step 2: Rebrand the manifest.** In `admin/public/manifest.webmanifest` set `"name": "admin"`, `"short_name": "admin"`, and a distinguishing description (e.g. "Rezzy for service providers"). Keep the mint theme/background colors. Reuse the favicon recipe (SVG monogram on mint tile) — see memory `favicon-recipe.md`; a "B" monogram distinguishes it from the customer app.
 
 - [ ] **Step 3: Generate icons.**
 
-Run: `cd bizrezzy && npm run icons`
+Run: `cd admin && npm run icons`
 Expected: PNG icons written to `public/` (sizes referenced by the manifest + `index.html`).
 
 - [ ] **Step 4: Build to confirm assets resolve.**
 
-Run: `cd bizrezzy && npm run build`
+Run: `cd admin && npm run build`
 Expected: build succeeds with no missing-asset warnings for icons/manifest.
 
 - [ ] **Step 5: Commit.**
 
 ```bash
-git add bizrezzy/scripts bizrezzy/public
-git commit -m "feat(bizrezzy): add PWA manifest and branded icons"
+git add admin/scripts admin/public
+git commit -m "feat(admin): add PWA manifest and branded icons"
 ```
 
 ---
 
-## Task 22: Deploy to bizrezzy.eloquentservice.com
+## Task 22: Deploy to admin.eloquentservice.com
 
 **Files:** none in-repo (server config) unless a deploy script is added.
 
@@ -1084,19 +1084,19 @@ git commit -m "feat(bizrezzy): add PWA manifest and branded icons"
 
 - [ ] **Step 1: Production build.**
 
-Run: `cd bizrezzy && npm run build`
-Expected: `bizrezzy/dist/` produced.
+Run: `cd admin && npm run build`
+Expected: `admin/dist/` produced.
 
-- [ ] **Step 2: DNS.** Add an A record `bizrezzy.eloquentservice.com` → `64.227.153.90` (confirm the DNS provider via the deploy skill / existing eloquentservice records).
+- [ ] **Step 2: DNS.** Add an A record `admin.eloquentservice.com` → `64.227.153.90` (confirm the DNS provider via the deploy skill / existing eloquentservice records).
 
-- [ ] **Step 3: Upload build to the droplet.** Create `/var/www/bizrezzy` and copy `dist/` contents there (rsync/scp). Confirm the exact web root convention from the deploy skill.
+- [ ] **Step 3: Upload build to the droplet.** Create `/var/www/admin` and copy `dist/` contents there (rsync/scp). Confirm the exact web root convention from the deploy skill.
 
-- [ ] **Step 4: nginx server block** for `bizrezzy.eloquentservice.com` with SPA fallback:
+- [ ] **Step 4: nginx server block** for `admin.eloquentservice.com` with SPA fallback:
 
 ```nginx
 server {
-    server_name bizrezzy.eloquentservice.com;
-    root /var/www/bizrezzy;
+    server_name admin.eloquentservice.com;
+    root /var/www/admin;
     index index.html;
     location / {
         try_files $uri $uri/ /index.html;
@@ -1106,14 +1106,14 @@ server {
 
 Enable the site and `nginx -t && systemctl reload nginx`.
 
-- [ ] **Step 5: TLS.** `certbot --nginx -d bizrezzy.eloquentservice.com` (matching how other eloquentservice subdomains get certs).
+- [ ] **Step 5: TLS.** `certbot --nginx -d admin.eloquentservice.com` (matching how other eloquentservice subdomains get certs).
 
-- [ ] **Step 6: Verify.** Load `https://bizrezzy.eloquentservice.com`, log in with a real shop_code+PIN, confirm dashboard loads bookings from the API. Hard-refresh on a deep route (e.g. `/bookings`) to confirm SPA fallback works.
+- [ ] **Step 6: Verify.** Load `https://admin.eloquentservice.com`, log in with a real shop_code+PIN, confirm dashboard loads bookings from the API. Hard-refresh on a deep route (e.g. `/bookings`) to confirm SPA fallback works.
 
-- [ ] **Step 7: Commit any deploy script/config added to the repo** (e.g. a `deploy-bizrezzy.ps1` mirroring `deploy-frontend.ps1`, if created).
+- [ ] **Step 7: Commit any deploy script/config added to the repo** (e.g. a `deploy-admin.ps1` mirroring `deploy-frontend.ps1`, if created).
 
 ```bash
-git add -A && git commit -m "chore(bizrezzy): add deploy script and config"
+git add -A && git commit -m "chore(admin): add deploy script and config"
 ```
 
 ---

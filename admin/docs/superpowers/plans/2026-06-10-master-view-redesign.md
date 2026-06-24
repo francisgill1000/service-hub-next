@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Redesign the bizrezzy "All Businesses" master view into a clean eloquent-bookings-style card list + per-business detail screen, and add per-shop WhatsApp persona and an active/inactive visibility toggle end-to-end (backend → master UI → live bot, bot change strictly additive).
+**Goal:** Redesign the admin "All Businesses" master view into a clean eloquent-bookings-style card list + per-business detail screen, and add per-shop WhatsApp persona and an active/inactive visibility toggle end-to-end (backend → master UI → live bot, bot change strictly additive).
 
-**Architecture:** Three repos in rollout order. (1) Laravel backend `Rezzy/backend` gains a nullable `shops.persona` column, a master-guarded `PATCH /master/shops/{shop}` endpoint, and returns `persona` from the master list + `shop-context`. (2) bizrezzy master UI gets a `MasterShopCard`, a new `MasterShopDetail` page at `/master/:id`, and an `updateMasterShop` lib call. (3) The live Node bot `whatsapp-autoreply` uses a shop's persona only when present, otherwise unchanged behavior.
+**Architecture:** Three repos in rollout order. (1) Laravel backend `Rezzy/backend` gains a nullable `shops.persona` column, a master-guarded `PATCH /master/shops/{shop}` endpoint, and returns `persona` from the master list + `shop-context`. (2) admin master UI gets a `MasterShopCard`, a new `MasterShopDetail` page at `/master/:id`, and an `updateMasterShop` lib call. (3) The live Node bot `whatsapp-autoreply` uses a shop's persona only when present, otherwise unchanged behavior.
 
 **Tech Stack:** Laravel 12 / PHPUnit + RefreshDatabase; React 18 + TypeScript + Vite + Vitest + Testing Library; Node ESM (whatsapp-autoreply).
 
-**Key reference:** Design spec at `bizrezzy/docs/superpowers/specs/2026-06-10-master-view-redesign-design.md`. Card visual reference: `eloquent-bookings/src/components/ShopCard.tsx` + its `.c-shop-card` CSS.
+**Key reference:** Design spec at `admin/docs/superpowers/specs/2026-06-10-master-view-redesign-design.md`. Card visual reference: `eloquent-bookings/src/components/ShopCard.tsx` + its `.c-shop-card` CSS.
 
 ---
 
@@ -21,7 +21,7 @@
 - Modify: `routes/api.php` — register `PATCH /master/shops/{shop}`
 - Test: `tests/Feature/MasterTest.php` (extend), `tests/Feature/WaShopContextTest.php` (extend)
 
-**Frontend (`D:/Francis/projects/2026/Eloquent/Solutions/Rezzy/bizrezzy`)**
+**Frontend (`D:/Francis/projects/2026/Eloquent/Solutions/Rezzy/admin`)**
 - Create: `src/lib/format.ts` — shared `shortDate`
 - Modify: `src/types.ts` — `MasterShop.persona`
 - Modify: `src/lib/shops.ts` — `updateMasterShop()`
@@ -299,9 +299,9 @@ git commit -m "feat(backend): expose per-shop persona from wa/shop-context"
 
 ---
 
-## PHASE 2 — FRONTEND (bizrezzy)
+## PHASE 2 — FRONTEND (admin)
 
-> All frontend commands run from `D:/Francis/projects/2026/Eloquent/Solutions/Rezzy/bizrezzy`.
+> All frontend commands run from `D:/Francis/projects/2026/Eloquent/Solutions/Rezzy/admin`.
 
 ### Task 4: Types + `updateMasterShop` lib call + shared `shortDate`
 
@@ -350,7 +350,7 @@ Expected: PASS (no errors).
 
 ```bash
 git add src/types.ts src/lib/shops.ts src/lib/format.ts
-git commit -m "feat(bizrezzy): updateMasterShop lib call, persona type, shared shortDate"
+git commit -m "feat(admin): updateMasterShop lib call, persona type, shared shortDate"
 ```
 
 ---
@@ -476,7 +476,7 @@ Expected: PASS.
 
 ```bash
 git add src/components/MasterShopCard.tsx src/components/MasterShopCard.test.tsx src/styles/customer.css
-git commit -m "feat(bizrezzy): MasterShopCard in eloquent-bookings style with monogram + status badges"
+git commit -m "feat(admin): MasterShopCard in eloquent-bookings style with monogram + status badges"
 ```
 
 ---
@@ -775,7 +775,7 @@ Expected: PASS — all three cases green.
 
 ```bash
 git add src/pages/MasterShopDetail.tsx src/pages/MasterShopDetail.test.tsx src/App.tsx src/styles/customer.css
-git commit -m "feat(bizrezzy): master business detail screen (creds, visibility toggle, persona)"
+git commit -m "feat(admin): master business detail screen (creds, visibility toggle, persona)"
 ```
 
 ---
@@ -823,7 +823,7 @@ Run: `npm run dev` and open `/master`. Expected: businesses render as horizontal
 
 ```bash
 git add src/pages/MasterShops.tsx
-git commit -m "feat(bizrezzy): render master list with MasterShopCard, open detail on tap"
+git commit -m "feat(admin): render master list with MasterShopCard, open detail on tap"
 ```
 
 ---
@@ -911,7 +911,7 @@ Expected: no output, exit code 0 (syntax OK).
 - [ ] **Step 3: Manual end-to-end verification (after backend + bot are deployed)**
 
 1. With no persona set on a test shop, message its WhatsApp number → bot replies as before (category-based).
-2. In bizrezzy `/master/:id` for that shop, set a persona (e.g. "You are Mario, reply only in playful one-liners."), save.
+2. In admin `/master/:id` for that shop, set a persona (e.g. "You are Mario, reply only in playful one-liners."), save.
 3. Message the shop's number again → reply now reflects the custom persona.
 4. Clear the persona (blank + save) → reply reverts to the default.
 
@@ -929,7 +929,7 @@ git commit -m "feat(bot): tenant replies use per-shop persona when set (additive
 ## Rollout
 
 1. Deploy **backend** (migration + endpoint) via git pull on the droplet (`/var/www/eloquent-backend`, runs `php artisan migrate`).
-2. Deploy **bizrezzy** (static SPA) per the static-SPA deploy process.
+2. Deploy **admin** (static SPA) per the static-SPA deploy process.
 3. Deploy **whatsapp-autoreply** — safe at any time; backward compatible until a persona is set.
 
 ## Self-review notes (verified against spec)

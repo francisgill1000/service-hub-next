@@ -65,5 +65,5 @@ invoice `paid` → booking confirmed (same as web).
 
 ## Out of scope
 
-bizrezzy admin collection, gating notifications on payment, per-shop wallets,
+admin admin collection, gating notifications on payment, per-shop wallets,
 embedded checkout. (Tracked in `docs/ziina-integration.md`.)

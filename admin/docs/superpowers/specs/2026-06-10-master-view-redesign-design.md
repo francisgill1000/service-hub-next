@@ -5,7 +5,7 @@
 
 ## Problem
 
-The bizrezzy "All Businesses" master view (`/master`) renders every business as a dense
+The admin "All Businesses" master view (`/master`) renders every business as a dense
 card with the ID/PIN credentials and a row of metadata crammed inline. Francis dislikes
 this display style and wants it to follow the cleaner card → detail pattern used in the
 customer app (`eloquent-bookings`).
@@ -42,13 +42,13 @@ Two capabilities are also missing from the master view:
 
 | Repo | Path | Changes |
 |------|------|---------|
-| bizrezzy (master UI) | `Rezzy/bizrezzy` | New card component, new detail page, route, lib calls, CSS |
+| admin (master UI) | `Rezzy/admin` | New card component, new detail page, route, lib calls, CSS |
 | backend (Laravel API) | `Rezzy/backend` | Migration, master update endpoint, payload additions |
 | whatsapp-autoreply (Node bot, **live**) | `Solutions/whatsapp-autoreply` | Additive: use persona when present |
 
 ---
 
-## A. List redesign — `bizrezzy`
+## A. List redesign — `admin`
 
 ### `MasterShopCard` (new component)
 
@@ -77,7 +77,7 @@ redirect guard. The only change is swapping the inline credential card markup fo
 
 ---
 
-## B. Detail screen — `/master/:id` (`bizrezzy`)
+## B. Detail screen — `/master/:id` (`admin`)
 
 New page `MasterShopDetail.tsx`, modeled on `eloquent-bookings` `ShopDetail`'s visual
 structure (appbar with Back, hero, sectioned vertical scroll).
@@ -120,7 +120,7 @@ Add `<Route path="/master/:id" element={<MasterShopDetail />} />` inside the exi
 ### CSS (`src/styles/customer.css`)
 
 Port the `eloquent-bookings` `.c-shop-card` family (adapted; monogram thumb instead of image)
-and add detail-screen styles (hero, credentials block, toggle, persona editor). bizrezzy
+and add detail-screen styles (hero, credentials block, toggle, persona editor). admin
 shares the same mint token palette (`tokens.css`), so colours carry over directly.
 
 ---
@@ -180,7 +180,7 @@ Francis deliberately sets a persona on a shop. The sales-number branch is untouc
 
 ```
 Master sets persona / toggles status
-  → bizrezzy MasterShopDetail
+  → admin MasterShopDetail
   → PATCH /master/shops/{id}  (Laravel, master-guarded)
   → shops.persona / shops.status updated
 
@@ -206,7 +206,7 @@ Customer messages a business's WhatsApp number
 
 ## Testing
 
-- **bizrezzy:** component tests for `MasterShopCard` (badges: connected/not, inactive,
+- **admin:** component tests for `MasterShopCard` (badges: connected/not, inactive,
   master) and `MasterShopDetail` (renders creds, persona save calls `updateMasterShop`,
   toggle calls it with `status`, not-found state). Follow the existing Vitest +
   Testing-Library patterns in `src/pages/*.test.tsx`.
@@ -219,6 +219,6 @@ Customer messages a business's WhatsApp number
 ## Rollout order
 
 1. Backend migration + endpoint + payload additions (deploy via git pull on droplet).
-2. bizrezzy frontend (redesign + detail + persona editor + toggle).
+2. admin frontend (redesign + detail + persona editor + toggle).
 3. Node bot additive change — deploy when ready; safe to deploy at any point since it is
    backward compatible.

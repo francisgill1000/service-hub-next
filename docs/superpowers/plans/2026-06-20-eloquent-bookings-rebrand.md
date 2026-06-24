@@ -15,7 +15,7 @@
 - Internal folder + package name is exactly `eloquent-bookings`.
 - Favicon/app-icon monogram glyph is `EB` on the existing mint tile (gradients unchanged).
 - New domain `bookings.eloquentservice.com`; old `rezzy.eloquentservice.com` stays live (same app, parallel).
-- Provider app (`bizrezzy`) is OUT OF SCOPE — do not edit it.
+- Provider app (`admin`) is OUT OF SCOPE — do not edit it.
 - Work stays on branch `feat/eloquent-bookings-web`. Do NOT checkout master or `git stash` (tree is normally dirty). Commit only the files each task names.
 - Droplet: `root@64.227.153.90`, customer nginx site is `sites-enabled/frontend`, `*.eloquentservice.com` is a wildcard A-record (no DNS step).
 - `deploy.ps1` stays ASCII-only (PS 5.1) and keeps the single-tarball upload model.

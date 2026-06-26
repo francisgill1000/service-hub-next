@@ -59,7 +59,7 @@ export default function ShopDetail() {
 
       // Pay-first: the booking exists but is unpaid. Send the customer to Ziina;
       // it's confirmed once payment settles. If we can't start payment, the
-      // booking still stands (admin can collect via admin) — land on its page.
+      // booking still stands (eloquent-bookings) — land on its page.
       try {
         const pay = await api.post(`/booking/${bookingId}/invoice/pay`);
         const url = pay.data?.data?.redirect_url;

@@ -1,6 +1,6 @@
 # Admin — Service Provider Web App
 
-Provider-facing PWA for Rezzy shops. Vite + React + TypeScript, talking to the Rezzy
+Provider-facing PWA for Admin shops. Vite + React + TypeScript, talking to the Admin
 Laravel API. Mirrors the `eloquent-bookings` stack/design; functionality is ported from the
 `mobile-app/` shop screens.
 

@@ -1,7 +1,7 @@
 {
   "name": "Admin",
   "short_name": "Admin",
-  "description": "Rezzy for service providers — manage bookings, staff, and services.",
+  "description": "Admin for service providers — manage bookings, staff, and services.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0e0c",

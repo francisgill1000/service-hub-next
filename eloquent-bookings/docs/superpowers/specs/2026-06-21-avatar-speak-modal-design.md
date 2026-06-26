@@ -1,7 +1,7 @@
 # Avatar-Speaks Modal in Live Chat — Design
 
 **Date:** 2026-06-21
-**Project:** eloquent-bookings (Rezzy)
+**Project:** eloquent-bookings
 **Status:** Approved (phase 1 — verification)
 
 ## Goal

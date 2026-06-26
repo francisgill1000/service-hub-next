@@ -6,7 +6,7 @@ Status: Approved (Francis: "i trust you. just do it")
 ## Goal
 
 Port the chat functionality from the standalone `whatsapp-autoreply` Node app into the
-Rezzy stack: Laravel backend (`Rezzy/backend`) + admin PWA. Multi-account: each shop
+Admin stack: Laravel backend (`Admin/backend`) + admin PWA. Multi-account: each shop
 connects its own WhatsApp Business number. Chat only — no Claude auto-reply for now.
 
 ## Architecture

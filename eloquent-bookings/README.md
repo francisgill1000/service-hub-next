@@ -1,6 +1,6 @@
 # Eloquent Bookings
 
-Standalone responsive customer PWA for Eloquent Bookings. Vite + React + TypeScript, talking to the Rezzy Laravel API.
+Standalone responsive customer PWA for Eloquent Bookings. Vite + React + TypeScript, talking to the Eloquent Bookings Laravel API.
 
 ## Setup
 ```bash

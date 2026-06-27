@@ -248,8 +248,12 @@ export default function Profile() {
                   level={logoPreview ? 'H' : 'M'}
                   bgColor="#ffffff"
                   fgColor="#0a0e0c"
-                  imageSettings={logoPreview ? { src: logoPreview, height: 42, width: 42, excavate: true } : undefined}
                 />
+                {logoPreview && (
+                  <span className="c-qr-logo">
+                    <img src={logoPreview} alt="" />
+                  </span>
+                )}
               </div>
               <div className="c-qr-name">{shop?.name}</div>
               <p className="c-qr-hint">Customers scan to view and book your business.</p>

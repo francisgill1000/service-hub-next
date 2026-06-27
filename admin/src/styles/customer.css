@@ -230,9 +230,20 @@
   border: 1px solid var(--border-mint);
 }
 .c-qr-frame {
+  position: relative;
   background: #fff; border-radius: var(--r-lg); padding: 16px; line-height: 0; margin-bottom: 12px;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 12px 30px -12px var(--mint-glow);
 }
+/* Clean centred logo badge over the QR — a white rounded chip with a small
+   ring, instead of dropping the raw photo straight into the QR modules. The
+   QR uses error-correction level H so the covered centre still scans. */
+.c-qr-logo {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 46px; height: 46px; padding: 4px; border-radius: 13px;
+  background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  display: grid; place-items: center;
+}
+.c-qr-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 9px; display: block; }
 .c-qr-name { font-size: 16px; font-weight: 800; color: var(--text-1); margin-bottom: 2px; }
 .c-qr-hint { color: var(--text-3); font-size: 12px; margin-bottom: 14px; }
 .c-qr-actions { display: flex; gap: 10px; width: 100%; }

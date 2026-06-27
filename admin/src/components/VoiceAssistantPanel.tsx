@@ -17,7 +17,7 @@ function fmtTime(s: number): string {
  * a progress track, and elapsed time. Auto-plays once when it first appears;
  * the button replays it any number of times afterwards.
  */
-function AudioBubble({ src }: { src: string }) {
+function AudioBubble({ src, autoPlay = false }: { src: string; autoPlay?: boolean }) {
   const ref = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -25,8 +25,8 @@ function AudioBubble({ src }: { src: string }) {
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    ref.current?.play().catch(() => undefined); // auto-play once on mount
-  }, []);
+    if (autoPlay) ref.current?.play().catch(() => undefined); // auto-play once on mount
+  }, [autoPlay]);
 
   const toggle = () => {
     const a = ref.current;
@@ -93,15 +93,20 @@ export function VoiceAssistantPanel({ onClose }: { onClose: () => void }) {
       setBusy(true);
       const blob = await stop();
       if (!blob) { setBusy(false); return; }
+      const voiceUrl = URL.createObjectURL(blob); // play back the owner's own note
       const hist = historyToSend();
       try {
         const res = await postVoice(blob, hist);
         setMessages((m) => [
           ...m,
-          ...(res.transcript ? [{ role: 'user' as const, content: res.transcript }] : []),
-          { role: 'assistant' as const, content: res.reply_text, audioUrl: res.reply_audio_url },
+          { role: 'user', content: res.transcript ?? '', audioUrl: voiceUrl },
+          { role: 'assistant', content: res.reply_text, audioUrl: res.reply_audio_url },
         ]);
-      } catch { setError('Could not reach the assistant.'); }
+      } catch {
+        // keep the owner's recorded note visible even if the request failed
+        setMessages((m) => [...m, { role: 'user', content: '', audioUrl: voiceUrl }]);
+        setError('Could not reach the assistant.');
+      }
       finally { setBusy(false); }
     } else {
       setError('');
@@ -123,7 +128,7 @@ export function VoiceAssistantPanel({ onClose }: { onClose: () => void }) {
           )}
           {messages.map((m, i) => (
             <div key={i} className={`va-bubble ${m.role === 'user' ? 'va-user' : 'va-ai'}`}>
-              {m.role === 'assistant' && m.audioUrl ? <AudioBubble src={m.audioUrl} /> : m.content}
+              {m.audioUrl ? <AudioBubble src={m.audioUrl} autoPlay={m.role === 'assistant'} /> : m.content}
             </div>
           ))}
           {busy && <div className="va-bubble va-ai va-typing">…</div>}

@@ -3,7 +3,15 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { VoiceAssistantPanel } from './VoiceAssistantPanel';
 
 vi.mock('@/lib/assistant', () => ({
-  postText: vi.fn().mockResolvedValue({ transcript: 'hi', reply_text: 'You made 50 dirhams.', reply_audio_url: null, history: [] }),
+  postText: vi.fn().mockResolvedValue({
+    transcript: 'hi',
+    reply_text: 'You made 50 dirhams.',
+    reply_audio_url: null,
+    history: [
+      { role: 'user', content: 'how much' },
+      { role: 'assistant', content: 'You made 50 dirhams.' },
+    ],
+  }),
   postVoice: vi.fn(),
 }));
 vi.mock('@/hooks/useRecorder', () => ({

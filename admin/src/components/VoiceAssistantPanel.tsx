@@ -26,10 +26,7 @@ export function VoiceAssistantPanel({ onClose }: { onClose: () => void }) {
     setHistory((h) => [...h, userTurn]);
     try {
       const res = await postText(text, history);
-      const next = res.history.length > 0
-        ? res.history
-        : [...history, userTurn, { role: 'assistant' as const, content: res.reply_text }];
-      setHistory(next);
+      setHistory(res.history);
       playReply(res.reply_audio_url);
     } catch { setError('Could not reach the assistant.'); }
     finally { setBusy(false); setDraft(''); }
@@ -44,10 +41,7 @@ export function VoiceAssistantPanel({ onClose }: { onClose: () => void }) {
       setHistory((h) => [...h, userTurn]);
       try {
         const res = await postVoice(blob, history);
-        const next = res.history.length > 0
-          ? res.history
-          : [...history, userTurn, { role: 'assistant' as const, content: res.reply_text }];
-        setHistory(next);
+        setHistory(res.history);
         playReply(res.reply_audio_url);
       } catch { setError('Could not reach the assistant.'); }
       finally { setBusy(false); }

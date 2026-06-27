@@ -2008,3 +2008,12 @@
 .va-mic { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--text-1); border: 1px solid var(--border-1); }
 .va-mic.recording { background: var(--danger); color: #fff; animation: va-pulse 1.2s ease-in-out infinite; }
 @keyframes va-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.5); } 50% { box-shadow: 0 0 0 8px rgba(248,113,113,0); } }
+
+.va-fab {
+  position: fixed; right: 16px; bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  width: 54px; height: 54px; border-radius: 50%; z-index: 55;
+  display: grid; place-items: center; color: #04110c;
+  background: var(--mint-300); border: none;
+  box-shadow: 0 8px 22px -6px var(--mint-glow), 0 0 0 1px rgba(0,0,0,0.05);
+}
+.va-fab:active { transform: scale(0.96); }

@@ -22,10 +22,13 @@ describe('assistant lib', () => {
     });
     const blob = new Blob(['x'], { type: 'audio/webm' });
     await postVoice(blob, []);
-    const [url, form] = (api.post as any).mock.calls[0];
+    const [url, form, config] = (api.post as any).mock.calls[0];
     expect(url).toBe('/shop/assistant/voice');
     expect(form).toBeInstanceOf(FormData);
     expect(form.get('audio')).toBeInstanceOf(Blob);
     expect(form.get('history')).toBe('[]');
+    // Must override the api instance's application/json default so the
+    // multipart body is parsed by the backend (regression guard).
+    expect(config?.headers?.['Content-Type']).toBe('multipart/form-data');
   });
 });

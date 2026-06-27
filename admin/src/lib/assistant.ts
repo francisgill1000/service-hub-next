@@ -18,6 +18,11 @@ export async function postVoice(audio: Blob, history: AssistantTurn[]): Promise<
   const ext = audio.type.split('/')[1]?.split(';')[0] || 'webm';
   form.append('audio', audio, `voice.${ext}`);
   form.append('history', JSON.stringify(history));
-  const { data } = await api.post('/shop/assistant/voice', form);
+  // The shared api instance defaults to application/json; override it so the
+  // FormData is sent as multipart. axios appends the boundary for FormData
+  // bodies (same pattern as the customer app's chat voice upload).
+  const { data } = await api.post('/shop/assistant/voice', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return data;
 }

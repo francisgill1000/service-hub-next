@@ -56,6 +56,9 @@ export const Icons = {
   Send: ({ size = 20 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
   ),
+  Mic: ({ size = 20 }: P) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 11a7 7 0 0 0 14 0" /><path d="M12 19v3" /></svg>
+  ),
   Store: ({ size = 28 }: P) => (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}><path d="M3 9l1.5-5h15L21 9" /><path d="M4 9v11h16V9" /><path d="M9 20v-6h6v6" /></svg>
   ),

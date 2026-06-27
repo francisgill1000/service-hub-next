@@ -1,15 +1,12 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icons } from '@/components/Icons';
-import { VoiceAssistantPanel } from './VoiceAssistantPanel';
 
+/** Floating mic on every tabbed screen → opens the voice assistant page. */
 export function VoiceAssistantFab() {
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   return (
-    <>
-      <button className="va-fab" aria-label="Voice assistant" onClick={() => setOpen(true)}>
-        <Icons.Mic size={22} />
-      </button>
-      {open && <VoiceAssistantPanel onClose={() => setOpen(false)} />}
-    </>
+    <button className="va-fab" aria-label="Voice assistant" onClick={() => navigate('/ask')}>
+      <Icons.Mic size={22} />
+    </button>
   );
 }

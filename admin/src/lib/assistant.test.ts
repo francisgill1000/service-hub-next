@@ -25,5 +25,7 @@ describe('assistant lib', () => {
     const [url, form] = (api.post as any).mock.calls[0];
     expect(url).toBe('/shop/assistant/voice');
     expect(form).toBeInstanceOf(FormData);
+    expect(form.get('audio')).toBeInstanceOf(Blob);
+    expect(form.get('history')).toBe('[]');
   });
 });

@@ -15,11 +15,9 @@ export async function postText(text: string, history: AssistantTurn[]): Promise<
 
 export async function postVoice(audio: Blob, history: AssistantTurn[]): Promise<AssistantReply> {
   const form = new FormData();
-  const ext = audio.type.includes('ogg') ? 'ogg' : audio.type.includes('mp4') ? 'mp4' : 'webm';
+  const ext = audio.type.split('/')[1]?.split(';')[0] || 'webm';
   form.append('audio', audio, `voice.${ext}`);
   form.append('history', JSON.stringify(history));
-  const { data } = await api.post('/shop/assistant/voice', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  const { data } = await api.post('/shop/assistant/voice', form);
   return data;
 }

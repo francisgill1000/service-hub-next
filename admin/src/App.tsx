@@ -22,6 +22,7 @@ import MasterShops from '@/pages/MasterShops';
 import MasterShopDetail from '@/pages/MasterShopDetail';
 import CategorySetup from '@/pages/CategorySetup';
 import Assistant from '@/pages/Assistant';
+import VoiceAssistant from '@/pages/VoiceAssistant';
 import Chats from '@/pages/Chats';
 import ChatThread from '@/pages/ChatThread';
 import WhatsAppSetup from '@/pages/WhatsAppSetup';
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/working-hours" element={<WorkingHours />} />
           <Route path="/category-setup" element={<CategorySetup />} />
           <Route path="/assistant" element={<Assistant />} />
+          <Route path="/ask" element={<VoiceAssistant />} />
           <Route path="/master" element={<MasterShops />} />
           <Route path="/master/:id" element={<MasterShopDetail />} />
           <Route path="/chats/setup" element={<WhatsAppSetup />} />

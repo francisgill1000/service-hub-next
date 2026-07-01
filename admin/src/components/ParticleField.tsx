@@ -33,8 +33,8 @@ export function ParticleField() {
       pts = Array.from({ length: target }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.5 * dpr,
-        vy: (Math.random() - 0.5) * 0.5 * dpr,
+        vx: (Math.random() - 0.5) * 0.75 * dpr,
+        vy: (Math.random() - 0.5) * 0.75 * dpr,
         r: (Math.random() * 1.7 + 0.8) * dpr,
       }));
     }

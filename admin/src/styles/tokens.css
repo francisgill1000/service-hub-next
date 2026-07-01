@@ -3,8 +3,10 @@
   --bg-0: #05070a;
   --bg-1: #0a0e0c;
   --bg-2: #0f1411;
-  --surface-1: #131816;
-  --surface-2: #1a201d;
+  /* Translucent so the animated background shows through cards/sections.
+     Bars and modals use their own opaque values and stay solid. */
+  --surface-1: rgba(19, 24, 22, 0.5);
+  --surface-2: rgba(26, 32, 29, 0.55);
   --surface-3: #232b27;
 
   --border-1: rgba(255, 255, 255, 0.06);

@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: var(--bg-1);
+  background: transparent; /* let the ambient background layer show through */
   color: var(--text-1);
   font-family: var(--font-sans);
 }
@@ -24,7 +24,7 @@
 
 /* Reset/base inside artboards */
 .m-screen {
-  background: var(--bg-1);
+  background: transparent; /* let the ambient background layer show through */
   color: var(--text-1);
   font-family: var(--font-sans);
   height: 100%;

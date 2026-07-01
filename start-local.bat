@@ -17,10 +17,10 @@ echo Starting queue worker (AI chat replies) ...
 start "Queue Worker" cmd /k "cd /d "%ROOT%backend" && php artisan queue:work database --tries=1 --timeout=120"
 
 echo Starting Admin app on http://localhost:5175 ...
-start "Admin (:5175)" cmd /k "cd /d "%ROOT%admin" && npm run dev"
+start "Admin (:5175)" cmd /k "cd /d "%ROOT%backend\admin" && npm run dev"
 
 echo Starting Customer app on http://localhost:5174 ...
-start "Customer (:5174)" cmd /k "cd /d "%ROOT%eloquent-bookings" && npm run dev"
+start "Customer (:5174)" cmd /k "cd /d "%ROOT%backend\eloquent-bookings" && npm run dev"
 
 echo.
 echo Servers launching in separate windows:

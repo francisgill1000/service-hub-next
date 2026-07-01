@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { ShopProvider } from '@/context/ShopContext';
+import { ParticleField } from '@/components/ParticleField';
 import { MobileLayout } from '@/layout/MobileLayout';
 import { RequireShop } from '@/layout/RequireShop';
 import Login from '@/pages/Login';
@@ -30,6 +31,7 @@ import WhatsAppSetup from '@/pages/WhatsAppSetup';
 export default function App() {
   return (
     <ShopProvider>
+      <ParticleField />
       <Routes>
         {/* Public / full-screen */}
         <Route path="/login" element={<Login />} />

@@ -102,5 +102,17 @@ body::after {
   body::after { animation: none; }
 }
 #root { position: relative; z-index: 1; }
+
+/* Particle-constellation canvas (ParticleField). Fixed and non-interactive;
+   z-index below the app content but above the glow/grid layers. */
+.fx-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  display: block;
+}
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }

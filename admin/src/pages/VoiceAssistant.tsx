@@ -6,6 +6,26 @@ import { useRecorder } from '@/hooks/useRecorder';
 
 type Msg = { role: 'user' | 'assistant'; content: string; audioUrl?: string | null };
 
+const STORAGE_KEY = 'va-conversation';
+
+/**
+ * Restore the saved conversation. Blob URLs from a previous session (the owner's
+ * own recorded notes) are revoked once the page unloads, so we drop them on load
+ * while keeping the transcript text — the player would otherwise be dead.
+ */
+function loadSaved(): Msg[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw) as Msg[];
+    return Array.isArray(arr)
+      ? arr.map((m) => (m.audioUrl?.startsWith('blob:') ? { ...m, audioUrl: null } : m))
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 function fmtTime(s: number): string {
   if (!isFinite(s) || s < 0) return '0:00';
   const m = Math.floor(s / 60);
@@ -67,17 +87,37 @@ function AudioBubble({ src, autoPlay = false }: { src: string; autoPlay?: boolea
 
 export default function VoiceAssistant() {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>(loadSaved);
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const { recording, start, stop, supported } = useRecorder();
   const threadRef = useRef<HTMLDivElement>(null);
+  // Messages restored from storage should not auto-play their audio on mount;
+  // only notes added during this session do. This is the count present at load.
+  const restoredCount = useRef(messages.length);
 
   // Keep the latest message in view as the conversation grows.
   useEffect(() => {
     threadRef.current?.scrollTo?.({ top: threadRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy]);
+
+  // Persist the conversation so it survives navigation and reloads. Blob URLs
+  // are session-local, so we strip them before saving and keep the transcript.
+  useEffect(() => {
+    try {
+      const saved = messages.map((m) => (m.audioUrl?.startsWith('blob:') ? { ...m, audioUrl: null } : m));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    } catch {
+      /* storage full or unavailable — the conversation just won't persist */
+    }
+  }, [messages]);
+
+  function clearConversation() {
+    setMessages([]); // the persist effect then writes an empty conversation
+    setError('');
+    restoredCount.current = 0;
+  }
 
   // Text-only view of the conversation to send as context (the server appends
   // the new user message itself, so we send the prior turns only).
@@ -129,6 +169,11 @@ export default function VoiceAssistant() {
           <span className="va-title">Ask about your business</span>
           <span className="va-sub">Speak or type — answers come back as voice</span>
         </div>
+        {messages.length > 0 && (
+          <button className="c-icon-btn" aria-label="Clear conversation" onClick={clearConversation}>
+            <Icons.Trash size={18} />
+          </button>
+        )}
       </div>
 
       <div className="va-thread" ref={threadRef}>
@@ -140,7 +185,10 @@ export default function VoiceAssistant() {
         )}
         {messages.map((m, i) => (
           <div key={i} className={`va-bubble ${m.role === 'user' ? 'va-user' : 'va-ai'}`}>
-            {m.audioUrl ? <AudioBubble src={m.audioUrl} autoPlay={m.role === 'assistant'} /> : m.content}
+            {m.audioUrl && (
+              <AudioBubble src={m.audioUrl} autoPlay={m.role === 'assistant' && i >= restoredCount.current} />
+            )}
+            {m.content && <div className="va-text">{m.content}</div>}
           </div>
         ))}
         {busy && <div className="va-bubble va-ai va-typing">…</div>}

@@ -5,12 +5,17 @@ import { useShop } from '@/context/ShopContext';
 import { Icons } from '@/components/Icons';
 import type { ServiceCategory, Shop } from '@/types';
 
+// Select value for "Other"; submitted to the API as category_id 0 with a
+// free-text custom_category the owner types in.
+const OTHER = 'other';
+
 export default function Register() {
   const navigate = useNavigate();
   const { loginShop } = useShop();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [customCategory, setCustomCategory] = useState('');
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -29,13 +34,16 @@ export default function Register() {
     if (!name.trim()) { setError('Business name is required.'); return; }
     if (!phone.trim()) { setError('Phone number is required.'); return; }
     if (!categoryId) { setError('Please choose your service category.'); return; }
+    const isOther = categoryId === OTHER;
+    if (isOther && !customCategory.trim()) { setError('Please enter your business category.'); return; }
     setSubmitting(true);
     setError('');
     try {
       const res = await registerShop({
         name: name.trim(),
         phone: phone.trim(),
-        category_id: Number(categoryId),
+        category_id: isOther ? 0 : Number(categoryId),
+        ...(isOther ? { custom_category: customCategory.trim() } : {}),
         is_verified: true,
       });
       if (res.shop) {
@@ -144,8 +152,17 @@ export default function Register() {
             {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
+            <option value={OTHER}>Other…</option>
           </select>
         </div>
+        {categoryId === OTHER && (
+          <div className="c-input-row">
+            <input id="custom-category" type="text" placeholder="Type your business category"
+              value={customCategory} maxLength={255}
+              onChange={(e) => { setCustomCategory(e.target.value); setError(''); }}
+              onKeyDown={(e) => { if (e.key === 'Enter') void handleSubmit(); }} />
+          </div>
+        )}
         <p className="c-page-sub" style={{ margin: '-6px 4px 14px', fontSize: 12 }}>
           This cannot be changed later — choose carefully.
         </p>

@@ -50,6 +50,7 @@ export type Shop = {
   name: string;
   shop_code?: string;
   category_id?: number;
+  custom_category?: string | null;
   category_confirmed_at?: string | null;
   is_master?: boolean;
   logo?: string;

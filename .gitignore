@@ -10,7 +10,7 @@ key
 *.keystore
 *-credentials.txt
 # Nested repo (tracked in its own git)
-backend/
+Booking-Manager/
 .claude/settings.json
 docs/ziina-integration.md
 docs/superpowers/specs/2026-06-21-chat-services-list-design.md

@@ -49,7 +49,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: var(--bg-1);
+  background: transparent; /* let the animated background show behind the header */
   position: relative;
   z-index: 2;
 }
